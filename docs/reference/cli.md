@@ -88,7 +88,7 @@ import { createCliKernel, createProcessCliIo, diffCommandModule, runBuildCli } f
 
 const kernel = createCliKernel({
   programName: 'custom-dtifx',
-  version: '1.0.0',
+  version: '0.0.1',
   description: 'Toolkit embed for bespoke automation',
   io: createProcessCliIo(),
 });
