@@ -165,8 +165,9 @@ const formatters: readonly FormatterInstanceConfig[] = getFormatterConfigEntries
   Provide parser, document cache, or token cache overrides to integrate custom adapters; otherwise
   the session provisions the default parser backed by caches when
   supplied.【F:packages/build/src/session/resolution-session.ts†L31-L90】
-- `DefaultParserAdapter` exposes DTIF parsing with options for flattened tokens, dependency graphs,
-  and custom session identifiers, matching the parameters accepted by
+- `SessionTokenParser` exposes DTIF parsing with options for flattened tokens, dependency graphs,
+  and custom session identifiers while delegating the heavy lifting to shared dtif-parser sessions.
+  The parser matches the parameters accepted by
   `ResolutionSession`.【F:packages/build/src/session/resolution-session.ts†L46-L79】
 - `FileSystemTokenCache` persists parser snapshots across runs using a Keyv-backed file store,
   keeping flattened tokens, metadata, and diagnostics available between builds so long-lived hosts

@@ -159,8 +159,8 @@ export {
 } from './infrastructure/sources/pointer-template.js';
 export { DtifSchemaValidationAdapter } from './infrastructure/validation/dtif-schema-validator.js';
 export {
-  DefaultParserAdapter,
-  type DefaultParserAdapterOptions,
+  SessionTokenParser,
+  type SessionTokenParserOptions,
 } from './infrastructure/resolution/default-parser.js';
 export { SequentialTaskScheduler } from './infrastructure/scheduler/sequential-task-scheduler.js';
 export {

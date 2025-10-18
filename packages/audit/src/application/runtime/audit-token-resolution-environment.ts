@@ -1,11 +1,11 @@
 import type { DocumentCache, TokenCache } from '@lapidist/dtif-parser';
 
 import {
-  DefaultParserAdapter,
+  SessionTokenParser,
   DefaultSourceRepository,
   collectTokenMetrics,
   planTokenSources,
-  type DefaultParserAdapterOptions,
+  type SessionTokenParserOptions,
   type ParserMetrics,
   type ParserPort,
   type TokenResolutionServiceOptions,
@@ -81,7 +81,7 @@ export interface CreateAuditTokenResolutionEnvironmentDependencies {
   readonly telemetrySubscriberFactory?: (options: {
     getSpan(): AuditTokenResolutionContext['span'];
   }) => DomainEventSubscriber;
-  readonly createParser?: (options: DefaultParserAdapterOptions) => ParserPort;
+  readonly createParser?: (options: SessionTokenParserOptions) => ParserPort;
   readonly createResolutionService?: (
     options: TokenResolutionServiceOptions,
   ) => TokenResolutionService;
@@ -157,16 +157,16 @@ export async function createAuditTokenResolutionEnvironment<
 
   const subscriptions: DomainEventSubscription[] = [eventBus.subscribe(loggingSubscriber)];
 
-  const parserOptions: DefaultParserAdapterOptions = {
+  const parserOptions: SessionTokenParserOptions = {
     includeGraphs: true,
     flatten: true,
     ...(options.documentCache ? { documentCache: options.documentCache } : {}),
     ...(options.tokenCache ? { tokenCache: options.tokenCache } : {}),
-  } satisfies DefaultParserAdapterOptions;
+  } satisfies SessionTokenParserOptions;
 
   const parser = dependencies.createParser
     ? dependencies.createParser(parserOptions)
-    : new DefaultParserAdapter(parserOptions);
+    : new SessionTokenParser(parserOptions);
 
   const consumeMetrics = createParserMetricsConsumer(parser);
 
