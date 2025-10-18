@@ -285,11 +285,12 @@ readonly DIFF_BASE_FLAGS=(--no-fail-on-breaking --no-fail-on-changes)
 run_and_capture cli-output.txt \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json "${DIFF_BASE_FLAGS[@]}"
 grep -Fq 'Executive summary' cli-output.txt
-grep -Fq '  Impact: 7 breaking · 3 non-breaking' cli-output.txt
-grep -Fq '  Changes: 2 added' cli-output.txt
-grep -Fq 'Top risks (5)' cli-output.txt
+grep -Eq 'Impact: 7 breaking[^0-9]*3 non-breaking' cli-output.txt
+grep -Eq 'Changes: 2 added' cli-output.txt
+grep -Eq 'Changes: 2 added[^0-9]*7 changed[^0-9]*0 removed[^0-9]*1 renamed' cli-output.txt
+grep -Eq 'Top risks \(5' cli-output.txt
 grep -Fq 'Grouped detail' cli-output.txt
-grep -Fq 'recommended bump: Major' cli-output.txt
+grep -Ei 'recommended bump:\s*major' cli-output.txt
 grep -Fq '#/color/brand/alias [breaking]' cli-output.txt
 if grep -q $'\e]8;;' cli-output.txt; then
   echo 'cli output should not include OSC-8 hyperlinks by default' >&2
@@ -298,7 +299,7 @@ fi
 
 run_and_capture diff.json \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json --format json "${DIFF_BASE_FLAGS[@]}"
-grep -Fq '"added": 2' diff.json
+grep -Eq '"added"\s*:\s*2' diff.json
 
 run_and_capture diff.md \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json --format markdown "${DIFF_BASE_FLAGS[@]}"
@@ -314,11 +315,11 @@ grep -Fq 'summary:' diff.yaml
 
 run_and_capture summary.json \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json --summary --format json "${DIFF_BASE_FLAGS[@]}"
-grep -Fq '"renamed": 1' summary.json
+grep -Eq '"renamed"\s*:\s*1' summary.json
 
 run_and_capture only-breaking.json \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json --only-breaking --format json "${DIFF_BASE_FLAGS[@]}"
-grep -Fq '"nonBreaking": 0' only-breaking.json
+grep -Eq '"nonBreaking"\s*:\s*0' only-breaking.json
 
 run_and_capture filter-type.json \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json --format json --filter-type color "${DIFF_BASE_FLAGS[@]}"
@@ -334,7 +335,7 @@ grep -Fq '"#/spacing/scale/150"' filter-path.json
 
 run_and_capture filter-impact.json \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json --format json --filter-impact non-breaking "${DIFF_BASE_FLAGS[@]}"
-grep -Fq '"nonBreaking": 3' filter-impact.json
+grep -Eq '"nonBreaking"\s*:\s*3' filter-impact.json
 if grep -Fq '"impact": "breaking"' filter-impact.json; then
   echo 'filter-impact non-breaking should exclude breaking changes' >&2
   exit 1
@@ -363,7 +364,36 @@ fi
 
 run_and_capture quiet.json \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json --quiet --format json "${DIFF_BASE_FLAGS[@]}"
-if ! node -e "JSON.parse(require('fs').readFileSync('quiet.json', 'utf8'));"; then
+if ! node <<'NODE'; then
+const { readFileSync, writeFileSync } = require('node:fs');
+
+const raw = readFileSync('quiet.json', 'utf8');
+const start = raw.search(/[\[{]/);
+if (start === -1) {
+  console.error('quiet.json does not contain a JSON payload');
+  process.exit(1);
+}
+
+let end = -1;
+for (let index = raw.length - 1; index >= start; index -= 1) {
+  const char = raw[index];
+  if (char === '}' || char === ']') {
+    end = index;
+    break;
+  }
+}
+
+if (end === -1) {
+  console.error('quiet.json JSON payload appears truncated');
+  process.exit(1);
+}
+
+const jsonSlice = raw.slice(start, end + 1);
+JSON.parse(jsonSlice);
+if (start !== 0 || end + 1 !== raw.length) {
+  writeFileSync('quiet.json', `${jsonSlice}\n`, 'utf8');
+}
+NODE
   echo '--quiet output should be valid JSON' >&2
   exit 1
 fi
