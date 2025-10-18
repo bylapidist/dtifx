@@ -1,6 +1,6 @@
 {
   "name": "@dtifx/cli",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Unified DTIFx command line that orchestrates diff, build, and audit workflows.",
   "license": "MIT",
   "type": "module",
