@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { mkdtemp, readFile, rm, writeFile, cp } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile, cp, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,6 +26,19 @@ describe('dtifx CLI formatter plugins', () => {
       );
       const pluginTarget = path.join(workspace, 'formatter-plugin.mjs');
       await cp(pluginSource, pluginTarget);
+
+      await writeFile(
+        path.join(workspace, 'package.json'),
+        JSON.stringify({ name: 'dtifx-cli-test', version: '0.0.0', type: 'module' }),
+        'utf8',
+      );
+
+      const workspaceNodeModules = path.join(workspace, 'node_modules');
+      await symlink(
+        path.join(cliProjectRoot, 'node_modules'),
+        workspaceNodeModules,
+        process.platform === 'win32' ? 'junction' : 'dir',
+      );
 
       const configPath = path.join(workspace, 'dtifx.config.mjs');
       await writeFile(
@@ -70,7 +83,7 @@ export default defineConfig({
         'utf8',
       );
 
-      const outDir = 'artifacts';
+      const outDir = path.join(workspace, 'artifacts');
       await execFileAsync(
         'pnpm',
         [
@@ -86,13 +99,13 @@ export default defineConfig({
           '--json-logs',
         ],
         {
-          cwd: workspace,
+          cwd: cliProjectRoot,
           env: process.env,
           maxBuffer: 5 * 1024 * 1024,
         },
       );
 
-      const outputPath = path.join(workspace, outDir, 'cli-format.txt');
+      const outputPath = path.join(outDir, 'cli-format.txt');
       const contents = await readFile(outputPath, 'utf8');
       expect(contents.trim()).toBe('CLI:POINTER');
     } finally {
