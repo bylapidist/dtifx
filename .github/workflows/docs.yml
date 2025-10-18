@@ -1,9 +1,24 @@
 name: Deploy documentation
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - '*.md'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '*.md'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/docs.yml'
 
 permissions:
   contents: read
@@ -37,6 +52,9 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+      - name: Format check
+        run: pnpm format:check
+
       - name: Build VitePress site
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -48,6 +66,7 @@ jobs:
           path: docs/.vitepress/dist
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     needs: build
     environment:
       name: github-pages
