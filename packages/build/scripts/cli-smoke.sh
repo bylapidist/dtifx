@@ -13,6 +13,10 @@ fi
 CLI_PKG_PATH=""
 CLI_PKG_CLEANUP_PATH=""
 CORE_PKG_CLEANUP_PATH=""
+DIFF_PKG_PATH=""
+DIFF_PKG_CLEANUP_PATH=""
+AUDIT_PKG_PATH=""
+AUDIT_PKG_CLEANUP_PATH=""
 
 if [[ -z "${CLI_PKG:-}" ]]; then
   CLI_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/cli"
@@ -48,6 +52,25 @@ else
   fi
 fi
 
+if [[ -z "${DIFF_PKG:-}" ]]; then
+  DIFF_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/diff"
+  if [[ -d "${DIFF_PACKAGE_ROOT}" ]]; then
+    if ! declare -f pack_workspace_package >/dev/null; then
+      # shellcheck source=../../../scripts/lib/package-utils.sh
+      source "${WORKSPACE_ROOT}/scripts/lib/package-utils.sh"
+    fi
+    DIFF_PKG_PATH="$(pack_workspace_package "${DIFF_PACKAGE_ROOT}")"
+    DIFF_PKG="${DIFF_PKG_PATH}"
+    DIFF_PKG_CLEANUP_PATH="${DIFF_PKG_PATH}"
+  fi
+else
+  if [[ "${DIFF_PKG}" = /* ]]; then
+    DIFF_PKG_PATH="${DIFF_PKG}"
+  else
+    DIFF_PKG_PATH="${WORKSPACE_ROOT}/${DIFF_PKG}"
+  fi
+fi
+
 if [[ -z "${AUDIT_PKG:-}" ]]; then
   AUDIT_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/audit"
   if [[ -d "${AUDIT_PACKAGE_ROOT}" ]]; then
@@ -74,6 +97,11 @@ fi
 
 if [[ ! -f "${CLI_PKG_PATH}" ]]; then
   echo "Resolved CLI_PKG path ${CLI_PKG_PATH} does not exist" >&2
+  exit 1
+fi
+
+if [[ -n "${DIFF_PKG_PATH}" && ! -f "${DIFF_PKG_PATH}" ]]; then
+  echo "Resolved DIFF_PKG path ${DIFF_PKG_PATH} does not exist" >&2
   exit 1
 fi
 
@@ -120,6 +148,12 @@ cleanup() {
   fi
   if [[ -n "${CORE_PKG_CLEANUP_PATH}" ]]; then
     rm -f "${CORE_PKG_CLEANUP_PATH}" 2>/dev/null || true
+  fi
+  if [[ -n "${DIFF_PKG_CLEANUP_PATH}" ]]; then
+    rm -f "${DIFF_PKG_CLEANUP_PATH}" 2>/dev/null || true
+  fi
+  if [[ -n "${AUDIT_PKG_CLEANUP_PATH}" ]]; then
+    rm -f "${AUDIT_PKG_CLEANUP_PATH}" 2>/dev/null || true
   fi
   exit "$status"
 }
@@ -240,10 +274,28 @@ const lines = raw
   .split(/\r?\n/)
   .map((line) => line.trimEnd())
   .filter((line) => line.length > 0);
-const jsonLines = lines.filter((line) => !line.startsWith('{"level"'));
-if (jsonLines.length === 0) {
+const firstJsonIndex = lines.findIndex((line) => {
+  const trimmed = line.trimStart();
+  return trimmed.startsWith('{') || trimmed.startsWith('[');
+});
+
+if (firstJsonIndex === -1) {
   throw new Error(`No JSON payload detected in ${filePath}`);
 }
+
+const jsonLines = [];
+for (let index = firstJsonIndex; index < lines.length; index += 1) {
+  const line = lines[index];
+  const trimmedStart = line.trimStart();
+  if (trimmedStart.startsWith('--- ')) {
+    break;
+  }
+  if (trimmedStart.startsWith('{"level"')) {
+    continue;
+  }
+  jsonLines.push(line);
+}
+
 const payload = jsonLines.join('\n');
 const parsed = JSON.parse(payload);
 process.stdout.write(JSON.stringify(parsed));
@@ -252,11 +304,11 @@ NODE
 
 pushd "${WORK_DIR}" >/dev/null
 
-node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${CORE_PKG_PATH}" "${AUDIT_PKG_PATH}"
+node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${CORE_PKG_PATH}" "${AUDIT_PKG_PATH}" "${DIFF_PKG_PATH}"
 const fs = require('node:fs');
 const path = require('node:path');
 
-const [workspaceRoot, buildPath, cliPath, corePath, auditPath] = process.argv.slice(2);
+const [workspaceRoot, buildPath, cliPath, corePath, auditPath, diffPath] = process.argv.slice(2);
 const pkg = {
   name: 'dtifx-build-cli-smoke',
   version: '0.0.0',
@@ -309,6 +361,12 @@ const auditSpecifier = ensureFileSpecifier(auditPath);
 if (auditSpecifier) {
   devDependencies['@dtifx/audit'] = auditSpecifier;
   overrides['@dtifx/audit'] = auditSpecifier;
+}
+
+const diffSpecifier = ensureFileSpecifier(diffPath);
+if (diffSpecifier) {
+  devDependencies['@dtifx/diff'] = diffSpecifier;
+  overrides['@dtifx/diff'] = diffSpecifier;
 }
 
 
