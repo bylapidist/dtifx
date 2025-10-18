@@ -8,36 +8,26 @@
 <h1>DTIFx Toolkit</h1>
 <!-- markdownlint-enable MD041 -->
 
-<p align="left">
-  <a href="https://github.com/bylapidist/dtifx/actions/workflows/ci.yml">
-    <img
-      src="https://github.com/bylapidist/dtifx/actions/workflows/ci.yml/badge.svg?branch=main"
-      alt="Continuous integration status"
-    />
-  </a>
-  <a href="https://github.com/bylapidist/dtifx/actions/workflows/cli-smoke.yml">
-    <img
-      src="https://github.com/bylapidist/dtifx/actions/workflows/cli-smoke.yml/badge.svg?branch=main"
-      alt="CLI smoke tests status"
-    />
-  </a>
-  <a href="https://github.com/bylapidist/dtifx/actions/workflows/docs.yml">
-    <img
-      src="https://github.com/bylapidist/dtifx/actions/workflows/docs.yml/badge.svg?branch=main"
-      alt="Documentation build status"
-    />
-  </a>
-  <a href="https://dtifx.lapidist.net">
-    <img
-      src="https://img.shields.io/badge/website-dtifx.lapidist.net-1d4ed8?logo=vercel&logoColor=white"
-      alt="DTIFx website"
-    />
-  </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/github/license/bylapidist/dtifx" alt="License: MIT" />
-  </a>
-</p>
+[![Continuous integration status][ci-badge]][ci-workflow]\
+[![CLI smoke tests status][cli-smoke-badge]][cli-smoke-workflow]\
+[![Documentation build status][docs-badge]][docs-workflow]\
+[![DTIFx website][site-badge]][site-link]\
+[![License: MIT][license-badge]][license-link]
+
 <!-- markdownlint-enable MD033 -->
+
+[ci-badge]: https://github.com/bylapidist/dtifx/actions/workflows/ci.yml/badge.svg?branch=main
+[ci-workflow]: https://github.com/bylapidist/dtifx/actions/workflows/ci.yml
+[cli-smoke-badge]:
+  https://github.com/bylapidist/dtifx/actions/workflows/cli-smoke.yml/badge.svg?branch=main
+[cli-smoke-workflow]: https://github.com/bylapidist/dtifx/actions/workflows/cli-smoke.yml
+[docs-badge]: https://github.com/bylapidist/dtifx/actions/workflows/docs.yml/badge.svg?branch=main
+[docs-workflow]: https://github.com/bylapidist/dtifx/actions/workflows/docs.yml
+[site-badge]:
+  https://img.shields.io/badge/website-dtifx.lapidist.net-1d4ed8?logo=vercel&logoColor=white
+[site-link]: https://dtifx.lapidist.net
+[license-badge]: https://img.shields.io/github/license/bylapidist/dtifx
+[license-link]: LICENSE
 
 The DTIFx Toolkit is the production suite for the Design Token Interchange Format (DTIF). It joins
 high-fidelity diffing, repeatable builds, and policy automation in a single TypeScript workspace.
