@@ -12,4 +12,5 @@ export type {
   TokenMetadataSnapshot,
 } from './resolution-types.js';
 export * from './parser.js';
+export * from './session-parser.js';
 export * from './token-resolution-service.js';

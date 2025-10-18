@@ -20,11 +20,11 @@ export type {
   BuildStageEvent,
 } from './telemetry.js';
 export type {
-  DocumentCachePort,
+  DocumentCache,
   ParserExecutionOptions,
   ParserPort,
   ParserResult,
-  TokenCachePort,
+  TokenCache,
   TokenCacheKey,
   TokenCacheSnapshot,
 } from './resolution.js';

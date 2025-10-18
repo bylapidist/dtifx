@@ -66,9 +66,10 @@ describe('dtifx CLI distribution', () => {
         packagesToPack.map(async ({ root }) => ({ manifest: await readManifest(root), root })),
       );
 
-      for (const { project } of packagesToPack) {
-        await runPnpm(['exec', 'nx', 'run', `${project}:build`], { cwd: workspaceRoot });
-      }
+      const projectList = packagesToPack.map(({ project }) => project).join(',');
+      await runPnpm(['exec', 'nx', 'run-many', '--target', 'build', '--projects', projectList], {
+        cwd: workspaceRoot,
+      });
 
       for (const { root } of packagesToPack) {
         await runPnpm(['pack', '--pack-destination', packWorkspace], { cwd: root });

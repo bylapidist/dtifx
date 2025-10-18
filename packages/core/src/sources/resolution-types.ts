@@ -60,5 +60,8 @@ export interface TokenResolvedSource {
 export interface TokenResolvedPlan {
   readonly entries: readonly TokenResolvedSource[];
   readonly diagnostics: readonly DiagnosticEvent[];
+  readonly snapshots: readonly TokenResolutionSnapshot[];
+  readonly metadata: ReadonlyMap<TokenId, TokenMetadataSnapshot>;
+  readonly resolutions: ReadonlyMap<TokenId, ResolvedTokenView>;
   readonly resolvedAt: Date;
 }
