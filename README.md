@@ -6,8 +6,38 @@
   </a>
 </div>
 <h1>DTIFx Toolkit</h1>
-<!-- markdownlint-enable MD033 -->
 <!-- markdownlint-enable MD041 -->
+
+<p align="left">
+  <a href="https://github.com/bylapidist/dtifx/actions/workflows/ci.yml">
+    <img
+      src="https://github.com/bylapidist/dtifx/actions/workflows/ci.yml/badge.svg?branch=main"
+      alt="Continuous integration status"
+    />
+  </a>
+  <a href="https://github.com/bylapidist/dtifx/actions/workflows/cli-smoke.yml">
+    <img
+      src="https://github.com/bylapidist/dtifx/actions/workflows/cli-smoke.yml/badge.svg?branch=main"
+      alt="CLI smoke tests status"
+    />
+  </a>
+  <a href="https://github.com/bylapidist/dtifx/actions/workflows/docs.yml">
+    <img
+      src="https://github.com/bylapidist/dtifx/actions/workflows/docs.yml/badge.svg?branch=main"
+      alt="Documentation build status"
+    />
+  </a>
+  <a href="https://dtifx.lapidist.net">
+    <img
+      src="https://img.shields.io/badge/website-dtifx.lapidist.net-1d4ed8?logo=vercel&logoColor=white"
+      alt="DTIFx website"
+    />
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/github/license/bylapidist/dtifx" alt="License: MIT" />
+  </a>
+</p>
+<!-- markdownlint-enable MD033 -->
 
 The DTIFx Toolkit is the production suite for the Design Token Interchange Format (DTIF). It joins
 high-fidelity diffing, repeatable builds, and policy automation in a single TypeScript workspace.
