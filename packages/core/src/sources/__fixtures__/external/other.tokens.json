@@ -1,0 +1,14 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$version": "1.0.0",
+  "color": {
+    "base": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.1, 0.2, 0.3],
+        "hex": "#1A334C"
+      }
+    }
+  }
+}

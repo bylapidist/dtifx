@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Design token diff</title>
+  <style>
+{{{styles}}}
+  </style>
+</head>
+<body>
+  <main class="dtifx-diff">
+    <header class="dtifx-diff__header">
+      <div class="dtifx-diff__header-body">
+        <h1>Design token diff</h1>
+        {{#if header.comparison}}
+        <p>Comparing {{header.comparison}} ({{header.previousLabel}} → {{header.nextLabel}}).</p>
+        {{else}}
+        <p>Comparing {{header.previousLabel}} to {{header.nextLabel}}.</p>
+        {{/if}}
+        {{#if header.startedAt}}
+        <p>Started {{header.startedAt}}.</p>
+        {{/if}}
+        {{#if header.duration}}
+        <p>Duration {{header.duration}}.</p>
+        {{/if}}
+      </div>
+    </header>
+    <div class="dtifx-diff__layout">
+      {{#if showNavigation}}
+      <nav class="dtifx-diff__nav" aria-label="Diff sections">
+        <h2 class="dtifx-diff__nav-title">Jump to</h2>
+        <ol class="dtifx-diff__nav-list">
+          {{#each navigation}}
+          <li class="dtifx-diff__nav-item">
+            <a class="dtifx-diff__nav-link" href="{{href}}">
+              <span class="dtifx-diff__nav-label">{{title}}</span>
+              <span class="dtifx-diff__nav-meta">{{meta}}</span>
+            </a>
+          </li>
+          {{/each}}
+        </ol>
+      </nav>
+      {{/if}}
+      <div class="dtifx-diff__content">
+        {{> summary-section summary}}
+        {{#each sections}}
+        {{{markup}}}
+        {{/each}}
+      </div>
+    </div>
+  </main>
+</body>
+</html>

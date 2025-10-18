@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "tsBuildInfoFile": "dist/.tsbuildinfo.spec"
+  },
+  "references": [{ "path": "../core/tsconfig.lib.json" }, { "path": "../diff/tsconfig.lib.json" }],
+  "include": ["src/**/*.spec.ts", "src/**/*.test.ts"]
+}

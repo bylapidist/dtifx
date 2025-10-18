@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.2/schema.json",
+  "changelog": ["@changesets/changelog-git", { "repo": "bylapidist/dtifx" }],
+  "commit": false,
+  "fixed": [["@dtifx/core", "@dtifx/cli", "@dtifx/diff", "@dtifx/build", "@dtifx/audit"]],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [],
+  "privatePackages": {
+    "version": true,
+    "tag": false
+  }
+}

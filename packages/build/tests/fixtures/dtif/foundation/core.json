@@ -1,0 +1,41 @@
+{
+  "$version": "1.0.0",
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$description": "Foundation tokens adapted from the DTIF examples",
+  "color": {
+    "$type": "color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [1, 1, 1],
+      "hex": "#ffffff"
+    },
+    "$description": "Soft neutral brand color"
+  },
+  "spacing": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "length",
+      "value": 8,
+      "unit": "px"
+    },
+    "$description": "Base spacing unit"
+  },
+  "rotation": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "angle",
+      "value": 45,
+      "unit": "deg"
+    },
+    "$description": "Foundation rotation token"
+  },
+  "screenDensity": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "resolution",
+      "value": 320,
+      "unit": "dpi"
+    },
+    "$description": "Baseline device resolution"
+  }
+}

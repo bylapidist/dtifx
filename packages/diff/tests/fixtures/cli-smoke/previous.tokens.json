@@ -1,0 +1,96 @@
+{
+  "$version": "1.0.0",
+  "color": {
+    "brand": {
+      "primary": {
+        "$type": "color",
+        "$description": "Brand primary",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.05, 0.1, 0.2],
+          "hex": "#0D1A33"
+        },
+        "$extensions": {
+          "example.audit": {
+            "status": "baseline"
+          }
+        },
+        "$deprecated": {
+          "$replacement": "#/color/brand/secondary"
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.9, 0.9, 0.9],
+          "hex": "#E5E5E5"
+        }
+      },
+      "alias": {
+        "$type": "color",
+        "$ref": "#/color/brand/primary"
+      }
+    }
+  },
+  "spacing": {
+    "scale": {
+      "100": {
+        "$type": "dimension",
+        "$value": {
+          "unit": "px",
+          "value": 4,
+          "dimensionType": "length"
+        }
+      },
+      "200": {
+        "$type": "dimension",
+        "$value": {
+          "unit": "px",
+          "value": 8,
+          "dimensionType": "length"
+        }
+      }
+    }
+  },
+  "motion": {
+    "rotation": {
+      "$type": "dimension",
+      "$value": {
+        "unit": "deg",
+        "value": 30,
+        "dimensionType": "angle"
+      }
+    }
+  },
+  "display": {
+    "density": {
+      "$type": "dimension",
+      "$value": {
+        "unit": "dpi",
+        "value": 300,
+        "dimensionType": "resolution"
+      }
+    }
+  },
+  "typography": {
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "unit": "px",
+          "value": 16,
+          "fontScale": true
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "unit": "px",
+          "value": 24,
+          "fontScale": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "$version": "1.0.0",
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$description": "Intentionally invalid token for negative tests",
+  "background": {
+    "$type": "color",
+    "$value": "not-a-valid-color"
+  }
+}

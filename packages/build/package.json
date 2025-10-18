@@ -1,0 +1,71 @@
+{
+  "name": "@dtifx/build",
+  "version": "1.0.0",
+  "description": "DTIF-aware build orchestrator for planning sources, executing transforms, and packaging token outputs.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bylapidist/dtifx.git",
+    "directory": "packages/build"
+  },
+  "homepage": "https://dtifx.lapidist.net/build",
+  "bugs": {
+    "url": "https://github.com/bylapidist/dtifx/issues"
+  },
+  "keywords": [
+    "dtif",
+    "design tokens",
+    "build",
+    "transforms",
+    "pipelines"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./cli/reporters": {
+      "import": "./dist/src/cli/reporters.js",
+      "types": "./dist/src/cli/reporters.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "scripts": {
+    "build": "nx build build",
+    "lint": "nx lint build",
+    "test": "nx test build"
+  },
+  "dependencies": {
+    "@dtifx/core": "workspace:*",
+    "@keyv/file": "npm:keyv-file@5.2.0",
+    "@lapidist/dtif-parser": "1.0.2",
+    "@lapidist/dtif-schema": "1.0.2",
+    "@lapidist/dtif-validator": "1.0.2",
+    "cacache": "20.0.1",
+    "chokidar": "4.0.3",
+    "dependency-graph": "1.0.0",
+    "fast-glob": "3.3.3",
+    "keyv": "5.5.3",
+    "p-queue": "9.0.0",
+    "safe-stable-stringify": "2.5.0",
+    "zod": "4.1.12"
+  },
+  "devDependencies": {
+    "@opentelemetry/sdk-trace-base": "2.1.0",
+    "@types/cacache": "19.0.0"
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

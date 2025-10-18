@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" aria-label="DTIFx CLI geometric gradient logo" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="a" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+  </defs>
+  <circle
+    cx="50"
+    cy="50"
+    r="48.5714285714"
+    fill="none"
+    stroke="url(#a)"
+    stroke-width="2.8571428571"
+    opacity=".25"
+  />
+  <path
+    fill="none"
+    stroke="url(#a)"
+    stroke-linecap="round"
+    stroke-width="14.2857142857"
+    d="M84.64 30a40 40 0 1 1-74.04 13.04"
+  />
+  <path
+    fill="none"
+    stroke="url(#a)"
+    stroke-linecap="round"
+    stroke-width="14.2857142857"
+    d="M50 90a40 40 0 1 1 25.7142857143-70.64"
+  />
+  <path
+    fill="none"
+    stroke="url(#a)"
+    stroke-linecap="round"
+    stroke-width="14.2857142857"
+    d="M15.36 30a40 40 0 1 1 48.32 57.6"
+  />
+  <circle cx="50" cy="50" r="8.5714285714" fill="url(#a)" />
+</svg>

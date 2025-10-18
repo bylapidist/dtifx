@@ -1,0 +1,44 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "build",
+  "projectType": "library",
+  "sourceRoot": "packages/build/src",
+  "implicitDependencies": ["core"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}/src", "{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/build/dist",
+        "main": "packages/build/src/index.ts",
+        "tsConfig": "packages/build/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [],
+      "options": {
+        "lintFilePatterns": ["packages/build/**/*.{ts,tsx,cts,mts}"],
+        "hasTypeAwareRules": true,
+        "eslintConfig": "eslint.config.mjs",
+        "maxWarnings": 0
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{projectRoot}/coverage"],
+      "options": {
+        "config": "packages/build/vitest.config.ts"
+      }
+    },
+    "cli-smoke": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "bash ../../scripts/smoke-build.sh",
+        "cwd": "{projectRoot}"
+      }
+    }
+  },
+  "tags": ["scope:build", "type:library"]
+}

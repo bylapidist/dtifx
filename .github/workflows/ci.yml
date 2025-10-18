@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Validate commit messages
+        uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: commitlint.config.mjs
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.20.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Markdown lint
+        run: pnpm lint:markdown
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+      - name: Tests
+        run: pnpm test
+
+      - name: Generate coverage comment
+        id: coverage_comment
+        run: node ./scripts/generate-coverage-comment.mjs
+
+      - name: Post coverage comment
+        if: github.event_name == 'pull_request' && steps.coverage_comment.outcome == 'success'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: coverage/coverage-comment.md
+          header: coverage-report
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Docs build
+        run: CI=1 pnpm docs:build

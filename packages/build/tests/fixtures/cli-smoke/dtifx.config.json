@@ -1,0 +1,84 @@
+{
+  "layers": [{ "name": "foundation" }, { "name": "product" }],
+  "sources": [
+    {
+      "kind": "file",
+      "id": "foundation",
+      "layer": "foundation",
+      "pointerTemplate": {
+        "segments": ["tokens", { "kind": "placeholder", "name": "stem" }]
+      },
+      "patterns": ["tokens/foundation.json"],
+      "rootDir": "."
+    },
+    {
+      "kind": "file",
+      "id": "product",
+      "layer": "product",
+      "pointerTemplate": {
+        "segments": ["tokens", { "kind": "placeholder", "name": "stem" }]
+      },
+      "patterns": ["tokens/product.json"],
+      "rootDir": "."
+    }
+  ],
+  "transforms": {
+    "entries": [
+      { "name": "color.toCss" },
+      { "name": "color.toSwiftUIColor" },
+      { "name": "color.toAndroidArgb" },
+      { "name": "color.toAndroidComposeColor" },
+      { "name": "dimension.toRem" },
+      { "name": "dimension.toPx" },
+      { "name": "border.toAndroidComposeShape" },
+      { "name": "typography.toAndroidCompose" }
+    ]
+  },
+  "formatters": {
+    "entries": [
+      { "name": "css.variables", "output": { "directory": "dist/css" } },
+      { "name": "sass.variables", "output": { "directory": "dist/sass" } },
+      { "name": "less.variables", "output": { "directory": "dist/less" } },
+      {
+        "name": "javascript.module",
+        "output": { "directory": "dist/modules" },
+        "options": {
+          "filename": "tokens.js",
+          "rootIdentifier": "moduleTokens",
+          "namedExports": true,
+          "transforms": ["dimension.toRem"]
+        }
+      },
+      {
+        "name": "typescript.module",
+        "output": { "directory": "dist/modules" },
+        "options": { "filename": "tokens.ts", "rootIdentifier": "moduleTokens" }
+      },
+      { "name": "ios.swiftui.colors", "output": { "directory": "dist/ios" } },
+      { "name": "android.material.colors", "output": { "directory": "dist/android" } },
+      { "name": "android.compose.colors", "output": { "directory": "dist/android/compose" } },
+      { "name": "android.compose.typography", "output": { "directory": "dist/android/compose" } },
+      { "name": "android.compose.shapes", "output": { "directory": "dist/android/compose" } },
+      { "name": "json.snapshot", "output": { "directory": "dist/json" } }
+    ]
+  },
+  "audit": {
+    "policies": [
+      {
+        "name": "governance.requireOwner",
+        "options": {
+          "severity": "error",
+          "extension": "net.lapidist.governance",
+          "field": "owner"
+        }
+      },
+      {
+        "name": "governance.requireTag",
+        "options": {
+          "severity": "warning",
+          "tags": ["released"]
+        }
+      }
+    ]
+  }
+}

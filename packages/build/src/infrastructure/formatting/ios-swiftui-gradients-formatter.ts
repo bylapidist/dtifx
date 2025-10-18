@@ -1,0 +1,348 @@
+import type { JsonPointer } from '@lapidist/dtif-parser';
+
+import {
+  assertAllowedKeys,
+  assertPlainObject,
+  assertStringArrayOption,
+  assertStringOption,
+  type ConfigOptionKind,
+} from '../../config/config-options.js';
+import type { FormatterDefinitionFactory } from '../../formatter/formatter-factory.js';
+import type {
+  FileArtifact,
+  FormatterDefinition,
+  FormatterToken,
+} from '../../formatter/formatter-registry.js';
+import type { GradientSwiftUiTransformOutput } from '../../transform/gradient-transforms.js';
+import { createUniqueSwiftPropertyIdentifier } from './ios-swiftui-identifier.js';
+
+const FORMATTER_NAME = 'ios.swiftui.gradients';
+const DEFAULT_FILENAME = 'GradientTokens.swift';
+const DEFAULT_STRUCT_NAME = 'GradientTokens';
+const DEFAULT_ACCESS_MODIFIER = 'public';
+const DEFAULT_IMPORTS = Object.freeze(['SwiftUI']);
+const OPTION_KIND: ConfigOptionKind = 'formatter';
+const OPTION_KEYS = new Set(['filename', 'structName', 'accessModifier', 'imports']);
+
+interface IosSwiftUiGradientsFormatterOptions {
+  readonly filename: string;
+  readonly structName: string;
+  readonly accessModifier: string;
+  readonly imports: readonly string[];
+}
+
+interface SwiftUiGradientEntry {
+  readonly pointer: JsonPointer;
+  readonly identifier: string;
+  readonly metadata: GradientSwiftUiTransformOutput;
+}
+
+/**
+ * Creates the formatter definition factory responsible for emitting SwiftUI gradient artifacts.
+ * @returns {FormatterDefinitionFactory} The SwiftUI gradients formatter factory.
+ */
+export function createIosSwiftUiGradientsFormatterFactory(): FormatterDefinitionFactory {
+  return {
+    name: FORMATTER_NAME,
+    create(entry) {
+      const options = parseOptions(entry.options, entry.name);
+      return createIosSwiftUiGradientsFormatterDefinition(options);
+    },
+  } satisfies FormatterDefinitionFactory;
+}
+
+function parseOptions(
+  rawOptions: Readonly<Record<string, unknown>> | undefined,
+  name: string,
+): IosSwiftUiGradientsFormatterOptions {
+  if (rawOptions === undefined) {
+    return {
+      filename: DEFAULT_FILENAME,
+      structName: DEFAULT_STRUCT_NAME,
+      accessModifier: DEFAULT_ACCESS_MODIFIER,
+      imports: DEFAULT_IMPORTS,
+    } satisfies IosSwiftUiGradientsFormatterOptions;
+  }
+
+  const options = assertPlainObject(rawOptions, name);
+  assertAllowedKeys(options, OPTION_KEYS, name, OPTION_KIND);
+
+  const typedOptions = options as {
+    readonly filename?: unknown;
+    readonly structName?: unknown;
+    readonly accessModifier?: unknown;
+    readonly imports?: unknown;
+  };
+
+  const filename =
+    typedOptions.filename === undefined
+      ? DEFAULT_FILENAME
+      : normaliseFilename(assertStringOption(typedOptions.filename, name, 'filename'));
+  const structName =
+    typedOptions.structName === undefined
+      ? DEFAULT_STRUCT_NAME
+      : normaliseTypeName(assertStringOption(typedOptions.structName, name, 'structName'));
+  const accessModifier =
+    typedOptions.accessModifier === undefined
+      ? DEFAULT_ACCESS_MODIFIER
+      : normaliseAccessModifier(
+          assertStringOption(typedOptions.accessModifier, name, 'accessModifier'),
+          name,
+        );
+  const imports =
+    typedOptions.imports === undefined
+      ? DEFAULT_IMPORTS
+      : normaliseImports(assertStringArrayOption(typedOptions.imports, name, 'imports'));
+
+  return {
+    filename,
+    structName,
+    accessModifier,
+    imports,
+  } satisfies IosSwiftUiGradientsFormatterOptions;
+}
+
+function createIosSwiftUiGradientsFormatterDefinition(
+  options: IosSwiftUiGradientsFormatterOptions,
+): FormatterDefinition {
+  return {
+    name: FORMATTER_NAME,
+    selector: { types: ['gradient'] },
+    run: async ({ tokens }) => {
+      const entries = collectGradientEntries(tokens);
+      if (entries.length === 0) {
+        return [];
+      }
+
+      const contents = formatSwiftFile(entries, options);
+      const artifact: FileArtifact = {
+        path: options.filename,
+        contents,
+        encoding: 'utf8',
+        metadata: { gradientCount: entries.length },
+      };
+      return [artifact];
+    },
+  } satisfies FormatterDefinition;
+}
+
+function collectGradientEntries(
+  tokens: readonly FormatterToken[],
+): readonly SwiftUiGradientEntry[] {
+  const entries: SwiftUiGradientEntry[] = [];
+  const seen = new Set<string>();
+  const sortedTokens = [...tokens].toSorted((a, b) => a.pointer.localeCompare(b.pointer));
+
+  for (const token of sortedTokens) {
+    if (token.type !== 'gradient') {
+      continue;
+    }
+
+    const metadata = token.transforms.get('gradient.toSwiftUI') as
+      | GradientSwiftUiTransformOutput
+      | undefined;
+    if (!metadata) {
+      continue;
+    }
+
+    const identifier = createUniqueSwiftPropertyIdentifier(token.pointer, seen);
+    entries.push({ pointer: token.pointer, identifier, metadata });
+  }
+
+  return entries;
+}
+
+function formatSwiftFile(
+  entries: readonly SwiftUiGradientEntry[],
+  options: IosSwiftUiGradientsFormatterOptions,
+): string {
+  const lines: string[] = ['// Generated by @dtifx/build. Do not edit.', ''];
+
+  for (const moduleImport of options.imports) {
+    lines.push(`import ${moduleImport}`);
+  }
+
+  if (options.imports.length > 0) {
+    lines.push('');
+  }
+
+  lines.push(
+    `${options.accessModifier} struct ${options.structName} {`,
+    ...createHelperTypes(options.accessModifier),
+  );
+
+  for (const entry of entries) {
+    const gradientLines = formatGradient(entry.metadata);
+    if (gradientLines.length === 0) {
+      continue;
+    }
+
+    lines.push(
+      `  /// Token: ${entry.pointer}`,
+      `  ${options.accessModifier} static let ${entry.identifier} = ${gradientLines[0]!}`,
+      ...gradientLines.slice(1).map((line) => (line.startsWith(' ') ? line : `  ${line}`)),
+      '',
+    );
+  }
+
+  if (entries.length > 0) {
+    lines.pop();
+  }
+
+  lines.push('}', '');
+
+  return lines.join('\n');
+}
+
+function createHelperTypes(accessModifier: string): readonly string[] {
+  return [
+    `  ${accessModifier} enum GradientKind: String {`,
+    '    case linear',
+    '    case radial',
+    '  }',
+    '',
+    `  ${accessModifier} struct GradientStop {`,
+    `    ${accessModifier} let color: String`,
+    `    ${accessModifier} let location: Double?`,
+    `    ${accessModifier} let easing: String?`,
+    '',
+    `    ${accessModifier} init(color: String, location: Double? = nil, easing: String? = nil) {`,
+    '      self.color = color',
+    '      self.location = location',
+    '      self.easing = easing',
+    '    }',
+    '  }',
+    '',
+    `  ${accessModifier} struct GradientToken {`,
+    `    ${accessModifier} let kind: GradientKind`,
+    `    ${accessModifier} let angle: Double?`,
+    `    ${accessModifier} let stops: [GradientStop]`,
+    '',
+    `    ${accessModifier} init(kind: GradientKind, angle: Double? = nil, stops: [GradientStop]) {`,
+    '      self.kind = kind',
+    '      self.angle = angle',
+    '      self.stops = stops',
+    '    }',
+    '  }',
+    '',
+  ];
+}
+
+function formatGradient(metadata: GradientSwiftUiTransformOutput): readonly string[] {
+  if (metadata.kind === 'conic') {
+    throw new TypeError(
+      'SwiftUI gradients do not support conic kind. Tokens must resolve to linear or radial gradients.',
+    );
+  }
+
+  const lines: string[] = ['GradientToken('];
+  lines.push(`    kind: .${metadata.kind},`);
+
+  if (metadata.angle !== undefined) {
+    lines.push(`    angle: ${formatNumber(metadata.angle)},`);
+  }
+
+  lines.push('    stops: [');
+
+  for (const stop of metadata.stops) {
+    const stopLines = formatGradientStop(stop);
+    const formattedStopLines = stopLines.map((line, index) =>
+      index === stopLines.length - 1 ? `${line},` : line,
+    );
+    lines.push(...formattedStopLines);
+  }
+
+  lines.push('    ]', '  )');
+
+  return lines;
+}
+
+function formatGradientStop(
+  stop: GradientSwiftUiTransformOutput['stops'][number],
+): readonly string[] {
+  const argumentsList = [`color: "${escapeString(stop.color)}"`];
+
+  if (stop.location !== undefined) {
+    argumentsList.push(`location: ${formatNumber(stop.location)}`);
+  }
+
+  if (stop.easing !== undefined) {
+    argumentsList.push(`easing: "${escapeString(stop.easing)}"`);
+  }
+
+  if (argumentsList.length === 1) {
+    return [`      GradientStop(${argumentsList[0]!})`];
+  }
+
+  const body = argumentsList.map((argument, index) => {
+    const suffix = index === argumentsList.length - 1 ? '' : ',';
+    return `        ${argument}${suffix}`;
+  });
+  return ['      GradientStop(', ...body, '      )'];
+}
+
+function normaliseFilename(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return DEFAULT_FILENAME;
+  }
+  return trimmed;
+}
+
+function normaliseTypeName(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return DEFAULT_STRUCT_NAME;
+  }
+  return trimmed;
+}
+
+function normaliseAccessModifier(value: string, name: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return DEFAULT_ACCESS_MODIFIER;
+  }
+  if (trimmed === 'public' || trimmed === 'internal') {
+    return trimmed;
+  }
+  throw new Error(
+    `Formatter "${name}" received invalid access modifier "${value}". Expected "public" or "internal".`,
+  );
+}
+
+function normaliseImports(values: readonly string[]): readonly string[] {
+  const modules = values.map((value) => value.trim()).filter((value) => value.length > 0);
+  if (modules.length === 0) {
+    return DEFAULT_IMPORTS;
+  }
+  return modules;
+}
+
+const ESCAPED_BACKSLASH = String.raw`\\`;
+const ESCAPED_QUOTE = String.raw`\"`;
+const ESCAPED_NEWLINE = String.raw`\n`;
+const RAW_BACKSLASH = '\\';
+const RAW_DOUBLE_QUOTE = '"';
+const RAW_CRLF = '\r\n';
+const RAW_NEWLINE = '\n';
+const RAW_CARRIAGE_RETURN = '\r';
+
+function escapeString(value: string): string {
+  return value
+    .replaceAll(RAW_BACKSLASH, ESCAPED_BACKSLASH)
+    .replaceAll(RAW_DOUBLE_QUOTE, ESCAPED_QUOTE)
+    .replaceAll(RAW_CRLF, ESCAPED_NEWLINE)
+    .replaceAll(RAW_NEWLINE, ESCAPED_NEWLINE)
+    .replaceAll(RAW_CARRIAGE_RETURN, ESCAPED_NEWLINE);
+}
+
+function formatNumber(value: number): string {
+  if (Number.isFinite(value) === false) {
+    return '0';
+  }
+  const rounded = Number(value.toFixed(6));
+  if (Number.isFinite(rounded) === false) {
+    return '0';
+  }
+  return rounded.toString();
+}

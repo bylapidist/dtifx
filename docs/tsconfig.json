@@ -1,0 +1,5 @@
+{
+  "extends": "../tsconfig.base.json",
+  "include": [".vitepress/config.ts", ".vitepress/theme/**/*.ts", "navigation.ts"],
+  "exclude": ["node_modules"]
+}

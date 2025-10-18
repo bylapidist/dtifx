@@ -1,0 +1,82 @@
+name: CLI smoke tests
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.20.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI packages
+        run: pnpm exec nx run-many -t build --projects build,diff,audit --output-style=static
+
+      - name: Smoke test CLI packages
+        run: |
+          set -euo pipefail
+
+          PACK_DIR="${PWD}"
+
+          capture_pack() {
+            local filter="$1"
+            local output
+            output=$(pnpm --filter "${filter}" pack --json --pack-destination "${PACK_DIR}")
+
+            local filename
+            filename=$(node -e 'const fs = require("node:fs"); const input = fs.readFileSync(0, "utf8"); const data = JSON.parse(input); if (!data || typeof data.filename !== "string" || data.filename.length === 0) { throw new Error("pnpm pack output missing filename"); } process.stdout.write(data.filename);' <<<"${output}")
+
+            local tarball
+            tarball="$(basename "${filename}")"
+
+            printf "%s\n" "${tarball}"
+          }
+
+          BUILD_PKG_TARBALL="$(capture_pack '@dtifx/build')"
+          DIFF_PKG_TARBALL="$(capture_pack '@dtifx/diff')"
+          AUDIT_PKG_TARBALL="$(capture_pack '@dtifx/audit')"
+          CORE_PKG_TARBALL="$(capture_pack '@dtifx/core')"
+
+          run_smoke() {
+            local name="$1"
+            local package_tarball="$2"
+            local smoke_script="$3"
+
+            echo "::group::Smoke test ${name}"
+
+            PKG="${package_tarball}" CORE_PKG="${CORE_PKG_TARBALL}" "${smoke_script}"
+
+            rm -f "${package_tarball}"
+            echo "::endgroup::"
+          }
+
+          run_smoke dtifx-build "${BUILD_PKG_TARBALL}" ./packages/build/scripts/cli-smoke.sh
+          run_smoke dtifx-diff "${DIFF_PKG_TARBALL}" ./packages/diff/scripts/cli-smoke.sh
+          run_smoke dtifx-audit "${AUDIT_PKG_TARBALL}" ./packages/audit/scripts/cli-smoke.sh
+
+          rm -f "${CORE_PKG_TARBALL}"

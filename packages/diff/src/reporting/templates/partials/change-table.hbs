@@ -1,0 +1,21 @@
+<table class="dtifx-diff__type-table">
+  <caption>{{caption}}</caption>
+  <thead>
+    <tr>
+      <th scope="col">{{headerLabel}}</th>
+      {{#each columns}}
+        <th scope="col">{{label}}</th>
+      {{/each}}
+    </tr>
+  </thead>
+  <tbody>
+    {{#each rows}}
+      <tr>
+        <th scope="row">{{header}}</th>
+        {{#each cells}}
+          <td>{{this}}</td>
+        {{/each}}
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

@@ -1,0 +1,33 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "core",
+  "projectType": "library",
+  "sourceRoot": "packages/core/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}/src", "{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/core/dist",
+        "main": "packages/core/src/index.ts",
+        "tsConfig": "packages/core/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "ESLINT_USE_FLAT_CONFIG=true pnpm exec eslint --config eslint.config.mjs \"packages/core/**/*.{ts,tsx,cts,mts}\" --max-warnings=0",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{projectRoot}/coverage"],
+      "options": {
+        "config": "packages/core/vitest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:core", "type:library"]
+}

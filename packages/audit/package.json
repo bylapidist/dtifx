@@ -1,0 +1,64 @@
+{
+  "name": "@dtifx/audit",
+  "version": "1.0.0",
+  "description": "Policy-driven governance engine with audit runners, evidence capture, and actionable compliance reports.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bylapidist/dtifx.git",
+    "directory": "packages/audit"
+  },
+  "homepage": "https://dtifx.lapidist.net/audit",
+  "bugs": {
+    "url": "https://github.com/bylapidist/dtifx/issues"
+  },
+  "keywords": [
+    "dtif",
+    "design tokens",
+    "audit",
+    "governance",
+    "compliance"
+  ],
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./reporters": {
+      "import": "./dist/src/reporters/index.js",
+      "types": "./dist/src/reporters/index.d.ts"
+    },
+    "./runtime": {
+      "import": "./dist/src/runtime/index.js",
+      "types": "./dist/src/runtime/index.d.ts"
+    },
+    "./testing": {
+      "import": "./dist/src/testing/index.js",
+      "types": "./dist/src/testing/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "nx build audit",
+    "lint": "nx lint audit",
+    "test": "nx test audit"
+  },
+  "dependencies": {
+    "@dtifx/core": "workspace:*",
+    "@lapidist/dtif-parser": "1.0.2"
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

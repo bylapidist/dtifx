@@ -1,0 +1,44 @@
+{
+  "layers": [{ "name": "foundation" }, { "name": "product" }],
+  "sources": [
+    {
+      "kind": "file",
+      "id": "foundation",
+      "layer": "foundation",
+      "pointerTemplate": {
+        "segments": ["tokens", { "kind": "placeholder", "name": "stem" }]
+      },
+      "patterns": ["tokens/foundation.json"],
+      "rootDir": "."
+    },
+    {
+      "kind": "file",
+      "id": "product",
+      "layer": "product",
+      "pointerTemplate": {
+        "segments": ["tokens", { "kind": "placeholder", "name": "stem" }]
+      },
+      "patterns": ["tokens/product.json"],
+      "rootDir": "."
+    }
+  ],
+  "audit": {
+    "policies": [
+      {
+        "name": "governance.requireOwner",
+        "options": {
+          "severity": "error",
+          "extension": "net.lapidist.governance",
+          "field": "owner"
+        }
+      },
+      {
+        "name": "governance.requireTag",
+        "options": {
+          "severity": "warning",
+          "tags": ["released"]
+        }
+      }
+    ]
+  }
+}

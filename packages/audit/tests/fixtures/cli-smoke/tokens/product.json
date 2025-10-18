@@ -1,0 +1,48 @@
+{
+  "$version": "1.0.0",
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$description": "Product tokens for audit CLI smoke tests",
+  "colorCta": {
+    "$type": "color",
+    "$description": "Call-to-action surface color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [0.9, 0.2, 0.1]
+    },
+    "$extensions": {
+      "net.lapidist.governance": {
+        "owner": "Product"
+      },
+      "net.lapidist.tags": ["product"]
+    }
+  },
+  "colorCtaText": {
+    "$type": "color",
+    "$description": "CTA text color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [1, 1, 1]
+    },
+    "$extensions": {
+      "net.lapidist.governance": {
+        "owner": "Product"
+      },
+      "net.lapidist.tags": ["product", "released"]
+    }
+  },
+  "spacingCompact": {
+    "$type": "dimension",
+    "$description": "Compact spacing token",
+    "$value": {
+      "dimensionType": "length",
+      "value": 4,
+      "unit": "px"
+    },
+    "$extensions": {
+      "net.lapidist.governance": {
+        "owner": "Product"
+      },
+      "net.lapidist.tags": ["spacing"]
+    }
+  }
+}

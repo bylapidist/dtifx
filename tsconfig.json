@@ -1,0 +1,13 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/diff" },
+    { "path": "./packages/audit" },
+    { "path": "./packages/build" },
+    { "path": "./packages/cli" }
+  ],
+  "extends": "./tsconfig.base.json",
+  "include": ["packages", "**/vitest.config.ts", "vitest.config.base.ts"],
+  "exclude": ["**/dist", "**/node_modules"]
+}

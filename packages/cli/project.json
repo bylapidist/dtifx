@@ -1,0 +1,34 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "cli",
+  "projectType": "application",
+  "sourceRoot": "packages/cli/src",
+  "implicitDependencies": ["core"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}/src", "{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/cli/dist",
+        "main": "packages/cli/src/bin.ts",
+        "tsConfig": "packages/cli/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "ESLINT_USE_FLAT_CONFIG=true pnpm exec eslint --config eslint.config.mjs \"packages/cli/**/*.{ts,tsx,cts,mts}\" --max-warnings=0",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{projectRoot}/coverage"],
+      "options": {
+        "config": "packages/cli/vitest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:cli", "type:application"]
+}

@@ -1,0 +1,58 @@
+<section id="summary" class="dtifx-diff__section dtifx-diff__section--summary" data-total-previous="{{attributes.totalPrevious}}" data-total-next="{{attributes.totalNext}}">
+  <header class="dtifx-diff__section-header dtifx-diff__section-header--summary">
+    <h2>Executive summary</h2>
+    <dl class="dtifx-diff__totals">
+      <div class="dtifx-diff__totals-item">
+        <dt>Previous</dt>
+        <dd>{{totals.previous}}</dd>
+      </div>
+      <div class="dtifx-diff__totals-item">
+        <dt>Next</dt>
+        <dd>{{totals.next}}</dd>
+      </div>
+      <div class="dtifx-diff__totals-item dtifx-diff__totals-item--delta">
+        <dt>Net change</dt>
+        <dd><span class="dtifx-diff__totals-delta dtifx-diff__totals-delta--{{delta.modifier}}">{{delta.label}}</span></dd>
+      </div>
+    </dl>
+  </header>
+  <div class="dtifx-diff__section-body dtifx-diff__section-body--summary">
+    <div class="dtifx-diff__summary-overview">
+      <ul class="dtifx-diff__summary-grid">
+        {{#each counts}}
+        {{> summary-card this}}
+        {{/each}}
+      </ul>
+      <div class="dtifx-diff__summary-meta">
+        {{#if meta.comparison}}<p><strong>Compared:</strong> {{meta.comparison}}</p>{{/if}}
+        {{#if meta.startedAt}}<p><strong>Started:</strong> {{meta.startedAt}}</p>{{/if}}
+        {{#if meta.duration}}<p><strong>Duration:</strong> {{meta.duration}}</p>{{/if}}
+        <p><strong>Impact:</strong> {{meta.impact}}</p>
+        <p><strong>Changes:</strong> {{meta.changes}}</p>
+        <p><strong>Change mix:</strong> {{meta.changeMix}}</p>
+        {{#if meta.typeHotspots.length}}
+        <p><strong>Type hotspots:</strong> {{#each meta.typeHotspots}}{{#if @index}}; {{/if}}{{this}}{{/each}}</p>
+        {{/if}}
+        {{#if meta.groupHotspots.length}}
+        <p><strong>Group hotspots:</strong> {{#each meta.groupHotspots}}{{#if @index}}; {{/if}}{{this}}{{/each}}</p>
+        {{/if}}
+      </div>
+    </div>
+    {{#if typeBreakdown}}
+    <div class="dtifx-diff__type-summary">
+      <h3>Type breakdown</h3>
+      <div class="dtifx-diff__table-wrapper">
+        {{> change-table typeBreakdown}}
+      </div>
+    </div>
+    {{/if}}
+    {{#if groupBreakdown}}
+    <div class="dtifx-diff__type-summary dtifx-diff__type-summary--groups">
+      <h3>Group breakdown</h3>
+      <div class="dtifx-diff__table-wrapper">
+        {{> change-table groupBreakdown}}
+      </div>
+    </div>
+    {{/if}}
+  </div>
+</section>

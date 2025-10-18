@@ -1,0 +1,8 @@
+node_modules
+pnpm-lock.yaml
+coverage
+packages/**/dist
+dist
+.vitepress/cache
+.vscode
+.husky

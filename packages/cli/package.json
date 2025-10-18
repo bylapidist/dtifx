@@ -1,0 +1,65 @@
+{
+  "name": "@dtifx/cli",
+  "version": "1.0.0",
+  "description": "Unified DTIFx command line that orchestrates diff, build, and audit workflows.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bylapidist/dtifx.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://dtifx.lapidist.net/cli",
+  "bugs": {
+    "url": "https://github.com/bylapidist/dtifx/issues"
+  },
+  "keywords": [
+    "dtif",
+    "design tokens",
+    "cli",
+    "automation",
+    "governance"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./testing": {
+      "import": "./dist/src/testing/index.js",
+      "types": "./dist/src/testing/index.d.ts"
+    }
+  },
+  "bin": {
+    "dtifx": "dist/src/bin.js"
+  },
+  "scripts": {
+    "build": "nx build cli",
+    "lint": "nx lint cli",
+    "test": "nx test cli"
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@dtifx/core": "workspace:*",
+    "@lapidist/dtif-parser": "1.0.2",
+    "commander": "14.0.1"
+  },
+  "peerDependencies": {
+    "@dtifx/audit": "workspace:*",
+    "@dtifx/build": "workspace:*",
+    "@dtifx/diff": "workspace:*"
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

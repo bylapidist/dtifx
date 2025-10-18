@@ -1,0 +1,67 @@
+{
+  "name": "@dtifx/diff",
+  "version": "1.0.0",
+  "description": "Production DTIF diff engine with reporters, formatters, and CI integrations.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bylapidist/dtifx.git",
+    "directory": "packages/diff"
+  },
+  "homepage": "https://dtifx.lapidist.net/diff",
+  "bugs": {
+    "url": "https://github.com/bylapidist/dtifx/issues"
+  },
+  "keywords": [
+    "dtif",
+    "design tokens",
+    "diff",
+    "ci",
+    "regression"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./token-set": {
+      "import": "./dist/src/token-set.js",
+      "types": "./dist/src/token-set.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "dependencies": {
+    "@dtifx/core": "workspace:*",
+    "@lapidist/dtif-parser": "1.0.2",
+    "@lapidist/dtif-schema": "1.0.2",
+    "@lapidist/dtif-validator": "1.0.2",
+    "ajv": "8.17.1",
+    "cli-truncate": "5.1.0",
+    "colord": "2.9.3",
+    "handlebars": "4.7.8",
+    "is-unicode-supported": "2.1.0",
+    "strip-ansi": "7.1.2",
+    "supports-hyperlinks": "4.3.0",
+    "wrap-ansi": "9.0.2",
+    "yaml": "2.8.1"
+  },
+  "scripts": {
+    "build": "nx build diff",
+    "lint": "nx lint diff",
+    "test": "nx test diff"
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

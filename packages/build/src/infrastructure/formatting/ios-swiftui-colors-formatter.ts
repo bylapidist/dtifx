@@ -1,0 +1,242 @@
+import type { JsonPointer } from '@lapidist/dtif-parser';
+
+import {
+  assertAllowedKeys,
+  assertPlainObject,
+  assertStringArrayOption,
+  assertStringOption,
+  type ConfigOptionKind,
+} from '../../config/config-options.js';
+import type { FormatterDefinitionFactory } from '../../formatter/formatter-factory.js';
+import type {
+  FileArtifact,
+  FormatterDefinition,
+  FormatterToken,
+} from '../../formatter/formatter-registry.js';
+import type { ColorSwiftUIColorTransformOutput } from '../../transform/color-transforms.js';
+import { createUniqueSwiftPropertyIdentifier } from './ios-swiftui-identifier.js';
+
+const FORMATTER_NAME = 'ios.swiftui.colors';
+const DEFAULT_FILENAME = 'ColorTokens.swift';
+const DEFAULT_STRUCT_NAME = 'ColorTokens';
+const DEFAULT_ACCESS_MODIFIER = 'public';
+const DEFAULT_IMPORTS = Object.freeze(['SwiftUI']);
+const OPTION_KIND: ConfigOptionKind = 'formatter';
+const OPTION_KEYS = new Set(['filename', 'structName', 'accessModifier', 'imports']);
+
+interface IosSwiftUiColorsFormatterOptions {
+  readonly filename: string;
+  readonly structName: string;
+  readonly accessModifier: string;
+  readonly imports: readonly string[];
+}
+
+interface SwiftUiColorEntry {
+  readonly pointer: JsonPointer;
+  readonly identifier: string;
+  readonly metadata: ColorSwiftUIColorTransformOutput;
+}
+
+/**
+ * Creates the formatter definition factory responsible for emitting SwiftUI color artifacts.
+ * @returns {FormatterDefinitionFactory} The SwiftUI colors formatter factory.
+ */
+export function createIosSwiftUiColorsFormatterFactory(): FormatterDefinitionFactory {
+  return {
+    name: FORMATTER_NAME,
+    create(entry) {
+      const options = parseOptions(entry.options, entry.name);
+      return createIosSwiftUiColorsFormatterDefinition(options);
+    },
+  } satisfies FormatterDefinitionFactory;
+}
+
+function parseOptions(
+  rawOptions: Readonly<Record<string, unknown>> | undefined,
+  name: string,
+): IosSwiftUiColorsFormatterOptions {
+  if (rawOptions === undefined) {
+    return {
+      filename: DEFAULT_FILENAME,
+      structName: DEFAULT_STRUCT_NAME,
+      accessModifier: DEFAULT_ACCESS_MODIFIER,
+      imports: DEFAULT_IMPORTS,
+    } satisfies IosSwiftUiColorsFormatterOptions;
+  }
+
+  const options = assertPlainObject(rawOptions, name);
+  assertAllowedKeys(options, OPTION_KEYS, name, OPTION_KIND);
+  const typedOptions = options as {
+    readonly filename?: unknown;
+    readonly structName?: unknown;
+    readonly accessModifier?: unknown;
+    readonly imports?: unknown;
+  };
+
+  const filename =
+    typedOptions.filename === undefined
+      ? DEFAULT_FILENAME
+      : normaliseFilename(assertStringOption(typedOptions.filename, name, 'filename'));
+  const structName =
+    typedOptions.structName === undefined
+      ? DEFAULT_STRUCT_NAME
+      : normaliseTypeName(assertStringOption(typedOptions.structName, name, 'structName'));
+  const accessModifier =
+    typedOptions.accessModifier === undefined
+      ? DEFAULT_ACCESS_MODIFIER
+      : normaliseAccessModifier(
+          assertStringOption(typedOptions.accessModifier, name, 'accessModifier'),
+          name,
+        );
+  const imports =
+    typedOptions.imports === undefined
+      ? DEFAULT_IMPORTS
+      : normaliseImports(assertStringArrayOption(typedOptions.imports, name, 'imports'));
+
+  return {
+    filename,
+    structName,
+    accessModifier,
+    imports,
+  } satisfies IosSwiftUiColorsFormatterOptions;
+}
+
+function createIosSwiftUiColorsFormatterDefinition(
+  options: IosSwiftUiColorsFormatterOptions,
+): FormatterDefinition {
+  return {
+    name: FORMATTER_NAME,
+    selector: { types: ['color'] },
+    run: async ({ tokens }) => {
+      const entries = collectColorEntries(tokens);
+      if (entries.length === 0) {
+        return [];
+      }
+
+      const contents = formatSwiftFile(entries, options);
+      const artifact: FileArtifact = {
+        path: options.filename,
+        contents,
+        encoding: 'utf8',
+        metadata: { colorCount: entries.length },
+      };
+      return [artifact];
+    },
+  } satisfies FormatterDefinition;
+}
+
+function collectColorEntries(tokens: readonly FormatterToken[]): readonly SwiftUiColorEntry[] {
+  const entries: SwiftUiColorEntry[] = [];
+  const seen = new Set<string>();
+  const sortedTokens = [...tokens].toSorted((a, b) => a.pointer.localeCompare(b.pointer));
+
+  for (const token of sortedTokens) {
+    if (token.type !== 'color') {
+      continue;
+    }
+
+    const metadata = token.transforms.get('color.toSwiftUIColor') as
+      | ColorSwiftUIColorTransformOutput
+      | undefined;
+    if (!metadata) {
+      continue;
+    }
+
+    const identifier = createUniqueSwiftPropertyIdentifier(token.pointer, seen);
+    entries.push({ pointer: token.pointer, identifier, metadata });
+  }
+
+  return entries;
+}
+
+function formatSwiftFile(
+  entries: readonly SwiftUiColorEntry[],
+  options: IosSwiftUiColorsFormatterOptions,
+): string {
+  const lines: string[] = ['// Generated by @dtifx/build. Do not edit.', ''];
+
+  for (const moduleImport of options.imports) {
+    lines.push(`import ${moduleImport}`);
+  }
+
+  if (options.imports.length > 0) {
+    lines.push('');
+  }
+
+  lines.push(`${options.accessModifier} struct ${options.structName} {`);
+
+  for (const entry of entries) {
+    lines.push(
+      `  /// Token: ${entry.pointer}`,
+      `  /// Hex: ${entry.metadata.hex}`,
+      `  ${options.accessModifier} static let ${entry.identifier} = Color(` +
+        `red: ${formatComponent(entry.metadata.red)}, ` +
+        `green: ${formatComponent(entry.metadata.green)}, ` +
+        `blue: ${formatComponent(entry.metadata.blue)}, ` +
+        `opacity: ${formatComponent(entry.metadata.opacity)}` +
+        ')',
+      '',
+    );
+  }
+
+  if (entries.length > 0) {
+    lines.pop();
+  }
+
+  lines.push('}', '');
+
+  return lines.join('\n');
+}
+
+function formatComponent(value: number): string {
+  if (Number.isFinite(value) === false) {
+    return '0';
+  }
+  const rounded = Number(value.toFixed(6));
+  if (Number.isFinite(rounded) === false) {
+    return '0';
+  }
+  return rounded.toString();
+}
+
+function normaliseFilename(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    throw new TypeError('Formatter "ios.swiftui.colors" filename must be a non-empty string.');
+  }
+  return trimmed;
+}
+
+function normaliseTypeName(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    throw new TypeError('Formatter "ios.swiftui.colors" structName must be a non-empty string.');
+  }
+  if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(trimmed) === false) {
+    throw new TypeError(
+      'Formatter "ios.swiftui.colors" structName must be a valid Swift identifier.',
+    );
+  }
+  return trimmed;
+}
+
+function normaliseAccessModifier(value: string, name: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    throw new TypeError(`Option "accessModifier" for "${name}" must be a non-empty string.`);
+  }
+  if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(trimmed) === false) {
+    throw new TypeError(
+      `Option "accessModifier" for "${name}" must be a valid Swift access modifier identifier.`,
+    );
+  }
+  return trimmed;
+}
+
+function normaliseImports(imports: readonly string[]): readonly string[] {
+  const cleaned = imports.map((value) => value.trim()).filter((value) => value.length > 0);
+  if (cleaned.length === 0) {
+    return DEFAULT_IMPORTS;
+  }
+  return cleaned;
+}

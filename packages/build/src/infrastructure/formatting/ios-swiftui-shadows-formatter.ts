@@ -1,0 +1,351 @@
+import type { JsonPointer } from '@lapidist/dtif-parser';
+
+import {
+  assertAllowedKeys,
+  assertPlainObject,
+  assertStringArrayOption,
+  assertStringOption,
+  type ConfigOptionKind,
+} from '../../config/config-options.js';
+import type { FormatterDefinitionFactory } from '../../formatter/formatter-factory.js';
+import type {
+  FileArtifact,
+  FormatterDefinition,
+  FormatterToken,
+} from '../../formatter/formatter-registry.js';
+import type { ShadowSwiftUiTransformOutput } from '../../transform/shadow-transforms.js';
+import { createUniqueSwiftPropertyIdentifier } from './ios-swiftui-identifier.js';
+
+const FORMATTER_NAME = 'ios.swiftui.shadows';
+const DEFAULT_FILENAME = 'ShadowTokens.swift';
+const DEFAULT_STRUCT_NAME = 'ShadowTokens';
+const DEFAULT_ACCESS_MODIFIER = 'public';
+const DEFAULT_IMPORTS = Object.freeze(['SwiftUI']);
+const OPTION_KIND: ConfigOptionKind = 'formatter';
+const OPTION_KEYS = new Set(['filename', 'structName', 'accessModifier', 'imports']);
+
+interface IosSwiftUiShadowsFormatterOptions {
+  readonly filename: string;
+  readonly structName: string;
+  readonly accessModifier: string;
+  readonly imports: readonly string[];
+}
+
+interface SwiftUiShadowEntry {
+  readonly pointer: JsonPointer;
+  readonly identifier: string;
+  readonly metadata: ShadowSwiftUiTransformOutput;
+}
+
+/**
+ * Creates the formatter definition factory responsible for emitting SwiftUI shadow artifacts.
+ * @returns {FormatterDefinitionFactory} The SwiftUI shadows formatter factory.
+ */
+export function createIosSwiftUiShadowsFormatterFactory(): FormatterDefinitionFactory {
+  return {
+    name: FORMATTER_NAME,
+    create(entry) {
+      const options = parseOptions(entry.options, entry.name);
+      return createIosSwiftUiShadowsFormatterDefinition(options);
+    },
+  } satisfies FormatterDefinitionFactory;
+}
+
+function parseOptions(
+  rawOptions: Readonly<Record<string, unknown>> | undefined,
+  name: string,
+): IosSwiftUiShadowsFormatterOptions {
+  if (rawOptions === undefined) {
+    return {
+      filename: DEFAULT_FILENAME,
+      structName: DEFAULT_STRUCT_NAME,
+      accessModifier: DEFAULT_ACCESS_MODIFIER,
+      imports: DEFAULT_IMPORTS,
+    } satisfies IosSwiftUiShadowsFormatterOptions;
+  }
+
+  const options = assertPlainObject(rawOptions, name);
+  assertAllowedKeys(options, OPTION_KEYS, name, OPTION_KIND);
+
+  const typedOptions = options as {
+    readonly filename?: unknown;
+    readonly structName?: unknown;
+    readonly accessModifier?: unknown;
+    readonly imports?: unknown;
+  };
+
+  const filename =
+    typedOptions.filename === undefined
+      ? DEFAULT_FILENAME
+      : normaliseFilename(assertStringOption(typedOptions.filename, name, 'filename'));
+  const structName =
+    typedOptions.structName === undefined
+      ? DEFAULT_STRUCT_NAME
+      : normaliseTypeName(assertStringOption(typedOptions.structName, name, 'structName'));
+  const accessModifier =
+    typedOptions.accessModifier === undefined
+      ? DEFAULT_ACCESS_MODIFIER
+      : normaliseAccessModifier(
+          assertStringOption(typedOptions.accessModifier, name, 'accessModifier'),
+          name,
+        );
+  const imports =
+    typedOptions.imports === undefined
+      ? DEFAULT_IMPORTS
+      : normaliseImports(assertStringArrayOption(typedOptions.imports, name, 'imports'));
+
+  return {
+    filename,
+    structName,
+    accessModifier,
+    imports,
+  } satisfies IosSwiftUiShadowsFormatterOptions;
+}
+
+function createIosSwiftUiShadowsFormatterDefinition(
+  options: IosSwiftUiShadowsFormatterOptions,
+): FormatterDefinition {
+  return {
+    name: FORMATTER_NAME,
+    selector: { types: ['shadow'] },
+    run: async ({ tokens }) => {
+      const entries = collectShadowEntries(tokens);
+      if (entries.length === 0) {
+        return [];
+      }
+
+      const contents = formatSwiftFile(entries, options);
+      const artifact: FileArtifact = {
+        path: options.filename,
+        contents,
+        encoding: 'utf8',
+        metadata: { shadowCount: entries.length },
+      };
+      return [artifact];
+    },
+  } satisfies FormatterDefinition;
+}
+
+function collectShadowEntries(tokens: readonly FormatterToken[]): readonly SwiftUiShadowEntry[] {
+  const entries: SwiftUiShadowEntry[] = [];
+  const seen = new Set<string>();
+  const sortedTokens = [...tokens].toSorted((a, b) => a.pointer.localeCompare(b.pointer));
+
+  for (const token of sortedTokens) {
+    if (token.type !== 'shadow') {
+      continue;
+    }
+
+    const metadata = token.transforms.get('shadow.toSwiftUI') as
+      | ShadowSwiftUiTransformOutput
+      | undefined;
+    if (!metadata) {
+      continue;
+    }
+
+    if (metadata.layers.length === 0) {
+      continue;
+    }
+
+    const identifier = createUniqueSwiftPropertyIdentifier(token.pointer, seen);
+    entries.push({ pointer: token.pointer, identifier, metadata });
+  }
+
+  return entries;
+}
+
+function formatSwiftFile(
+  entries: readonly SwiftUiShadowEntry[],
+  options: IosSwiftUiShadowsFormatterOptions,
+): string {
+  const lines: string[] = ['// Generated by @dtifx/build. Do not edit.', ''];
+
+  for (const moduleImport of options.imports) {
+    lines.push(`import ${moduleImport}`);
+  }
+
+  if (options.imports.length > 0) {
+    lines.push('');
+  }
+
+  lines.push(
+    `${options.accessModifier} struct ${options.structName} {`,
+    ...createHelperTypes(options.accessModifier),
+  );
+
+  for (const entry of entries) {
+    const shadowLines = formatShadow(entry.metadata);
+    if (shadowLines.length === 0) {
+      continue;
+    }
+
+    lines.push(
+      `  /// Token: ${entry.pointer}`,
+      `  ${options.accessModifier} static let ${entry.identifier} = ${shadowLines[0]!}`,
+      ...shadowLines.slice(1).map((line) => (line.startsWith(' ') ? line : `  ${line}`)),
+      '',
+    );
+  }
+
+  if (entries.length > 0) {
+    lines.pop();
+  }
+
+  lines.push('}', '');
+
+  return lines.join('\n');
+}
+
+function createHelperTypes(accessModifier: string): readonly string[] {
+  return [
+    `  ${accessModifier} struct ShadowLayer {`,
+    `    ${accessModifier} let color: String`,
+    `    ${accessModifier} let x: Double`,
+    `    ${accessModifier} let y: Double`,
+    `    ${accessModifier} let radius: Double`,
+    `    ${accessModifier} let spread: Double?`,
+    `    ${accessModifier} let opacity: Double?`,
+    '',
+    `    ${accessModifier} init(`,
+    '      color: String,',
+    '      x: Double,',
+    '      y: Double,',
+    '      radius: Double,',
+    '      spread: Double? = nil,',
+    '      opacity: Double? = nil',
+    '    ) {',
+    '      self.color = color',
+    '      self.x = x',
+    '      self.y = y',
+    '      self.radius = radius',
+    '      self.spread = spread',
+    '      self.opacity = opacity',
+    '    }',
+    '  }',
+    '',
+    `  ${accessModifier} struct ShadowToken {`,
+    `    ${accessModifier} let layers: [ShadowLayer]`,
+    '',
+    `    ${accessModifier} init(layers: [ShadowLayer]) {`,
+    '      self.layers = layers',
+    '    }',
+    '  }',
+    '',
+  ];
+}
+
+function formatShadow(metadata: ShadowSwiftUiTransformOutput): readonly string[] {
+  if (metadata.layers.length === 0) {
+    return [];
+  }
+
+  const lines: string[] = ['ShadowToken('];
+  lines.push('    layers: [');
+
+  for (const layer of metadata.layers) {
+    const layerLines = formatShadowLayer(layer);
+    const formattedLayerLines = layerLines.map((line, index) =>
+      index === layerLines.length - 1 ? `${line},` : line,
+    );
+    lines.push(...formattedLayerLines);
+  }
+
+  lines.push('    ]', '  )');
+
+  return lines;
+}
+
+function formatShadowLayer(
+  layer: ShadowSwiftUiTransformOutput['layers'][number],
+): readonly string[] {
+  const argumentsList = [
+    `color: "${escapeString(layer.color)}"`,
+    `x: ${formatNumber(layer.x)}`,
+    `y: ${formatNumber(layer.y)}`,
+    `radius: ${formatNumber(layer.radius)}`,
+  ];
+
+  if (layer.spread !== undefined) {
+    argumentsList.push(`spread: ${formatNumber(layer.spread)}`);
+  }
+
+  if (layer.opacity !== undefined) {
+    argumentsList.push(`opacity: ${formatNumber(layer.opacity)}`);
+  }
+
+  if (argumentsList.length === 4) {
+    return [`      ShadowLayer(${argumentsList.join(', ')})`];
+  }
+
+  const body = argumentsList.map((argument, index) => {
+    const suffix = index === argumentsList.length - 1 ? '' : ',';
+    return `        ${argument}${suffix}`;
+  });
+  return ['      ShadowLayer(', ...body, '      )'];
+}
+
+function normaliseFilename(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return DEFAULT_FILENAME;
+  }
+  return trimmed;
+}
+
+function normaliseTypeName(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return DEFAULT_STRUCT_NAME;
+  }
+  return trimmed;
+}
+
+function normaliseAccessModifier(value: string, name: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return DEFAULT_ACCESS_MODIFIER;
+  }
+  if (trimmed === 'public' || trimmed === 'internal') {
+    return trimmed;
+  }
+  throw new Error(
+    `Formatter "${name}" received invalid access modifier "${value}". Expected "public" or "internal".`,
+  );
+}
+
+function normaliseImports(values: readonly string[]): readonly string[] {
+  const modules = values.map((value) => value.trim()).filter((value) => value.length > 0);
+  if (modules.length === 0) {
+    return DEFAULT_IMPORTS;
+  }
+  return modules;
+}
+
+const ESCAPED_BACKSLASH = String.raw`\\`;
+const ESCAPED_QUOTE = String.raw`\"`;
+const ESCAPED_NEWLINE = String.raw`\n`;
+const RAW_BACKSLASH = '\\';
+const RAW_DOUBLE_QUOTE = '"';
+const RAW_CRLF = '\r\n';
+const RAW_NEWLINE = '\n';
+const RAW_CARRIAGE_RETURN = '\r';
+
+function escapeString(value: string): string {
+  return value
+    .replaceAll(RAW_BACKSLASH, ESCAPED_BACKSLASH)
+    .replaceAll(RAW_DOUBLE_QUOTE, ESCAPED_QUOTE)
+    .replaceAll(RAW_CRLF, ESCAPED_NEWLINE)
+    .replaceAll(RAW_NEWLINE, ESCAPED_NEWLINE)
+    .replaceAll(RAW_CARRIAGE_RETURN, ESCAPED_NEWLINE);
+}
+
+function formatNumber(value: number): string {
+  if (Number.isFinite(value) === false) {
+    return '0';
+  }
+  const rounded = Number(value.toFixed(6));
+  if (Number.isFinite(rounded) === false) {
+    return '0';
+  }
+  return rounded.toString();
+}

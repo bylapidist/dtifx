@@ -1,0 +1,51 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "diff",
+  "projectType": "library",
+  "sourceRoot": "packages/diff/src",
+  "implicitDependencies": ["core"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}/src", "{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/diff/dist",
+        "main": "packages/diff/src/index.ts",
+        "tsConfig": "packages/diff/tsconfig.lib.json",
+        "assets": [
+          {
+            "input": "packages/diff/src/reporting/templates",
+            "glob": "**/*.hbs",
+            "output": "src/reporting/templates"
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [],
+      "options": {
+        "lintFilePatterns": ["packages/diff/**/*.{ts,tsx,cts,mts}"],
+        "hasTypeAwareRules": true,
+        "eslintConfig": "eslint.config.mjs",
+        "maxWarnings": 0
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{projectRoot}/coverage"],
+      "options": {
+        "config": "packages/diff/vitest.config.ts"
+      }
+    },
+    "cli-smoke": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "bash ../../scripts/smoke-diff.sh",
+        "cwd": "{projectRoot}"
+      }
+    }
+  },
+  "tags": ["scope:diff", "type:library"]
+}

@@ -1,0 +1,71 @@
+{
+  "name": "@dtifx/root",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.18.3",
+  "type": "module",
+  "scripts": {
+    "build": "nx run-many -t build --all --exclude docs-site",
+    "lint": "nx run-many -t lint --all --exclude docs-site",
+    "lint:markdown": "nx run docs-site:lint",
+    "test": "nx run-many -t test --all",
+    "format": "nx format:write --all",
+    "format:check": "nx format:check --all",
+    "graph": "nx graph",
+    "prepare": "husky",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "smoke:build": "./scripts/smoke-build.sh",
+    "smoke:diff": "./scripts/smoke-diff.sh",
+    "smoke:audit": "./scripts/smoke-audit.sh",
+    "release": "pnpm run build && pnpm run smoke:diff && pnpm run smoke:build && pnpm run smoke:audit && changeset publish",
+    "docs:dev": "nx run docs-site:dev",
+    "docs:build": "nx run docs-site:build",
+    "docs:preview": "nx run docs-site:preview"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.29.7",
+    "@commitlint/cli": "20.1.0",
+    "@commitlint/config-conventional": "20.0.0",
+    "@eslint/js": "9.38.0",
+    "@nx/eslint": "21.6.5",
+    "@nx/eslint-plugin": "21.6.5",
+    "@nx/js": "21.6.5",
+    "@nx/vite": "21.6.5",
+    "@types/node": "24.8.1",
+    "@typescript-eslint/eslint-plugin": "8.46.1",
+    "@typescript-eslint/parser": "8.46.1",
+    "@vitest/coverage-v8": "3.2.4",
+    "eslint": "9.38.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-jsdoc": "61.1.4",
+    "eslint-plugin-prettier": "5.5.4",
+    "eslint-plugin-unicorn": "61.0.2",
+    "husky": "9.1.7",
+    "lint-staged": "16.2.4",
+    "markdownlint-cli": "0.45.0",
+    "nx": "21.6.5",
+    "prettier": "3.6.2",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "vite": "7.1.10",
+    "vite-tsconfig-paths": "5.1.4",
+    "vitepress": "1.6.4",
+    "vitest": "3.2.4"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx,cjs,mjs,cts,mts}": [
+      "pnpm exec eslint --config eslint.config.mjs --no-warn-ignored --max-warnings=0 --fix"
+    ],
+    "*.{json,md,mdx,yaml,yml,ts,tsx,js,cjs,mjs,cts,mts}": [
+      "pnpm exec prettier --write"
+    ],
+    "*.{md,mdx}": [
+      "pnpm exec markdownlint --config .markdownlint.jsonc"
+    ]
+  },
+  "engines": {
+    "node": ">=22.20.0"
+  }
+}

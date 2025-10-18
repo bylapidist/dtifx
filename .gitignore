@@ -1,0 +1,13 @@
+node_modules
+.pnpm-store
+*.log
+coverage
+dist
+.nx
+.vitepress/cache
+docs/.vitepress/dist
+.DS_Store
+*.tsbuildinfo
+package-lock.json
+**/cache**/
+tmp/

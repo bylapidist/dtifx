@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📄 Security Policy
+    url: https://github.com/bylapidist/dtifx/blob/main/SECURITY.md
+    about: Report vulnerabilities privately following the security policy.
+  - name: 🤝 Code of Conduct
+    url: https://github.com/bylapidist/dtifx/blob/main/CODE_OF_CONDUCT.md
+    about: Review our behaviour expectations before engaging with the community.
