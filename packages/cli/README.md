@@ -65,7 +65,7 @@ import {
 
 const kernel = createCliKernel({
   programName: 'dtifx',
-  version: '1.0.0',
+  version: '0.0.1',
 });
 
 kernel.register(auditCommandModule).register(buildCommandModule).register(diffCommandModule);

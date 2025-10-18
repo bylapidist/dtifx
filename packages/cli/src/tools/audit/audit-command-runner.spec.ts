@@ -109,7 +109,7 @@ describe('executeAuditCommand', () => {
       formatMs: 5,
       dependencyMs: 5,
     },
-    runContext: { previous: '1.0.0', next: '1.1.0' },
+    runContext: { previous: '0.0.1', next: '0.0.2' },
   } as const;
   const auditResult = {
     policies: [],

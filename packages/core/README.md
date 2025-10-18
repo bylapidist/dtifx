@@ -38,7 +38,7 @@ logger.log({
   level: 'info',
   name: 'dtifx-core-example',
   event: 'initialising-runtime',
-  data: { version: '1.0.0' },
+  data: { version: '0.0.1' },
 });
 ```
 

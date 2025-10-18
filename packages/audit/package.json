@@ -1,6 +1,6 @@
 {
   "name": "@dtifx/audit",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Policy-driven governance engine with audit runners, evidence capture, and actionable compliance reports.",
   "license": "MIT",
   "type": "module",
