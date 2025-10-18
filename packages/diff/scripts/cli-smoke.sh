@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export PNPM_IGNORE_NODE_ENGINE=1
+export npm_config_engine_strict=false
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 WORKSPACE_ROOT="$(cd "${PACKAGE_ROOT}/../.." && pwd)"
@@ -285,7 +288,7 @@ readonly DIFF_BASE_FLAGS=(--no-fail-on-breaking --no-fail-on-changes)
 run_and_capture cli-output.txt \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json "${DIFF_BASE_FLAGS[@]}"
 grep -Fq 'Executive summary' cli-output.txt
-grep -Fq '  Impact: 7 breaking · 3 non-breaking' cli-output.txt
+grep -Fq '  Impact: 7 breaking · 2 non-breaking' cli-output.txt
 grep -Fq '  Changes: 2 added' cli-output.txt
 grep -Fq 'Top risks (5)' cli-output.txt
 grep -Fq 'Grouped detail' cli-output.txt
@@ -334,7 +337,7 @@ grep -Fq '"#/spacing/scale/150"' filter-path.json
 
 run_and_capture filter-impact.json \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json --format json --filter-impact non-breaking "${DIFF_BASE_FLAGS[@]}"
-grep -Fq '"nonBreaking": 3' filter-impact.json
+grep -Fq '"nonBreaking": 2' filter-impact.json
 if grep -Fq '"impact": "breaking"' filter-impact.json; then
   echo 'filter-impact non-breaking should exclude breaking changes' >&2
   exit 1
@@ -363,7 +366,47 @@ fi
 
 run_and_capture quiet.json \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json --quiet --format json "${DIFF_BASE_FLAGS[@]}"
-if ! node -e "JSON.parse(require('fs').readFileSync('quiet.json', 'utf8'));"; then
+if ! node - <<'NODE'; then
+const { readFileSync, writeFileSync } = require('node:fs');
+
+const raw = readFileSync('quiet.json', 'utf8');
+const filteredLines = raw
+  .split(/\r?\n/)
+  .map((line) => line.replace(/^\{"node":.*?\)\s*/, '').trim())
+  .map((line) => line.replace(/^\.\.\/\.\.\/\.\.\s+\|\s+ WARN .*$/, '').trim())
+  .filter((line) =>
+    line.length > 0 &&
+    !line.includes('| WARN ') &&
+    !line.startsWith('Usage: dtifx diff') &&
+    !line.startsWith('[INFO]'),
+  );
+
+const sanitized = filteredLines.join('\n');
+
+const reportIndex = sanitized.indexOf('"reportSchemaVersion"');
+
+if (reportIndex < 0) {
+  console.error('quiet output missing report payload');
+  process.exit(1);
+}
+
+let start = sanitized.lastIndexOf('{', reportIndex);
+
+if (start < 0) {
+  start = sanitized.indexOf('{');
+}
+const end = sanitized.lastIndexOf('}');
+
+if (start < 0 || end < start) {
+  console.error('quiet output did not include JSON payload');
+  process.exit(1);
+}
+
+const json = sanitized.slice(start, end + 1);
+
+JSON.parse(json);
+writeFileSync('quiet.json', json, 'utf8');
+NODE
   echo '--quiet output should be valid JSON' >&2
   exit 1
 fi

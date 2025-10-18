@@ -871,12 +871,23 @@ function pointersEqual(previous: readonly TokenPointer[], next: readonly TokenPo
 
   return previous.every((previousPointer, index) => {
     const nextPointer = next[index];
-    return (
-      nextPointer !== undefined &&
-      previousPointer.pointer === nextPointer.pointer &&
-      previousPointer.uri === nextPointer.uri &&
-      (previousPointer.external ?? false) === (nextPointer.external ?? false)
-    );
+
+    if (!nextPointer) {
+      return false;
+    }
+
+    const previousExternal = previousPointer.external ?? false;
+    const nextExternal = nextPointer.external ?? false;
+
+    if (previousPointer.pointer !== nextPointer.pointer || previousExternal !== nextExternal) {
+      return false;
+    }
+
+    if (previousExternal) {
+      return previousPointer.uri === nextPointer.uri;
+    }
+
+    return true;
   });
 }
 

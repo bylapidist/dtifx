@@ -203,7 +203,18 @@ const lines = raw
   .split(/\r?\n/)
   .map((line) => line.trimEnd())
   .filter((line) => line.length > 0);
-const jsonLines = lines.filter((line) => !line.startsWith('{"level"'));
+const jsonLines = lines.filter((line) => {
+  const trimmed = line.trimStart();
+  if (trimmed.length === 0) {
+    return false;
+  }
+  if (trimmed.startsWith('{"level"')) {
+    return false;
+  }
+  const firstChar = trimmed[0];
+  const allowedStarts = "{[}\"'-0123456789tfn";
+  return allowedStarts.includes(firstChar);
+});
 if (jsonLines.length === 0) {
   throw new Error(`No JSON payload detected in ${filePath}`);
 }

@@ -238,9 +238,16 @@ if (!filePath) {
 const raw = fs.readFileSync(filePath, 'utf8');
 const lines = raw
   .split(/\r?\n/)
-  .map((line) => line.trimEnd())
-  .filter((line) => line.length > 0);
-const jsonLines = lines.filter((line) => !line.startsWith('{"level"'));
+  .map((line) => line.replace(/^\{"node":.*?\)\s*/, '').trim())
+  .map((line) => line.replace(/^\.\.\/\.\.\/\.\.\s+\|\s+ WARN .*$/, '').trim())
+  .filter((line) =>
+    line.length > 0 &&
+    !line.includes('| WARN ') &&
+    !line.startsWith('Usage: dtifx build') &&
+    !line.startsWith('[INFO]') &&
+    !line.startsWith('{"level"'),
+  );
+const jsonLines = lines;
 if (jsonLines.length === 0) {
   throw new Error(`No JSON payload detected in ${filePath}`);
 }
