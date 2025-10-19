@@ -51,7 +51,14 @@ export default defineConfig({
       {
         text: 'Support',
         items: [
-          { text: 'Examples', link: '/examples/automation' },
+          {
+            text: 'Examples',
+            items: [
+              { text: 'Automation script', link: '/examples/automation' },
+              { text: 'Build preset config', link: '/examples/build-presets' },
+              { text: 'Minimal stack', link: '/examples/minimal-stack' },
+            ],
+          },
           { text: 'Troubleshooting', link: '/troubleshooting/' },
         ],
       },
@@ -164,6 +171,7 @@ export default defineConfig({
           items: [
             { text: 'Automation script', link: '/examples/automation' },
             { text: 'Build preset config', link: '/examples/build-presets' },
+            { text: 'Minimal stack', link: '/examples/minimal-stack' },
           ],
         },
       ],
