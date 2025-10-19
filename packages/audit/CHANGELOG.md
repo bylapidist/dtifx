@@ -1,5 +1,12 @@
 # @dtifx/audit
 
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies [36a9f87]
+  - @dtifx/core@2.0.0
+
 <!-- markdownlint-disable MD024 -->
 
 ## 1.0.0
