@@ -127,6 +127,10 @@ API reference material. Key entry points include:
 - [Diff workflow](docs/guides/diff-workflow.md)
 - [Audit governance](docs/guides/audit-governance.md)
 - [CLI reference](docs/reference/cli.md)
+- [Minimal stack example](https://github.com/bylapidist/dtifx-example) pairs the toolkit with
+  design-lint, publishes committed build/diff/audit artefacts, and exposes the core scripts you can
+  mirror in your own repositories (`npm run verify`, `npm run dtif:validate`, `npm run dtif:build`,
+  `npm run dtif:diff`, `npm run dtif:audit`, and `npm run design-lint`).
 
 Preview the site locally with `pnpm docs:dev` and publish via the automated
 [documentation workflow](https://github.com/bylapidist/dtifx/actions/workflows/docs.yml).
