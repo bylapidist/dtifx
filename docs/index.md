@@ -18,6 +18,9 @@ hero:
     - theme: alt
       text: Explore package hubs
       link: /core/
+    - theme: alt
+      text: Try the minimal stack example
+      link: /examples/minimal-stack
 features:
   - icon:
       src: /logos/dtifx-core.svg
