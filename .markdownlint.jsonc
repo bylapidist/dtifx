@@ -1,5 +1,9 @@
 {
   "default": true,
+  "ignores": [
+    ".changeset/**/*.md",
+    "**/CHANGELOG.md"
+  ],
   "MD013": {
     "line_length": 120,
     "heading_line_length": 80,
