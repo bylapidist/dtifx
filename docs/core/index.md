@@ -63,3 +63,5 @@ structured telemetry pipeline, and strongly typed settings for predictable autom
   facilities used by every package.
 - [Toolkit architecture](/overview/architecture) — How `@dtifx/core` integrates with the build,
   diff, audit, and CLI stacks.
+- [Semantic token prefabs](/core/prefabs) — Typed builders for colour, gradient, typography, and
+  shadow tokens.

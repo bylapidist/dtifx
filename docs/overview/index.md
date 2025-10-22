@@ -20,7 +20,8 @@ and CI agents on the same major release to avoid runtime mismatch.
 ## Package responsibilities
 
 - **`@dtifx/core`** – Foundational utilities covering telemetry runtimes, structured loggers,
-  configuration resolution, token source planning, and policy orchestration.
+  configuration resolution, token source planning, policy orchestration, and semantic token prefabs
+  for colours, gradients, typography, and shadows.
 - **`@dtifx/build`** – DTIF-aware build orchestrator that plans sources, resolves layered snapshots,
   executes transforms, writes formatter artefacts, and evaluates dependency metadata.
 - **`@dtifx/diff`** – Token diff engine with rename detection, impact heuristics, filter evaluation,
@@ -91,5 +92,7 @@ diagnostics can be shipped to observability stacks without custom parsing.
   together.
 - Follow the [quickstart guide](/guides/getting-started) to exercise the build, audit, and diff
   commands in a sample workspace.
+- Review the [semantic token prefabs](/core/prefabs) to compose colour, gradient, typography, and
+  shadow tokens programmatically.
 - Browse the [CLI reference](/reference/cli) for command listings, defaults, and exit-code
   behaviour.

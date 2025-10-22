@@ -172,6 +172,8 @@ export {
   type ResolveConfigPathOptions,
 } from './config/index.js';
 
+export * from './prefabs/index.js';
+
 const manifestDefinition = {
   name: '@dtifx/core',
   summary: 'Foundational runtime, logging, and manifest utilities that power DTIFx automation.',
