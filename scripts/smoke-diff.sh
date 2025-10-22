@@ -27,6 +27,12 @@ if [[ -d "${BUILD_PACKAGE_ROOT}" ]]; then
   BUILD_PKG_PATH="$(pack_workspace_package "${BUILD_PACKAGE_ROOT}")"
 fi
 
+EXTRACTORS_PACKAGE_ROOT="${REPO_ROOT}/packages/extractors"
+EXTRACTORS_PKG_PATH=""
+if [[ -d "${EXTRACTORS_PACKAGE_ROOT}" ]]; then
+  EXTRACTORS_PKG_PATH="$(pack_workspace_package "${EXTRACTORS_PACKAGE_ROOT}")"
+fi
+
 CORE_PACKAGE_ROOT="${REPO_ROOT}/packages/core"
 CORE_PKG_PATH=""
 if [[ -d "${CORE_PACKAGE_ROOT}" ]]; then
@@ -50,6 +56,9 @@ cleanup_artifacts() {
   if [[ -n "${AUDIT_PKG_PATH:-}" ]]; then
     rm -f "${AUDIT_PKG_PATH}" 2>/dev/null || true
   fi
+  if [[ -n "${EXTRACTORS_PKG_PATH:-}" ]]; then
+    rm -f "${EXTRACTORS_PKG_PATH}" 2>/dev/null || true
+  fi
   rm -f "${CLI_PKG_PATH}" 2>/dev/null || true
 }
 trap cleanup_artifacts EXIT
@@ -64,6 +73,9 @@ fi
 if [[ -n "${AUDIT_PKG_PATH}" ]]; then
   echo "Using local @dtifx/audit artifact $(basename "${AUDIT_PKG_PATH}")" >&2
 fi
+if [[ -n "${EXTRACTORS_PKG_PATH}" ]]; then
+  echo "Using local @dtifx/extractors artifact $(basename "${EXTRACTORS_PKG_PATH}")" >&2
+fi
 echo "Using local @dtifx/cli artifact $(basename "${CLI_PKG_PATH}")" >&2
 
 PKG="${PKG_PATH}" \
@@ -71,4 +83,5 @@ PKG="${PKG_PATH}" \
   BUILD_PKG="${BUILD_PKG_PATH}" \
   AUDIT_PKG="${AUDIT_PKG_PATH}" \
   CLI_PKG="${CLI_PKG_PATH}" \
+  EXTRACTORS_PKG="${EXTRACTORS_PKG_PATH}" \
   bash "${PACKAGE_ROOT}/scripts/cli-smoke.sh"

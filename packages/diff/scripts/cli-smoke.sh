@@ -17,6 +17,8 @@ BUILD_PKG_CLEANUP_PATH=""
 CORE_PKG_CLEANUP_PATH=""
 AUDIT_PKG_PATH=""
 AUDIT_PKG_CLEANUP_PATH=""
+EXTRACTORS_PKG_PATH=""
+EXTRACTORS_PKG_CLEANUP_PATH=""
 
 if [[ -z "${CLI_PKG:-}" ]]; then
   CLI_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/cli"
@@ -61,11 +63,32 @@ if [[ -z "${CLI_PKG:-}" ]]; then
       AUDIT_PKG_CLEANUP_PATH="${AUDIT_PKG_PATH}"
     fi
   fi
+  if [[ -z "${EXTRACTORS_PKG:-}" ]]; then
+    EXTRACTORS_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/extractors"
+    if [[ -d "${EXTRACTORS_PACKAGE_ROOT}" ]]; then
+      EXTRACTORS_PKG_PATH="$(pack_workspace_package "${EXTRACTORS_PACKAGE_ROOT}")"
+      EXTRACTORS_PKG="${EXTRACTORS_PKG_PATH}"
+      EXTRACTORS_PKG_CLEANUP_PATH="${EXTRACTORS_PKG_PATH}"
+    fi
+  fi
 else
   if [[ "${CLI_PKG}" = /* ]]; then
     CLI_PKG_PATH="${CLI_PKG}"
   else
     CLI_PKG_PATH="${WORKSPACE_ROOT}/${CLI_PKG}"
+  fi
+fi
+
+if [[ -z "${EXTRACTORS_PKG:-}" && -z "${EXTRACTORS_PKG_PATH}" ]]; then
+  EXTRACTORS_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/extractors"
+  if [[ -d "${EXTRACTORS_PACKAGE_ROOT}" ]]; then
+    if ! command -v pack_workspace_package >/dev/null 2>&1; then
+      # shellcheck source=../../../scripts/lib/package-utils.sh
+      source "${WORKSPACE_ROOT}/scripts/lib/package-utils.sh"
+    fi
+    EXTRACTORS_PKG_PATH="$(pack_workspace_package "${EXTRACTORS_PACKAGE_ROOT}")"
+    EXTRACTORS_PKG="${EXTRACTORS_PKG_PATH}"
+    EXTRACTORS_PKG_CLEANUP_PATH="${EXTRACTORS_PKG_PATH}"
   fi
 fi
 
@@ -99,6 +122,14 @@ if [[ -n "${AUDIT_PKG:-}" ]]; then
   fi
 fi
 
+if [[ -n "${EXTRACTORS_PKG:-}" ]]; then
+  if [[ "${EXTRACTORS_PKG}" = /* ]]; then
+    EXTRACTORS_PKG_PATH="${EXTRACTORS_PKG}"
+  else
+    EXTRACTORS_PKG_PATH="${WORKSPACE_ROOT}/${EXTRACTORS_PKG}"
+  fi
+fi
+
 if [[ "${PKG}" = /* ]]; then
   PKG_PATH="${PKG}"
 else
@@ -112,6 +143,11 @@ fi
 
 if [[ ! -f "${CLI_PKG_PATH}" ]]; then
   echo "Resolved CLI_PKG path ${CLI_PKG_PATH} does not exist" >&2
+  exit 1
+fi
+
+if [[ -n "${EXTRACTORS_PKG_PATH}" && ! -f "${EXTRACTORS_PKG_PATH}" ]]; then
+  echo "Resolved EXTRACTORS_PKG path ${EXTRACTORS_PKG_PATH} does not exist" >&2
   exit 1
 fi
 
@@ -163,6 +199,9 @@ cleanup() {
   if [[ -n "${AUDIT_PKG_CLEANUP_PATH}" ]]; then
     rm -f "${AUDIT_PKG_CLEANUP_PATH}" 2>/dev/null || true
   fi
+  if [[ -n "${EXTRACTORS_PKG_CLEANUP_PATH}" ]]; then
+    rm -f "${EXTRACTORS_PKG_CLEANUP_PATH}" 2>/dev/null || true
+  fi
 }
 trap cleanup EXIT
 
@@ -172,13 +211,56 @@ run_and_capture() {
   "$@" | tee "${output_file}"
 }
 
+assert_json_file() {
+  local file="$1"
+  JSON_FILE="$file" node - <<'NODE'
+const fs = require('node:fs');
+
+const filePath = process.env.JSON_FILE;
+if (!filePath) {
+  throw new Error('JSON_FILE environment variable not provided');
+}
+
+const raw = fs.readFileSync(filePath, 'utf8');
+const lines = raw
+  .split(/\r?\n/)
+  .map((line) => line.trimEnd())
+  .filter((line) => line.length > 0);
+
+const firstJsonIndex = lines.findIndex((line) => {
+  const trimmed = line.trimStart();
+  return trimmed.startsWith('{') || trimmed.startsWith('[');
+});
+
+if (firstJsonIndex === -1) {
+  throw new Error(`No JSON payload detected in ${filePath}`);
+}
+
+const jsonLines = [];
+for (let index = firstJsonIndex; index < lines.length; index += 1) {
+  const line = lines[index];
+  const trimmedStart = line.trimStart();
+  if (trimmedStart.startsWith('{"level"')) {
+    continue;
+  }
+  if (trimmedStart.includes('|  WARN')) {
+    continue;
+  }
+  jsonLines.push(line);
+}
+
+const payload = jsonLines.join('\n');
+JSON.parse(payload);
+NODE
+}
+
 pushd "${WORK_DIR}" >/dev/null
 
-node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${BUILD_PKG_PATH}" "${CORE_PKG_PATH}" "${AUDIT_PKG_PATH}"
+node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${BUILD_PKG_PATH}" "${CORE_PKG_PATH}" "${AUDIT_PKG_PATH}" "${EXTRACTORS_PKG_PATH}"
 const fs = require('node:fs');
 const path = require('node:path');
 
-const [workspaceRoot, diffPath, cliPath, buildPath, corePath, auditPath] = process.argv.slice(2);
+const [workspaceRoot, diffPath, cliPath, buildPath, corePath, auditPath, extractorsPath] = process.argv.slice(2);
 
 const pkg = {
   name: 'dtifx-diff-cli-smoke',
@@ -239,6 +321,12 @@ const auditSpecifier = ensureFileSpecifier(auditPath);
 if (auditSpecifier) {
   devDependencies['@dtifx/audit'] = auditSpecifier;
   overrides['@dtifx/audit'] = auditSpecifier;
+}
+
+const extractorsSpecifier = ensureFileSpecifier(extractorsPath);
+if (extractorsSpecifier) {
+  devDependencies['@dtifx/extractors'] = extractorsSpecifier;
+  overrides['@dtifx/extractors'] = extractorsSpecifier;
 }
 
 if (Object.keys(devDependencies).length > 0) {
@@ -363,7 +451,7 @@ fi
 
 run_and_capture quiet.json \
   pnpm exec dtifx diff compare previous.tokens.json next.tokens.json --quiet --format json "${DIFF_BASE_FLAGS[@]}"
-if ! node -e "JSON.parse(require('fs').readFileSync('quiet.json', 'utf8'));"; then
+if ! assert_json_file quiet.json; then
   echo '--quiet output should be valid JSON' >&2
   exit 1
 fi
