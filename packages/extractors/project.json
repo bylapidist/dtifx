@@ -27,6 +27,14 @@
       "options": {
         "config": "packages/extractors/vitest.config.ts"
       }
+    },
+    "cli-smoke": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "bash ../../scripts/smoke-extractors.sh",
+        "cwd": "{projectRoot}"
+      }
     }
   },
   "tags": ["scope:extractors", "type:library"]

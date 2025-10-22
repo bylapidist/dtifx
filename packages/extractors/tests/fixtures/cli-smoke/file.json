@@ -1,0 +1,32 @@
+{
+  "styles": {
+    "1:2": {
+      "key": "color-style-key",
+      "name": "Color/Surface/Background",
+      "style_type": "FILL",
+      "description": "Surface background",
+      "node_id": "1:3"
+    },
+    "2:4": {
+      "key": "gradient-style-key",
+      "name": "Gradient/Hero/Primary",
+      "style_type": "FILL",
+      "description": "Primary hero gradient",
+      "node_id": "2:5"
+    },
+    "3:6": {
+      "key": "text-style-key",
+      "name": "Typography/Heading/H1",
+      "style_type": "TEXT",
+      "description": "Display heading",
+      "node_id": "3:7"
+    },
+    "4:8": {
+      "key": "image-style-key",
+      "name": "Asset/Illustration/Hero",
+      "style_type": "FILL",
+      "description": "Hero illustration",
+      "node_id": "4:9"
+    }
+  }
+}
