@@ -23,6 +23,24 @@ corepack enable pnpm
 
 ## 2. Initialise the workspace
 
+### Scaffolding with `dtifx init`
+
+Generate a workspace with configuration, sample tokens, and downstream integration stubs:
+
+```bash
+pnpm dlx @dtifx/cli dtifx init my-design-system
+cd my-design-system
+```
+
+The command prompts for the package manager, whether to include sample data, and if Git should be
+initialised. Pass `--yes` and `--no-sample-data`/`--no-git` to skip the questions. The scaffolder
+prepares `dtifx.config.mjs`, installs dependencies, and wires common scripts in `package.json`. When
+you opt into the sample data you can skip to [exercise the workflows](#5-exercise-the-workflows).
+
+### Manual bootstrap
+
+Prefer to assemble the project by hand? Create a directory, add dependencies, and register scripts:
+
 ```bash
 mkdir dtifx-sample
 cd dtifx-sample
