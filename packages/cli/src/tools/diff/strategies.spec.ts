@@ -9,7 +9,8 @@ const { relative } = path;
 
 const fixturePath = (name: string): string => {
   const url = new URL(`../../../tests/fixtures/strategies/${name}`, import.meta.url);
-  return relative(process.cwd(), fileURLToPath(url));
+  const relativePath = relative(process.cwd(), fileURLToPath(url));
+  return relativePath.startsWith('.') ? relativePath : `./${relativePath}`;
 };
 
 describe('loadDiffStrategies', () => {

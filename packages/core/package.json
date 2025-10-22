@@ -111,6 +111,9 @@
     "p-map": "7.0.3",
     "zod": "4.1.12"
   },
+  "devDependencies": {
+    "@types/color": "4.2.0"
+  },
   "publishConfig": {
     "access": "public"
   }
