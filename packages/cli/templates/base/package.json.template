@@ -1,0 +1,20 @@
+{
+  "name": "__PACKAGE_NAME__",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Scaffolded DTIFx workspace created with dtifx init.",
+  "type": "module",
+  "packageManager": "__PACKAGE_MANAGER_TAG__",
+  "scripts": {
+    "build:validate": "dtifx build validate",
+    "build:generate": "dtifx build generate",
+    "governance:audit": "dtifx audit run",
+    "quality:diff": "dtifx diff compare"
+  },
+  "devDependencies": {
+    "@dtifx/cli": "latest",
+    "@dtifx/build": "latest",
+    "@dtifx/diff": "latest",
+    "@dtifx/audit": "latest"
+  }
+}

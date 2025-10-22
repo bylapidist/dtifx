@@ -1,0 +1,13 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+
+# DTIFx cache
+.dtifx-cache
+
+# Tooling
+coverage
+.env
+.DS_Store
