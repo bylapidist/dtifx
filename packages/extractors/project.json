@@ -32,7 +32,7 @@
       "executor": "nx:run-commands",
       "outputs": [],
       "options": {
-        "command": "bash ../../scripts/smoke-extractors.sh",
+        "command": "bash ./scripts/cli-smoke.sh",
         "cwd": "{projectRoot}"
       }
     }

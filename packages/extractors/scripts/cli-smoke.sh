@@ -5,9 +5,25 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 WORKSPACE_ROOT="$(cd "${PACKAGE_ROOT}/../.." && pwd)"
 
+PKG_PATH=""
+PKG_CLEANUP_PATH=""
+
 if [[ -z "${PKG:-}" ]]; then
-  echo "PKG environment variable must be set to the @dtifx/extractors npm pack artifact" >&2
-  exit 1
+  echo "PKG not provided; building and packing @dtifx/extractors" >&2
+  pnpm exec nx run-many -t build --projects core,cli,extractors --output-style=static >&2
+
+  # shellcheck source=../../../scripts/lib/package-utils.sh
+  source "${WORKSPACE_ROOT}/scripts/lib/package-utils.sh"
+
+  PKG_PATH="$(pack_workspace_package "${PACKAGE_ROOT}")"
+  PKG="${PKG_PATH}"
+  PKG_CLEANUP_PATH="${PKG_PATH}"
+else
+  if [[ "${PKG}" = /* ]]; then
+    PKG_PATH="${PKG}"
+  else
+    PKG_PATH="${WORKSPACE_ROOT}/${PKG}"
+  fi
 fi
 
 CLI_PKG_PATH=""
@@ -61,12 +77,6 @@ if [[ -z "${CORE_PKG:-}" && -z "${CORE_PKG_PATH}" ]]; then
   fi
 fi
 
-if [[ "${PKG}" = /* ]]; then
-  PKG_PATH="${PKG}"
-else
-  PKG_PATH="${WORKSPACE_ROOT}/${PKG}"
-fi
-
 if [[ ! -f "${PKG_PATH}" ]]; then
   echo "Resolved PKG path ${PKG_PATH} does not exist" >&2
   exit 1
@@ -103,6 +113,9 @@ fi
 cleanup() {
   local status=${1:-$?}
   rm -rf "${WORK_DIR}" 2>/dev/null || true
+  if [[ -n "${PKG_CLEANUP_PATH}" ]]; then
+    rm -f "${PKG_CLEANUP_PATH}" 2>/dev/null || true
+  fi
   if [[ -n "${CLI_PKG_CLEANUP_PATH}" ]]; then
     rm -f "${CLI_PKG_CLEANUP_PATH}" 2>/dev/null || true
   fi
