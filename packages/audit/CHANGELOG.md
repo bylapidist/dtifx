@@ -1,5 +1,13 @@
 # @dtifx/audit
 
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies [35e826e]
+- Updated dependencies [35e826e]
+  - @dtifx/core@3.0.0
+
 ## 2.0.0
 
 ### Patch Changes

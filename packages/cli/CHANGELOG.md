@@ -1,5 +1,22 @@
 # @dtifx/cli
 
+## 3.0.0
+
+### Minor Changes
+
+- 98efcc1: Add a `dtifx init` scaffolder with local templates, workspace validation, and
+  documentation updates.
+
+### Patch Changes
+
+- Updated dependencies [48b6817]
+- Updated dependencies [35e826e]
+- Updated dependencies [35e826e]
+  - @dtifx/build@3.0.0
+  - @dtifx/core@3.0.0
+  - @dtifx/audit@3.0.0
+  - @dtifx/diff@3.0.0
+
 ## 2.0.0
 
 ### Patch Changes

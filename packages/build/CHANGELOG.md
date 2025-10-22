@@ -1,5 +1,20 @@
 # @dtifx/build
 
+## 3.0.0
+
+### Minor Changes
+
+- 48b6817: Add a `docs.static` formatter that produces static documentation bundles with grouped
+  token examples and copied assets.
+
+  Render the generated documentation with Handlebars templates and static assets.
+
+### Patch Changes
+
+- Updated dependencies [35e826e]
+- Updated dependencies [35e826e]
+  - @dtifx/core@3.0.0
+
 ## 2.0.0
 
 ### Patch Changes

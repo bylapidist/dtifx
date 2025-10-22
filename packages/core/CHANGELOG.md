@@ -1,5 +1,15 @@
 # @dtifx/core
 
+## 3.0.0
+
+### Minor Changes
+
+- 35e826e: add semantic token prefabs for colour, gradient, typography, and shadow tokens
+
+### Patch Changes
+
+- 35e826e: use color package for color prefab adjustments
+
 ## 2.0.0
 
 ### Minor Changes
