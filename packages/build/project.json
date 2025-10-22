@@ -11,7 +11,14 @@
       "options": {
         "outputPath": "packages/build/dist",
         "main": "packages/build/src/index.ts",
-        "tsConfig": "packages/build/tsconfig.lib.json"
+        "tsConfig": "packages/build/tsconfig.lib.json",
+        "assets": [
+          {
+            "input": "packages/build/src/formatter/definitions/docs/templates",
+            "glob": "**/*",
+            "output": "src/formatter/definitions/docs/templates"
+          }
+        ]
       }
     },
     "lint": {

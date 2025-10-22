@@ -14,6 +14,7 @@ describe('createDefaultFormatterFactories', () => {
 
     expect(factories.map((factory) => factory.name)).toStrictEqual([
       'json.snapshot',
+      'docs.static',
       'javascript.module',
       'typescript.module',
       'css.variables',

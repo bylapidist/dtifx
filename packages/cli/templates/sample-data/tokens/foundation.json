@@ -1,0 +1,69 @@
+{
+  "$version": "1.0.0",
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$description": "Foundation tokens scaffolded by dtifx init",
+  "colorBrand": {
+    "$type": "color",
+    "$description": "Primary brand color",
+    "$value": {
+      "colorSpace": "oklch",
+      "components": [0.62, 0.16, 264]
+    },
+    "$extensions": {
+      "net.lapidist.governance": {
+        "owner": "Design Systems"
+      },
+      "net.lapidist.tags": ["brand", "released"]
+    }
+  },
+  "colorBackground": {
+    "$type": "color",
+    "$description": "Brand-aligned background token",
+    "$ref": "#/colorBrand",
+    "$extensions": {
+      "net.lapidist.governance": {
+        "owner": "Design Systems"
+      },
+      "net.lapidist.tags": ["background", "released"]
+    }
+  },
+  "spacingBase": {
+    "$type": "dimension",
+    "$description": "Base spacing unit",
+    "$value": {
+      "dimensionType": "length",
+      "value": 8,
+      "unit": "px"
+    },
+    "$extensions": {
+      "net.lapidist.governance": {
+        "owner": "Design Systems"
+      },
+      "net.lapidist.tags": ["spacing"]
+    }
+  },
+  "typographyBody": {
+    "$type": "typography",
+    "$description": "Body text style",
+    "$value": {
+      "fontFamily": "Inter",
+      "fontWeight": 500,
+      "fontSize": {
+        "dimensionType": "length",
+        "value": 16,
+        "unit": "px"
+      },
+      "lineHeight": {
+        "dimensionType": "length",
+        "value": 24,
+        "unit": "px"
+      }
+    },
+    "$extensions": {
+      "net.lapidist.governance": {
+        "owner": "Design Systems"
+      },
+      "net.lapidist.tags": ["typography", "released"]
+    }
+  }
+}

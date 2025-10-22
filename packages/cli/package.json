@@ -45,7 +45,8 @@
   },
   "files": [
     "dist",
-    "LICENSE"
+    "LICENSE",
+    "templates"
   ],
   "sideEffects": false,
   "dependencies": {

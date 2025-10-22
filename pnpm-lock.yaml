@@ -134,6 +134,9 @@ importers:
       fast-glob:
         specifier: 3.3.3
         version: 3.3.3
+      handlebars:
+        specifier: 4.7.8
+        version: 4.7.8
       keyv:
         specifier: 5.5.3
         version: 5.5.3
@@ -153,6 +156,9 @@ importers:
       '@types/cacache':
         specifier: 19.0.0
         version: 19.0.0
+      '@types/handlebars':
+        specifier: 4.1.0
+        version: 4.1.0
 
   packages/cli:
     dependencies:
@@ -1794,6 +1800,10 @@ packages:
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
+
+  '@types/handlebars@4.1.0':
+    resolution: {integrity: sha512-gq9YweFKNNB1uFK71eRqsd4niVkXrxHugqWFQkeLRJvGjnxsLr16bYtcsG4tOFwmYi0Bax+wCkbf1reUfdl4kA==}
+    deprecated: This is a stub types definition. handlebars provides its own type definitions, so you do not need this installed.
 
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
@@ -6628,6 +6638,10 @@ snapshots:
   '@types/deep-eql@4.0.2': {}
 
   '@types/estree@1.0.8': {}
+
+  '@types/handlebars@4.1.0':
+    dependencies:
+      handlebars: 4.7.8
 
   '@types/hast@3.0.4':
     dependencies:
