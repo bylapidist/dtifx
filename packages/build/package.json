@@ -55,6 +55,7 @@
     "chokidar": "4.0.3",
     "dependency-graph": "1.0.0",
     "fast-glob": "3.3.3",
+    "handlebars": "4.7.8",
     "keyv": "5.5.3",
     "p-queue": "9.0.0",
     "safe-stable-stringify": "2.5.0",

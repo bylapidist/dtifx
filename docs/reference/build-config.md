@@ -147,6 +147,7 @@ The default formatter registry includes:
 - `sass.variables` — Emits Sass variables mirroring the CSS custom property set.
 - `less.variables` — Emits Less variables mirroring the CSS custom property set.
 - Platform suites for SwiftUI (`ios.swiftui.*`) and Android (`android.material.*`).
+- `docs.static` — Emits a static documentation site with grouped token examples and copied assets.
 
 The module formatters share a common option surface:
 
