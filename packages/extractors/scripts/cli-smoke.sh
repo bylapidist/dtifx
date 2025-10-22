@@ -160,25 +160,29 @@ const ensureFileSpecifier = (value) => {
   return value.startsWith('file:') ? value : `file:${value}`;
 };
 
+const dependencies = {};
 const devDependencies = {};
 const overrides = {};
 
-const extractorsSpecifier = ensureFileSpecifier(extractorsPath);
-if (extractorsSpecifier) {
-  devDependencies['@dtifx/extractors'] = extractorsSpecifier;
-  overrides['@dtifx/extractors'] = extractorsSpecifier;
-}
+const registerPackage = (name, specifier) => {
+  if (!specifier) {
+    return;
+  }
 
-const cliSpecifier = ensureFileSpecifier(cliPath);
-if (cliSpecifier) {
-  devDependencies['@dtifx/cli'] = cliSpecifier;
-  overrides['@dtifx/cli'] = cliSpecifier;
-}
+  dependencies[name] = specifier;
+  devDependencies[name] = specifier;
+  overrides[name] = specifier;
+};
 
-const coreSpecifier = ensureFileSpecifier(corePath);
-if (coreSpecifier) {
-  devDependencies['@dtifx/core'] = coreSpecifier;
-  overrides['@dtifx/core'] = coreSpecifier;
+registerPackage('@dtifx/extractors', ensureFileSpecifier(extractorsPath));
+registerPackage('@dtifx/cli', ensureFileSpecifier(cliPath));
+registerPackage('@dtifx/core', ensureFileSpecifier(corePath));
+
+if (Object.keys(dependencies).length > 0) {
+  pkg.dependencies = {
+    ...(pkg.dependencies ?? {}),
+    ...dependencies,
+  };
 }
 
 if (Object.keys(devDependencies).length > 0) {
