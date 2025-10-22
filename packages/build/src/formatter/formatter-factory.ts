@@ -19,6 +19,7 @@ import { createIosSwiftUiShadowsFormatterFactory } from '../infrastructure/forma
 import { createIosSwiftUiTypographyFormatterFactory } from '../infrastructure/formatting/ios-swiftui-typography-formatter.js';
 import { createTypescriptModuleFormatterFactory } from '../infrastructure/formatting/typescript-module-formatter.js';
 import type { FormatterDefinition } from './formatter-registry.js';
+import { createDocsStaticFormatterFactory } from './definitions/docs/docs-static-formatter.js';
 
 /**
  * Context passed to formatter definition factories containing the resolved build configuration and the
@@ -133,6 +134,7 @@ export function createAndroidComposeFormatterFactories(): readonly FormatterDefi
 export function createDefaultFormatterFactories(): readonly FormatterDefinitionFactory[] {
   return [
     createJsonSnapshotFormatterFactory(),
+    ...createDocumentationFormatterFactories(),
     ...createModuleFormatterFactories(),
     ...createCssFormatterFactories(),
     ...createIosSwiftUiFormatterFactories(),
@@ -147,6 +149,14 @@ export function createDefaultFormatterFactories(): readonly FormatterDefinitionF
  */
 export function createModuleFormatterFactories(): readonly FormatterDefinitionFactory[] {
   return [createJavascriptModuleFormatterFactory(), createTypescriptModuleFormatterFactory()];
+}
+
+/**
+ * Creates the collection of documentation formatter definition factories provided by the build system.
+ * @returns {readonly FormatterDefinitionFactory[]} The built-in documentation formatter factories.
+ */
+export function createDocumentationFormatterFactories(): readonly FormatterDefinitionFactory[] {
+  return [createDocsStaticFormatterFactory()];
 }
 
 export { createCssVariablesFormatterFactory } from '../infrastructure/formatting/css-variables-formatter.js';
@@ -168,3 +178,4 @@ export { createAndroidComposeColorsFormatterFactory } from '../infrastructure/fo
 export { createAndroidComposeTypographyFormatterFactory } from '../infrastructure/formatting/android-compose-typography-formatter.js';
 export { createAndroidComposeShapesFormatterFactory } from '../infrastructure/formatting/android-compose-shapes-formatter.js';
 export { createTypescriptModuleFormatterFactory } from '../infrastructure/formatting/typescript-module-formatter.js';
+export { createDocsStaticFormatterFactory } from './definitions/docs/docs-static-formatter.js';

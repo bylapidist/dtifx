@@ -1,0 +1,24 @@
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <title>{{title}}</title>
+    {{#if description}}
+      <meta name='description' content='{{description}}' />
+    {{/if}}
+    <link rel='stylesheet' href='assets/styles.css' />
+  </head>
+  <body>
+    <header class='docs-header'>
+      <h1 class='docs-title'>{{title}}</h1>
+      {{#if description}}
+        <p class='docs-description'>{{description}}</p>
+      {{/if}}
+    </header>
+    <main id='docs-app' class='docs-root'>
+      <noscript class='docs-noscript'>Enable JavaScript to explore the generated documentation.</noscript>
+    </main>
+    <script src='assets/docs-data.js'></script>
+    <script src='assets/app.js' defer></script>
+  </body>
+</html>
