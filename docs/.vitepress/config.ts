@@ -36,12 +36,14 @@ export default defineConfig({
           { text: '@dtifx/diff', link: '/diff/' },
           { text: '@dtifx/cli', link: '/cli/' },
           { text: '@dtifx/audit', link: '/audit/' },
+          { text: '@dtifx/extractors', link: '/extractors/' },
         ],
       },
       {
         text: 'Guides',
         items: [
           { text: 'Quickstart', link: '/guides/getting-started' },
+          { text: 'Extractor setup', link: '/guides/extractor-setup' },
           { text: 'Build pipeline', link: '/guides/build-pipeline' },
           { text: 'Platform presets', link: '/guides/build-presets' },
           { text: 'Diff workflow', link: '/guides/diff-workflow' },
@@ -104,8 +106,18 @@ export default defineConfig({
           items: [
             { text: 'Overview', link: '/cli/' },
             { text: 'CLI reference', link: '/reference/cli' },
+            { text: 'Extractor setup guide', link: '/guides/extractor-setup' },
             { text: 'Quickstart guide', link: '/guides/getting-started' },
             { text: 'Troubleshooting', link: '/troubleshooting/' },
+          ],
+        },
+      ],
+      '/extractors/': [
+        {
+          text: '@dtifx/extractors',
+          items: [
+            { text: 'Overview', link: '/extractors/' },
+            { text: 'Extractor setup guide', link: '/guides/extractor-setup' },
           ],
         },
       ],
@@ -135,6 +147,7 @@ export default defineConfig({
           text: 'Workflows',
           items: [
             { text: 'Quickstart', link: '/guides/getting-started' },
+            { text: 'Extractor setup', link: '/guides/extractor-setup' },
             { text: 'Build pipeline', link: '/guides/build-pipeline' },
             { text: 'Platform presets', link: '/guides/build-presets' },
             { text: 'Diff workflow', link: '/guides/diff-workflow' },

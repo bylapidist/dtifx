@@ -17,6 +17,8 @@ DIFF_PKG_PATH=""
 DIFF_PKG_CLEANUP_PATH=""
 AUDIT_PKG_PATH=""
 AUDIT_PKG_CLEANUP_PATH=""
+EXTRACTORS_PKG_PATH=""
+EXTRACTORS_PKG_CLEANUP_PATH=""
 
 if [[ -z "${CLI_PKG:-}" ]]; then
   CLI_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/cli"
@@ -84,6 +86,25 @@ if [[ -z "${AUDIT_PKG:-}" ]]; then
   fi
 fi
 
+if [[ -z "${EXTRACTORS_PKG:-}" ]]; then
+  EXTRACTORS_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/extractors"
+  if [[ -d "${EXTRACTORS_PACKAGE_ROOT}" ]]; then
+    if ! declare -f pack_workspace_package >/dev/null 2>&1; then
+      # shellcheck source=../../../scripts/lib/package-utils.sh
+      source "${WORKSPACE_ROOT}/scripts/lib/package-utils.sh"
+    fi
+    EXTRACTORS_PKG_PATH="$(pack_workspace_package "${EXTRACTORS_PACKAGE_ROOT}")"
+    EXTRACTORS_PKG="${EXTRACTORS_PKG_PATH}"
+    EXTRACTORS_PKG_CLEANUP_PATH="${EXTRACTORS_PKG_PATH}"
+  fi
+else
+  if [[ "${EXTRACTORS_PKG}" = /* ]]; then
+    EXTRACTORS_PKG_PATH="${EXTRACTORS_PKG}"
+  else
+    EXTRACTORS_PKG_PATH="${WORKSPACE_ROOT}/${EXTRACTORS_PKG}"
+  fi
+fi
+
 if [[ "${PKG}" = /* ]]; then
   PKG_PATH="${PKG}"
 else
@@ -97,6 +118,11 @@ fi
 
 if [[ ! -f "${CLI_PKG_PATH}" ]]; then
   echo "Resolved CLI_PKG path ${CLI_PKG_PATH} does not exist" >&2
+  exit 1
+fi
+
+if [[ -n "${EXTRACTORS_PKG_PATH}" && ! -f "${EXTRACTORS_PKG_PATH}" ]]; then
+  echo "Resolved EXTRACTORS_PKG path ${EXTRACTORS_PKG_PATH} does not exist" >&2
   exit 1
 fi
 
@@ -154,6 +180,9 @@ cleanup() {
   fi
   if [[ -n "${AUDIT_PKG_CLEANUP_PATH}" ]]; then
     rm -f "${AUDIT_PKG_CLEANUP_PATH}" 2>/dev/null || true
+  fi
+  if [[ -n "${EXTRACTORS_PKG_CLEANUP_PATH}" ]]; then
+    rm -f "${EXTRACTORS_PKG_CLEANUP_PATH}" 2>/dev/null || true
   fi
   exit "$status"
 }
@@ -304,11 +333,11 @@ NODE
 
 pushd "${WORK_DIR}" >/dev/null
 
-node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${CORE_PKG_PATH}" "${AUDIT_PKG_PATH}" "${DIFF_PKG_PATH}"
+node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${CORE_PKG_PATH}" "${AUDIT_PKG_PATH}" "${DIFF_PKG_PATH}" "${EXTRACTORS_PKG_PATH}"
 const fs = require('node:fs');
 const path = require('node:path');
 
-const [workspaceRoot, buildPath, cliPath, corePath, auditPath, diffPath] = process.argv.slice(2);
+const [workspaceRoot, buildPath, cliPath, corePath, auditPath, diffPath, extractorsPath] = process.argv.slice(2);
 const pkg = {
   name: 'dtifx-build-cli-smoke',
   version: '0.0.0',
@@ -367,6 +396,12 @@ const diffSpecifier = ensureFileSpecifier(diffPath);
 if (diffSpecifier) {
   devDependencies['@dtifx/diff'] = diffSpecifier;
   overrides['@dtifx/diff'] = diffSpecifier;
+}
+
+const extractorsSpecifier = ensureFileSpecifier(extractorsPath);
+if (extractorsSpecifier) {
+  devDependencies['@dtifx/extractors'] = extractorsSpecifier;
+  overrides['@dtifx/extractors'] = extractorsSpecifier;
 }
 
 

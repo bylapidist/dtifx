@@ -1,0 +1,41 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "extractors",
+  "projectType": "library",
+  "sourceRoot": "packages/extractors/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}/src", "{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/extractors/dist",
+        "main": "packages/extractors/src/index.ts",
+        "tsConfig": "packages/extractors/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "ESLINT_USE_FLAT_CONFIG=true pnpm exec eslint --config eslint.config.mjs \"packages/extractors/**/*.{ts,tsx,cts,mts}\" --max-warnings=0",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{projectRoot}/coverage"],
+      "options": {
+        "config": "packages/extractors/vitest.config.ts"
+      }
+    },
+    "cli-smoke": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "bash ./scripts/cli-smoke.sh",
+        "cwd": "{projectRoot}"
+      }
+    }
+  },
+  "tags": ["scope:extractors", "type:library"]
+}

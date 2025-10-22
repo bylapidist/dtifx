@@ -17,6 +17,7 @@ const coreProjectRoot = path.resolve(cliProjectRoot, '..', 'core');
 const diffProjectRoot = path.resolve(cliProjectRoot, '..', 'diff');
 const buildProjectRoot = path.resolve(cliProjectRoot, '..', 'build');
 const auditProjectRoot = path.resolve(cliProjectRoot, '..', 'audit');
+const extractorsProjectRoot = path.resolve(cliProjectRoot, '..', 'extractors');
 
 const runPnpm = async (args: string[], options: { cwd: string }) => {
   return await execFileAsync('pnpm', args, {
@@ -59,6 +60,7 @@ describe('dtifx CLI distribution', () => {
         { project: 'diff', root: diffProjectRoot },
         { project: 'build', root: buildProjectRoot },
         { project: 'audit', root: auditProjectRoot },
+        { project: 'extractors', root: extractorsProjectRoot },
         { project: 'cli', root: cliProjectRoot },
       ];
 

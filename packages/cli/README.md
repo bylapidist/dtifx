@@ -11,21 +11,22 @@
 
 ## Overview
 
-`@dtifx/cli` publishes the `dtifx` executable. It unifies the diff, build, and audit runtimes so you
-can run every DTIFx workflow through one entry point with consistent logging, telemetry, and error
-handling.
+`@dtifx/cli` publishes the `dtifx` executable. It unifies the extract, diff, build, and audit
+runtimes so you can run every DTIFx workflow through one entry point with consistent logging,
+telemetry, and error handling.
 
 ## Installation
 
 ```bash
-pnpm add -D @dtifx/cli @dtifx/audit @dtifx/build @dtifx/diff
+pnpm add -D @dtifx/cli @dtifx/audit @dtifx/build @dtifx/diff @dtifx/extractors
 # or
-npm install --save-dev @dtifx/cli @dtifx/audit @dtifx/build @dtifx/diff
+npm install --save-dev @dtifx/cli @dtifx/audit @dtifx/build @dtifx/diff @dtifx/extractors
 ```
 
 - Requires Node.js 22 or later.
 - `@dtifx/audit`, `@dtifx/build`, and `@dtifx/diff` are peer dependencies. Install the packages that
   match your workflows.
+- `@dtifx/extractors` provides the provider clients used by the `dtifx extract` namespace.
 
 ## Usage
 
@@ -35,7 +36,9 @@ npm install --save-dev @dtifx/cli @dtifx/audit @dtifx/build @dtifx/diff
 # discover available namespaces and flags
 pnpm exec dtifx --help
 
-# run audit, diff, and build workflows
+# run extract, audit, diff, and build workflows
+pnpm exec dtifx extract figma --file ABC123 \
+  --token $FIGMA_ACCESS_TOKEN --output tokens/figma.json
 pnpm exec dtifx audit run --config ./dtifx.config.mjs
 pnpm exec dtifx diff compare tokens/base.json tokens/feature.json
 pnpm exec dtifx build generate --out-dir dist/tokens

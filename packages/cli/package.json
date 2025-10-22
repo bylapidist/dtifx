@@ -52,7 +52,8 @@
   "dependencies": {
     "@dtifx/core": "workspace:*",
     "@lapidist/dtif-parser": "1.0.2",
-    "commander": "14.0.1"
+    "commander": "14.0.1",
+    "@dtifx/extractors": "workspace:*"
   },
   "peerDependencies": {
     "@dtifx/audit": "workspace:*",

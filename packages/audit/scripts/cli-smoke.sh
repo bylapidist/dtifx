@@ -17,6 +17,8 @@ BUILD_PKG_PATH=""
 BUILD_PKG_CLEANUP_PATH=""
 DIFF_PKG_PATH=""
 DIFF_PKG_CLEANUP_PATH=""
+EXTRACTORS_PKG_PATH=""
+EXTRACTORS_PKG_CLEANUP_PATH=""
 
 if [[ -z "${CLI_PKG:-}" ]]; then
   CLI_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/cli"
@@ -43,11 +45,32 @@ if [[ -z "${CLI_PKG:-}" ]]; then
       CORE_PKG_CLEANUP_PATH="${CORE_PKG_PATH}"
     fi
   fi
+  if [[ -z "${EXTRACTORS_PKG:-}" ]]; then
+    EXTRACTORS_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/extractors"
+    if [[ -d "${EXTRACTORS_PACKAGE_ROOT}" ]]; then
+      EXTRACTORS_PKG_PATH="$(pack_workspace_package "${EXTRACTORS_PACKAGE_ROOT}")"
+      EXTRACTORS_PKG="${EXTRACTORS_PKG_PATH}"
+      EXTRACTORS_PKG_CLEANUP_PATH="${EXTRACTORS_PKG_PATH}"
+    fi
+  fi
 else
   if [[ "${CLI_PKG}" = /* ]]; then
     CLI_PKG_PATH="${CLI_PKG}"
   else
     CLI_PKG_PATH="${WORKSPACE_ROOT}/${CLI_PKG}"
+  fi
+fi
+
+if [[ -z "${EXTRACTORS_PKG:-}" && -z "${EXTRACTORS_PKG_PATH}" ]]; then
+  EXTRACTORS_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/extractors"
+  if [[ -d "${EXTRACTORS_PACKAGE_ROOT}" ]]; then
+    if ! declare -f pack_workspace_package >/dev/null 2>&1; then
+      # shellcheck source=../../../scripts/lib/package-utils.sh
+      source "${WORKSPACE_ROOT}/scripts/lib/package-utils.sh"
+    fi
+    EXTRACTORS_PKG_PATH="$(pack_workspace_package "${EXTRACTORS_PACKAGE_ROOT}")"
+    EXTRACTORS_PKG="${EXTRACTORS_PKG_PATH}"
+    EXTRACTORS_PKG_CLEANUP_PATH="${EXTRACTORS_PKG_PATH}"
   fi
 fi
 
@@ -105,6 +128,11 @@ if [[ ! -f "${CLI_PKG_PATH}" ]]; then
   exit 1
 fi
 
+if [[ -n "${EXTRACTORS_PKG_PATH}" && ! -f "${EXTRACTORS_PKG_PATH}" ]]; then
+  echo "Resolved EXTRACTORS_PKG path ${EXTRACTORS_PKG_PATH} does not exist" >&2
+  exit 1
+fi
+
 CORE_PKG_PATH=""
 if [[ -n "${CORE_PKG:-}" ]]; then
   if [[ "${CORE_PKG}" = /* ]]; then
@@ -126,6 +154,18 @@ fi
 if [[ -n "${DIFF_PKG_PATH}" ]] && [[ ! -f "${DIFF_PKG_PATH}" ]]; then
   echo "DIFF_PKG path ${DIFF_PKG_PATH} does not exist" >&2
   exit 1
+fi
+
+if [[ -n "${EXTRACTORS_PKG:-}" ]]; then
+  if [[ "${EXTRACTORS_PKG}" = /* ]]; then
+    EXTRACTORS_PKG_PATH="${EXTRACTORS_PKG}"
+  else
+    EXTRACTORS_PKG_PATH="${WORKSPACE_ROOT}/${EXTRACTORS_PKG}"
+  fi
+  if [[ ! -f "${EXTRACTORS_PKG_PATH}" ]]; then
+    echo "EXTRACTORS_PKG path ${EXTRACTORS_PKG_PATH} does not exist" >&2
+    exit 1
+  fi
 fi
 
 WORK_DIR="${PACKAGE_ROOT}/tmp/cli-smoke"
@@ -152,6 +192,9 @@ cleanup() {
   fi
   if [[ -n "${DIFF_PKG_CLEANUP_PATH}" ]]; then
     rm -f "${DIFF_PKG_CLEANUP_PATH}" 2>/dev/null || true
+  fi
+  if [[ -n "${EXTRACTORS_PKG_CLEANUP_PATH}" ]]; then
+    rm -f "${EXTRACTORS_PKG_CLEANUP_PATH}" 2>/dev/null || true
   fi
   exit "$status"
 }
@@ -203,9 +246,27 @@ const lines = raw
   .split(/\r?\n/)
   .map((line) => line.trimEnd())
   .filter((line) => line.length > 0);
-const jsonLines = lines.filter((line) => !line.startsWith('{"level"'));
-if (jsonLines.length === 0) {
+const firstJsonIndex = lines.findIndex((line) => {
+  const trimmed = line.trimStart();
+  return trimmed.startsWith('{') || trimmed.startsWith('[');
+});
+if (firstJsonIndex === -1) {
   throw new Error(`No JSON payload detected in ${filePath}`);
+}
+const jsonLines = [];
+for (let index = firstJsonIndex; index < lines.length; index += 1) {
+  const line = lines[index];
+  const trimmedStart = line.trimStart();
+  if (trimmedStart.startsWith('--- ')) {
+    break;
+  }
+  if (trimmedStart.startsWith('{"level"')) {
+    continue;
+  }
+  if (trimmedStart.includes('|  WARN')) {
+    continue;
+  }
+  jsonLines.push(line);
 }
 const payload = jsonLines.join('\n');
 const parsed = JSON.parse(payload);
@@ -215,11 +276,11 @@ NODE
 
 pushd "${WORK_DIR}" >/dev/null
 
-node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${CORE_PKG_PATH}" "${BUILD_PKG_PATH}" "${DIFF_PKG_PATH}"
+node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${CORE_PKG_PATH}" "${BUILD_PKG_PATH}" "${DIFF_PKG_PATH}" "${EXTRACTORS_PKG_PATH}"
 const fs = require('node:fs');
 const path = require('node:path');
 
-const [workspaceRoot, auditPath, cliPath, corePath, buildPath, diffPath] = process.argv.slice(2);
+const [workspaceRoot, auditPath, cliPath, corePath, buildPath, diffPath, extractorsPath] = process.argv.slice(2);
 const pkg = {
   name: 'dtifx-audit-cli-smoke',
   version: '0.0.0',
@@ -278,6 +339,12 @@ const diffSpecifier = ensureFileSpecifier(diffPath);
 if (diffSpecifier) {
   devDependencies['@dtifx/diff'] = diffSpecifier;
   overrides['@dtifx/diff'] = diffSpecifier;
+}
+
+const extractorsSpecifier = ensureFileSpecifier(extractorsPath);
+if (extractorsSpecifier) {
+  devDependencies['@dtifx/extractors'] = extractorsSpecifier;
+  overrides['@dtifx/extractors'] = extractorsSpecifier;
 }
 
 if (Object.keys(devDependencies).length > 0) {

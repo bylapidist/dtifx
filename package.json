@@ -18,7 +18,8 @@
     "smoke:build": "./scripts/smoke-build.sh",
     "smoke:diff": "./scripts/smoke-diff.sh",
     "smoke:audit": "./scripts/smoke-audit.sh",
-    "release": "pnpm run build && pnpm run smoke:diff && pnpm run smoke:build && pnpm run smoke:audit && changeset publish",
+    "smoke:extractors": "pnpm exec nx run extractors:cli-smoke",
+    "release": "pnpm run build && pnpm run smoke:diff && pnpm run smoke:build && pnpm run smoke:extractors && pnpm run smoke:audit && changeset publish",
     "docs:dev": "nx run docs-site:dev",
     "docs:build": "nx run docs-site:build",
     "docs:preview": "nx run docs-site:preview"

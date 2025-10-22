@@ -45,13 +45,14 @@ telemetry.
 
 ## Package suite
 
-| Package                          | Purpose                                                                 |
-| -------------------------------- | ----------------------------------------------------------------------- |
-| [`@dtifx/cli`](packages/cli)     | Unified CLI for diff, build, and audit workflows.                       |
-| [`@dtifx/build`](packages/build) | Plans token layers, runs transforms, and renders distributable outputs. |
-| [`@dtifx/diff`](packages/diff)   | Calculates DTIF diffs and produces human and machine-friendly reports.  |
-| [`@dtifx/audit`](packages/audit) | Evaluates policy manifests and surfaces actionable guidance.            |
-| [`@dtifx/core`](packages/core)   | Shared runtime primitives used by every package and custom hosts.       |
+| Package                                    | Purpose                                                                 |
+| ------------------------------------------ | ----------------------------------------------------------------------- |
+| [`@dtifx/cli`](packages/cli)               | Unified CLI for extract, diff, build, and audit workflows.              |
+| [`@dtifx/extractors`](packages/extractors) | Connects design providers (starting with Figma) to DTIF token exports.  |
+| [`@dtifx/build`](packages/build)           | Plans token layers, runs transforms, and renders distributable outputs. |
+| [`@dtifx/diff`](packages/diff)             | Calculates DTIF diffs and produces human and machine-friendly reports.  |
+| [`@dtifx/audit`](packages/audit)           | Evaluates policy manifests and surfaces actionable guidance.            |
+| [`@dtifx/core`](packages/core)             | Shared runtime primitives used by every package and custom hosts.       |
 
 Review each package README for detailed usage examples and API references.
 
@@ -73,19 +74,21 @@ dtifx --help          # available when the CLI is installed locally
 Run the commands within your design token repository or a fresh directory.
 
 ```bash
-pnpm add -D @dtifx/cli @dtifx/build @dtifx/diff @dtifx/audit
+pnpm add -D @dtifx/cli @dtifx/build @dtifx/diff @dtifx/audit @dtifx/extractors
 # or
-npm install --save-dev @dtifx/cli @dtifx/build @dtifx/diff @dtifx/audit
+npm install --save-dev @dtifx/cli @dtifx/build @dtifx/diff @dtifx/audit @dtifx/extractors
 ```
 
 Expose helpful scripts for team workflows:
 
 ```bash
+pnpm pkg set "scripts.tokens:extract"="dtifx extract figma --file ABC123 --output tokens/figma.json"
 pnpm pkg set "scripts.tokens:diff"="dtifx diff compare"
 pnpm pkg set "scripts.tokens:build"="dtifx build generate"
 pnpm pkg set "scripts.tokens:validate"="dtifx build validate"
 pnpm pkg set "scripts.tokens:audit"="dtifx audit run"
 # or
+npm pkg set "scripts.tokens:extract"="dtifx extract figma --file ABC123 --output tokens/figma.json"
 npm pkg set "scripts.tokens:diff"="dtifx diff compare"
 npm pkg set "scripts.tokens:build"="dtifx build generate"
 npm pkg set "scripts.tokens:validate"="dtifx build validate"
@@ -101,6 +104,9 @@ all workflows.
 ### 4. Run automation
 
 ```bash
+# harvest design tokens from Figma
+pnpm exec dtifx extract figma --file ABC123 --output tokens/figma.json
+
 # compare two snapshots
 pnpm exec dtifx diff compare snapshots/previous.json snapshots/next.json
 

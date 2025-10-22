@@ -27,10 +27,19 @@ if [[ -d "${CORE_PACKAGE_ROOT}" ]]; then
   CORE_PKG_PATH="$(pack_workspace_package "${CORE_PACKAGE_ROOT}")"
 fi
 
+EXTRACTORS_PACKAGE_ROOT="${REPO_ROOT}/packages/extractors"
+EXTRACTORS_PKG_PATH=""
+if [[ -d "${EXTRACTORS_PACKAGE_ROOT}" ]]; then
+  EXTRACTORS_PKG_PATH="$(pack_workspace_package "${EXTRACTORS_PACKAGE_ROOT}")"
+fi
+
 cleanup_artifacts() {
   rm -f "${PKG_PATH}" 2>/dev/null || true
   if [[ -n "${CORE_PKG_PATH:-}" ]]; then
     rm -f "${CORE_PKG_PATH}" 2>/dev/null || true
+  fi
+  if [[ -n "${EXTRACTORS_PKG_PATH:-}" ]]; then
+    rm -f "${EXTRACTORS_PKG_PATH}" 2>/dev/null || true
   fi
   rm -f "${CLI_PKG_PATH}" 2>/dev/null || true
 }
@@ -40,6 +49,9 @@ echo "Running dtifx audit smoke test with package artifact ${PKG_NAME}" >&2
 if [[ -n "${CORE_PKG_PATH}" ]]; then
   echo "Using local @dtifx/core artifact $(basename "${CORE_PKG_PATH}")" >&2
 fi
+if [[ -n "${EXTRACTORS_PKG_PATH}" ]]; then
+  echo "Using local @dtifx/extractors artifact $(basename "${EXTRACTORS_PKG_PATH}")" >&2
+fi
 echo "Using local @dtifx/cli artifact $(basename "${CLI_PKG_PATH}")" >&2
 
-PKG="${PKG_PATH}" CORE_PKG="${CORE_PKG_PATH}" CLI_PKG="${CLI_PKG_PATH}" bash "${PACKAGE_ROOT}/scripts/cli-smoke.sh"
+PKG="${PKG_PATH}" CORE_PKG="${CORE_PKG_PATH}" CLI_PKG="${CLI_PKG_PATH}" EXTRACTORS_PKG="${EXTRACTORS_PKG_PATH}" bash "${PACKAGE_ROOT}/scripts/cli-smoke.sh"

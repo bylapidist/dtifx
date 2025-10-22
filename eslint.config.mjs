@@ -36,6 +36,7 @@ const moduleBoundaryRule = [
           'scope:diff',
           'scope:lint',
           'scope:audit',
+          'scope:extractors',
         ],
       },
       {
@@ -56,6 +57,10 @@ const moduleBoundaryRule = [
       },
       {
         sourceTag: 'scope:inspect',
+        onlyDependOnLibsWithTags: ['scope:core'],
+      },
+      {
+        sourceTag: 'scope:extractors',
         onlyDependOnLibsWithTags: ['scope:core'],
       },
       {
