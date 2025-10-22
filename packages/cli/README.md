@@ -18,14 +18,15 @@ telemetry, and error handling.
 ## Installation
 
 ```bash
-pnpm add -D @dtifx/cli @dtifx/audit @dtifx/build @dtifx/diff
+pnpm add -D @dtifx/cli @dtifx/audit @dtifx/build @dtifx/diff @dtifx/extractors
 # or
-npm install --save-dev @dtifx/cli @dtifx/audit @dtifx/build @dtifx/diff
+npm install --save-dev @dtifx/cli @dtifx/audit @dtifx/build @dtifx/diff @dtifx/extractors
 ```
 
 - Requires Node.js 22 or later.
 - `@dtifx/audit`, `@dtifx/build`, and `@dtifx/diff` are peer dependencies. Install the packages that
   match your workflows.
+- `@dtifx/extractors` provides the provider clients used by the `dtifx extract` namespace.
 
 ## Usage
 

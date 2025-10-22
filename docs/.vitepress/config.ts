@@ -36,6 +36,7 @@ export default defineConfig({
           { text: '@dtifx/diff', link: '/diff/' },
           { text: '@dtifx/cli', link: '/cli/' },
           { text: '@dtifx/audit', link: '/audit/' },
+          { text: '@dtifx/extractors', link: '/extractors/' },
         ],
       },
       {
@@ -108,6 +109,15 @@ export default defineConfig({
             { text: 'Extractor setup guide', link: '/guides/extractor-setup' },
             { text: 'Quickstart guide', link: '/guides/getting-started' },
             { text: 'Troubleshooting', link: '/troubleshooting/' },
+          ],
+        },
+      ],
+      '/extractors/': [
+        {
+          text: '@dtifx/extractors',
+          items: [
+            { text: 'Overview', link: '/extractors/' },
+            { text: 'Extractor setup guide', link: '/guides/extractor-setup' },
           ],
         },
       ],

@@ -66,6 +66,14 @@ npm pkg set "scripts.governance:audit"="dtifx audit run"
 npm pkg set "scripts.quality:diff"="dtifx diff compare"
 ```
 
+Add `@dtifx/extractors` and an `extract` script when you need to harvest design tokens from Figma or
+other providers supported by the toolkit:
+
+```bash
+pnpm add -D @dtifx/extractors
+pnpm pkg set "scripts.tokens:extract"="dtifx extract figma --file ABC123 --output tokens/figma.json"
+```
+
 Running `pnpm run build:validate` now prints usage help because the configuration file is missing.
 Create it next.
 

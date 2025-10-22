@@ -56,6 +56,16 @@ features:
     link: /cli/
     linkText: Open the CLI reference
   - icon:
+      src: /logos/dtifx-extractors.svg
+      alt: '@dtifx/extractors logo'
+    iconBackground: 'rgba(32, 41, 72, 0.06)'
+    title: '@dtifx/extractors'
+    details: |
+      Authenticate with design APIs and convert provider payloads into DTIF-compliant token
+      documents ready for downstream automation.
+    link: /extractors/
+    linkText: Explore extractor docs
+  - icon:
       src: /logos/dtifx-audit.svg
       alt: '@dtifx/audit logo'
     iconBackground: 'rgba(32, 41, 72, 0.06)'

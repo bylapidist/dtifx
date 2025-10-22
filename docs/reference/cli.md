@@ -6,9 +6,9 @@ outline: deep
 
 # CLI reference
 
-The `@dtifx/cli` package publishes the `dtifx` binary. It registers the diff, build, and audit
-command modules with a shared kernel, providing consistent IO, telemetry, and error handling. This
-reference lists every command and option.
+The `@dtifx/cli` package publishes the `dtifx` binary. It registers the extract, diff, build, and
+audit command modules with a shared kernel, providing consistent IO, telemetry, and error handling.
+This reference lists every command and option.
 
 ## Programmatic APIs
 
@@ -61,8 +61,9 @@ real process globals.
 
 ### Command modules
 
-The CLI ships reusable `CliCommandModule` instances for diff, build, and audit workflows:
+The CLI ships reusable `CliCommandModule` instances for extract, diff, build, and audit workflows:
 
+- `extractCommandModule`
 - `diffCommandModule`
 - `buildCommandModule`
 - `auditCommandModule`
@@ -75,6 +76,7 @@ them with bespoke modules to extend the binary.
 
 For common embed scenarios the package provides pre-wired kernel factories and runners:
 
+- `createExtractCliKernel(options)` and `runExtractCli(argv?)`
 - `createDiffCliKernel(options)` and `runDiffCli(argv?)`
 - `createBuildCliKernel(options)` and `runBuildCli(argv?)`
 - `createAuditCliKernel(options)` and `runAuditCli(argv?)`
@@ -108,8 +110,8 @@ to propagate failures or aggregate multiple CLI invocations inside a single proc
 
 ## Global behaviour
 
-- Running `dtifx` without arguments prints a hint directing you to `dtifx diff`, `dtifx build`, or
-  `dtifx audit`.
+- Running `dtifx` without arguments prints a hint directing you to `dtifx extract`, `dtifx diff`,
+  `dtifx build`, or `dtifx audit`.
 - Non-interactive build subcommands (`validate`, `generate`, `inspect`) and audit runs set
   `process.exitCode = 1` when runtimes fail so callers can detect errors. `dtifx build watch` logs
   failures but keeps the session alive for the next rebuild. Diff commands throw `CommanderError`
@@ -127,9 +129,35 @@ to propagate failures or aggregate multiple CLI invocations inside a single proc
     their `--json-logs` options, while other integrations can read the preference via
     `context.getGlobalOptions()`.
 
+## `dtifx extract`
+
+### Extract entry point
+
+- `--help`
+  - Lists available providers (`figma`) and shared help options.
+
+### `dtifx extract figma`
+
+- `--file <key>` (required)
+  - Figma file key to extract from.
+- `--token <token>`
+  - Personal access token. Falls back to the `FIGMA_ACCESS_TOKEN` environment variable.
+- `--node <id>` (repeatable)
+  - Restrict extraction to one or more node identifiers.
+- `--output <file>`
+  - Destination file path. Defaults to `tokens/<file-key>.figma.json` when omitted.
+- `--api-base <url>`
+  - Override the API host (used with recorded fixtures and mocks).
+- `--no-pretty`
+  - Disable pretty-printed JSON output.
+
+The command writes a DTIF-compliant token document to the resolved output path. Provider warnings
+stream to `stderr`. Extraction fails fast if credentials are missing or the provider API returns
+errors.
+
 ## `dtifx diff`
 
-### Top-level
+### Diff entry point
 
 - `--version`
   - Prints the installed version of `@dtifx/diff` and exits.
