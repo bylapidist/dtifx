@@ -10,6 +10,7 @@ import {
   createCliKernel,
   createProcessCliIo,
   diffCommandModule,
+  initCommandModule,
 } from './index.js';
 
 const require = createRequire(import.meta.url);
@@ -59,14 +60,15 @@ const kernel = createCliKernel({
 kernel.register(diffCommandModule);
 kernel.register(buildCommandModule);
 kernel.register(auditCommandModule);
+kernel.register(initCommandModule);
 
 const exitCode = await kernel.run();
 
 if (process.argv.length <= 2) {
   const name = packageManifest.name ?? '@dtifx/cli';
   const message =
-    `${name} supports diff, build, and audit workflows. ` +
-    'Explore `dtifx diff --help`, `dtifx build --help`, or `dtifx audit --help` to get started.\n';
+    `${name} supports init, diff, build, and audit workflows. ` +
+    'Explore `dtifx init --help`, `dtifx diff --help`, `dtifx build --help`, or `dtifx audit --help` to get started.\n';
   io.writeOut(message);
 }
 
