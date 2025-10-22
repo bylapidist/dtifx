@@ -54,7 +54,8 @@
       "@dtifx/core/telemetry": ["packages/core/src/telemetry/index.ts"],
       "@dtifx/core/testing": ["packages/core/src/testing/index.ts"],
       "@dtifx/diff": ["packages/diff/src/index.ts"],
-      "@dtifx/diff/token-set": ["packages/diff/src/token-set.ts"]
+      "@dtifx/diff/token-set": ["packages/diff/src/token-set.ts"],
+      "@dtifx/extractors": ["packages/extractors/src/index.ts"]
     }
   }
 }

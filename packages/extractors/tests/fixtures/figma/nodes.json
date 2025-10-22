@@ -1,0 +1,80 @@
+{
+  "nodes": {
+    "1:3": {
+      "document": {
+        "id": "1:3",
+        "name": "Color swatch",
+        "type": "RECTANGLE",
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": { "r": 0.125, "g": 0.2, "b": 0.35, "a": 0.95 },
+            "opacity": 0.8
+          }
+        ]
+      }
+    },
+    "2:5": {
+      "document": {
+        "id": "2:5",
+        "name": "Gradient swatch",
+        "type": "RECTANGLE",
+        "fills": [
+          {
+            "type": "GRADIENT_LINEAR",
+            "gradientStops": [
+              { "position": 0, "color": { "r": 0.05, "g": 0.1, "b": 0.2, "a": 1 } },
+              { "position": 0.5, "color": { "r": 0.3, "g": 0.4, "b": 0.6, "a": 0.75 } },
+              { "position": 1, "color": { "r": 0.75, "g": 0.8, "b": 0.95, "a": 1 } }
+            ],
+            "gradientHandlePositions": [
+              { "x": 0.1, "y": 0.2 },
+              { "x": 0.85, "y": 0.7 },
+              { "x": 0.2, "y": 0.9 }
+            ],
+            "opacity": 0.9
+          }
+        ]
+      }
+    },
+    "3:7": {
+      "document": {
+        "id": "3:7",
+        "name": "Heading",
+        "type": "TEXT",
+        "style": {
+          "fontSize": 24,
+          "fontWeight": 700,
+          "fontName": { "family": "Inter", "style": "Bold" },
+          "lineHeightPx": 32,
+          "letterSpacing": 0.5,
+          "letterSpacingUnit": "PIXELS",
+          "paragraphSpacing": 12,
+          "textCase": "UPPER",
+          "textDecoration": "UNDERLINE"
+        },
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": { "r": 0.95, "g": 0.2, "b": 0.2, "a": 1 },
+            "opacity": 1
+          }
+        ]
+      }
+    },
+    "4:9": {
+      "document": {
+        "id": "4:9",
+        "name": "Hero Illustration",
+        "type": "RECTANGLE",
+        "fills": [
+          {
+            "type": "IMAGE",
+            "imageRef": "image-ref-123",
+            "scaleMode": "FILL"
+          }
+        ]
+      }
+    }
+  }
+}

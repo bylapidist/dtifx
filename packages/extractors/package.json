@@ -1,0 +1,51 @@
+{
+  "name": "@dtifx/extractors",
+  "version": "3.0.0",
+  "description": "Design API extractors that convert provider payloads into DTIF token documents.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bylapidist/dtifx.git",
+    "directory": "packages/extractors"
+  },
+  "homepage": "https://dtifx.lapidist.net/extractors",
+  "bugs": {
+    "url": "https://github.com/bylapidist/dtifx/issues"
+  },
+  "keywords": [
+    "dtif",
+    "design tokens",
+    "extract",
+    "figma",
+    "automation"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "nx build extractors",
+    "lint": "nx lint extractors",
+    "test": "nx test extractors"
+  },
+  "dependencies": {
+    "@dtifx/core": "workspace:*"
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}
