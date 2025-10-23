@@ -46,7 +46,7 @@
     "@lapidist/dtif-schema": "1.0.2",
     "@lapidist/dtif-validator": "1.0.2",
     "ajv": "8.17.1",
-    "cli-truncate": "5.1.0",
+    "cli-truncate": "5.1.1",
     "colord": "2.9.3",
     "handlebars": "4.7.8",
     "is-unicode-supported": "2.1.0",
