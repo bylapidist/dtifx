@@ -74,8 +74,4 @@ features:
       documents ready for downstream automation.
     link: /extractors/
     linkText: Explore extractor docs
-  - icon: ⚖️
-    title: 'Governance playbooks'
-    details: |
-      Roll out policy templates, incident drills, and partner-ready reports so teams can operationalise audit outcomes seamlessly, without friction.
 ---
