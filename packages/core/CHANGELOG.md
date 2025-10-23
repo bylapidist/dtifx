@@ -1,5 +1,11 @@
 # @dtifx/core
 
+## 4.0.0
+
+### Patch Changes
+
+- e5f6223: Add the missing `@types/color` dependency so TypeScript builds succeed under Vitest 4.
+
 ## 3.0.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@dtifx/extractors",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Design API extractors that convert provider payloads into DTIF token documents.",
   "license": "MIT",
   "type": "module",
