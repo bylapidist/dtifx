@@ -1,5 +1,17 @@
 # @dtifx/cli
 
+## 4.1.1
+
+### Patch Changes
+
+- 83ba7bb: ensure diff compare reports create parent directories when writing to disk
+- Updated dependencies [2710789]
+  - @dtifx/extractors@4.1.1
+  - @dtifx/core@4.1.1
+  - @dtifx/diff@4.1.1
+  - @dtifx/build@4.1.1
+  - @dtifx/audit@4.1.1
+
 ## 4.1.0
 
 ### Minor Changes

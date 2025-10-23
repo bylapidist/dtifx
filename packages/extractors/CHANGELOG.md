@@ -1,5 +1,12 @@
 # @dtifx/extractors
 
+## 4.1.1
+
+### Patch Changes
+
+- 2710789: Respect custom Figma API base URLs when generating image token values.
+  - @dtifx/core@4.1.1
+
 ## 4.1.0
 
 ### Minor Changes
