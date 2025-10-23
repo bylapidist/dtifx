@@ -79,16 +79,20 @@ pnpm add -D @dtifx/cli @dtifx/build @dtifx/diff @dtifx/audit @dtifx/extractors
 npm install --save-dev @dtifx/cli @dtifx/build @dtifx/diff @dtifx/audit @dtifx/extractors
 ```
 
-Expose helpful scripts for team workflows:
+Expose helpful scripts for team workflows (swap the provider command that matches your stack):
 
 ```bash
 pnpm pkg set "scripts.tokens:extract"="dtifx extract figma --file ABC123 --output tokens/figma.json"
+pnpm pkg set "scripts.tokens:extract:penpot"="dtifx extract penpot --file DEMO --output tokens/penpot.json"
+pnpm pkg set "scripts.tokens:extract:sketch"="dtifx extract sketch --file design-library.json --output tokens/sketch.json"
 pnpm pkg set "scripts.tokens:diff"="dtifx diff compare"
 pnpm pkg set "scripts.tokens:build"="dtifx build generate"
 pnpm pkg set "scripts.tokens:validate"="dtifx build validate"
 pnpm pkg set "scripts.tokens:audit"="dtifx audit run"
 # or
 npm pkg set "scripts.tokens:extract"="dtifx extract figma --file ABC123 --output tokens/figma.json"
+npm pkg set "scripts.tokens:extract:penpot"="dtifx extract penpot --file DEMO --output tokens/penpot.json"
+npm pkg set "scripts.tokens:extract:sketch"="dtifx extract sketch --file design-library.json --output tokens/sketch.json"
 npm pkg set "scripts.tokens:diff"="dtifx diff compare"
 npm pkg set "scripts.tokens:build"="dtifx build generate"
 npm pkg set "scripts.tokens:validate"="dtifx build validate"
@@ -104,8 +108,10 @@ all workflows.
 ### 4. Run automation
 
 ```bash
-# harvest design tokens from Figma
+# harvest design tokens from a provider
 pnpm exec dtifx extract figma --file ABC123 --output tokens/figma.json
+pnpm exec dtifx extract penpot --file DEMO --output tokens/penpot.json
+pnpm exec dtifx extract sketch --file design-library.json --output tokens/sketch.json
 
 # compare two snapshots
 pnpm exec dtifx diff compare snapshots/previous.json snapshots/next.json

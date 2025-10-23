@@ -39,6 +39,10 @@ pnpm exec dtifx --help
 # run extract, audit, diff, and build workflows
 pnpm exec dtifx extract figma --file ABC123 \
   --token $FIGMA_ACCESS_TOKEN --output tokens/figma.json
+pnpm exec dtifx extract penpot --file demo-file \
+  --token $PENPOT_ACCESS_TOKEN --output tokens/penpot.json
+pnpm exec dtifx extract sketch --file ./design-library.json \
+  --output tokens/sketch.json
 pnpm exec dtifx audit run --config ./dtifx.config.mjs
 pnpm exec dtifx diff compare tokens/base.json tokens/feature.json
 pnpm exec dtifx build generate --out-dir dist/tokens

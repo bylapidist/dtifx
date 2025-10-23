@@ -6,9 +6,9 @@ description:
 
 # `@dtifx/extractors`
 
-`@dtifx/extractors` authenticates with design provider APIs and converts their style nodes into
-DTIF-compliant token documents. The initial release focuses on Figma and powers the `dtifx extract`
-CLI namespace.
+`@dtifx/extractors` authenticates with design provider APIs (or the Sketch file system) and converts
+their style nodes into DTIF-compliant token documents. Figma, Penpot, and Sketch clients power the
+`dtifx extract` CLI namespace.
 
 ## Key capabilities
 
@@ -28,20 +28,33 @@ implementations:
 pnpm add -D @dtifx/cli @dtifx/extractors
 ```
 
-Create a script that pipes provider credentials and the desired destination:
+Create scripts that pipe provider credentials and the desired destinations:
 
 ```bash
-pnpm pkg set "scripts.tokens:extract"="dtifx extract figma --file ABC123 --output tokens/figma.json"
+pnpm pkg set "scripts.tokens:extract:figma"="dtifx extract figma --file ABC123 --output tokens/figma.json"
+pnpm pkg set "scripts.tokens:extract:penpot"="dtifx extract penpot --file DEMO --output tokens/penpot.json"
+pnpm pkg set "scripts.tokens:extract:sketch"="dtifx extract sketch --file design-library.json --output tokens/sketch.json"
 ```
 
-Set the `FIGMA_ACCESS_TOKEN` environment variable (or pass `--token`) before running the script.
+Run the script with the appropriate credentials:
 
 ```bash
-FIGMA_ACCESS_TOKEN="<token>" pnpm run tokens:extract
+FIGMA_ACCESS_TOKEN="<token>" pnpm run tokens:extract:figma
+PENPOT_ACCESS_TOKEN="<token>" pnpm run tokens:extract:penpot
+pnpm run tokens:extract:sketch
 ```
 
-The command writes a DTIF token document enriched with metadata, colour, gradient, typography, and
-image tokens. Combine it with existing layers using merge logic in your build or CI pipelines.
+Each command writes a DTIF token document enriched with metadata, colour, gradient, and typography
+tokens. Combine the outputs with existing layers using merge logic in your build or CI pipelines.
+
+## Provider reference
+
+- **Figma** — `dtifx extract figma` requires `FIGMA_ACCESS_TOKEN` (or the `--token` flag) and
+  returns colour, gradient, typography, and image references.
+- **Penpot** — `dtifx extract penpot` expects `PENPOT_ACCESS_TOKEN` or `--token`, calling the REST
+  API and surfacing warnings when gradients are unsupported.
+- **Sketch** — `dtifx extract sketch` reads shared styles from local archives or JSON exports; no
+  credentials are necessary, but warnings highlight styles that could not be mapped.
 
 ## Resources
 

@@ -134,7 +134,7 @@ to propagate failures or aggregate multiple CLI invocations inside a single proc
 ### Extract entry point
 
 - `--help`
-  - Lists available providers (`figma`) and shared help options.
+  - Lists available providers (`figma`, `penpot`, `sketch`) and shared help options.
 
 ### `dtifx extract figma`
 
@@ -154,6 +154,34 @@ to propagate failures or aggregate multiple CLI invocations inside a single proc
 The command writes a DTIF-compliant token document to the resolved output path. Provider warnings
 stream to `stderr`. Extraction fails fast if credentials are missing or the provider API returns
 errors.
+
+### `dtifx extract penpot`
+
+- `--file <id>` (required)
+  - Penpot file identifier (UUID) to extract from.
+- `--token <token>`
+  - Personal access token. Falls back to the `PENPOT_ACCESS_TOKEN` environment variable.
+- `--output <file>`
+  - Destination file path. Defaults to `tokens/<file-id>.penpot.json` when omitted.
+- `--api-base <url>`
+  - Override the REST API host (useful for mocks and integration tests).
+- `--no-pretty`
+  - Disable pretty-printed JSON output.
+
+The command writes a DTIF token document populated from the Penpot REST API. Unsupported gradients
+and missing values are emitted as warnings on `stderr`.
+
+### `dtifx extract sketch`
+
+- `--file <path>` (required)
+  - Path to a Sketch `.sketch` archive or JSON export containing shared styles.
+- `--output <file>`
+  - Destination file path. Defaults to `tokens/<document>.sketch.json` when omitted.
+- `--no-pretty`
+  - Disable pretty-printed JSON output.
+
+The command reads shared styles from disk and converts them into a DTIF document. Missing styles or
+unsupported attributes appear as warnings on `stderr`.
 
 ## `dtifx diff`
 

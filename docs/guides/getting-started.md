@@ -66,13 +66,18 @@ npm pkg set "scripts.governance:audit"="dtifx audit run"
 npm pkg set "scripts.quality:diff"="dtifx diff compare"
 ```
 
-Add `@dtifx/extractors` and an `extract` script when you need to harvest design tokens from Figma or
-other providers supported by the toolkit:
+Add `@dtifx/extractors` and provider-specific scripts when you need to harvest design tokens from
+Figma, Penpot, or Sketch:
 
 ```bash
 pnpm add -D @dtifx/extractors
-pnpm pkg set "scripts.tokens:extract"="dtifx extract figma --file ABC123 --output tokens/figma.json"
+pnpm pkg set "scripts.tokens:extract:figma"="dtifx extract figma --file ABC123 --output tokens/figma.json"
+pnpm pkg set "scripts.tokens:extract:penpot"="dtifx extract penpot --file DEMO --output tokens/penpot.json"
+pnpm pkg set "scripts.tokens:extract:sketch"="dtifx extract sketch --file design-library.json --output tokens/sketch.json"
 ```
+
+Set `FIGMA_ACCESS_TOKEN` or `PENPOT_ACCESS_TOKEN` before invoking the respective scripts. Sketch
+extractions only require read access to the document on disk.
 
 Running `pnpm run build:validate` now prints usage help because the configuration file is missing.
 Create it next.
