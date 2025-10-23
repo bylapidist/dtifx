@@ -1,0 +1,39 @@
+{
+  "colors": [
+    {
+      "id": "color-surface",
+      "name": "Color/Surface/Background",
+      "description": "Surface background",
+      "color": { "r": 0.125, "g": 0.25, "b": 0.375, "a": 0.8 }
+    }
+  ],
+  "gradients": [
+    {
+      "id": "gradient-hero",
+      "name": "Gradient/Hero/Primary",
+      "description": "Primary hero gradient",
+      "kind": "linear",
+      "angle": 32,
+      "stops": [
+        { "position": 0, "color": { "r": 1, "g": 0, "b": 0, "a": 1 } },
+        { "position": 1, "color": { "r": 0, "g": 0, "b": 1, "a": 1 } }
+      ]
+    }
+  ],
+  "typography": [
+    {
+      "id": "typography-heading",
+      "name": "Typography/Heading/H1",
+      "description": "Heading style",
+      "fontFamily": "Inter",
+      "fontSize": 24,
+      "fontWeight": 700,
+      "lineHeight": 32,
+      "letterSpacing": 0.5,
+      "paragraphSpacing": 12,
+      "textCase": "uppercase",
+      "textDecoration": "underline",
+      "color": { "r": 0.95, "g": 0.2, "b": 0.2, "a": 1 }
+    }
+  ]
+}

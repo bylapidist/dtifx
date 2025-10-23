@@ -1,8 +1,8 @@
 ---
 title: Extractor setup
 description:
-  Configure the DTIFx extractor package and CLI to harvest Figma styles into DTIF token documents
-  for local and CI automation.
+  Configure the DTIFx extractor package and CLI to harvest design styles from Figma, Penpot, and
+  Sketch into DTIF token documents for local and CI automation.
 outline: deep
 ---
 
@@ -11,6 +11,10 @@ into DTIF-compliant token documents, and saves the results alongside your existi
 these steps to authenticate, run the CLI, and merge extracted payloads into your repositories.
 
 ## 1. Create API credentials
+
+Follow the setup steps for the providers you plan to automate.
+
+### Figma
 
 1. Visit [Figma personal access tokens](https://www.figma.com/developers/api#personal-access-tokens)
    and generate a token scoped for the files you plan to extract.
@@ -24,6 +28,24 @@ these steps to authenticate, run the CLI, and merge extracted payloads into your
 3. Record the file key for each Figma document you want to extract. The key appears in the file URL
    (`https://www.figma.com/file/<FILE_KEY>/…`).
 
+### Penpot
+
+1. Create a [Penpot personal access token](https://help.penpot.app/user-guide/access-tokens/) with
+   permission to read the document you plan to harvest.
+2. Store the token securely and expose it to the CLI via an environment variable:
+
+   ```bash
+   export PENPOT_ACCESS_TOKEN="<paste-token-here>"
+   ```
+
+3. Note the Penpot file identifier (UUID) from the application URL. It is used as the `--file`
+   option.
+
+### Sketch
+
+Sketch extractions read shared styles from local `.sketch` archives or JSON exports. No API tokens
+are required—ensure your automation runner can access the source files on disk.
+
 ## 2. Install extractor tooling
 
 Add the extractor library alongside the CLI so both the programmatic and command-line workflows are
@@ -35,16 +57,21 @@ pnpm add -D @dtifx/cli @dtifx/extractors
 npm install --save-dev @dtifx/cli @dtifx/extractors
 ```
 
-Consider adding a package script that forwards the required options. The example below writes the
-extracted document to `tokens/figma.json`:
+Consider adding package scripts that forward the required options. The examples below write provider
+documents into the `tokens/` directory:
 
 ```bash
-pnpm pkg set "scripts.tokens:extract"="dtifx extract figma --file ABC123 --output tokens/figma.json"
+pnpm pkg set "scripts.tokens:extract:figma"="dtifx extract figma --file ABC123 --output tokens/figma.json"
+pnpm pkg set "scripts.tokens:extract:penpot"="dtifx extract penpot --file DEMO --output tokens/penpot.json"
+pnpm pkg set "scripts.tokens:extract:sketch"="dtifx extract sketch --file design-library.json --output tokens/sketch.json"
 # or
-npm pkg set "scripts.tokens:extract"="dtifx extract figma --file ABC123 --output tokens/figma.json"
+npm pkg set "scripts.tokens:extract:figma"="dtifx extract figma --file ABC123 --output tokens/figma.json"
+npm pkg set "scripts.tokens:extract:penpot"="dtifx extract penpot --file DEMO --output tokens/penpot.json"
+npm pkg set "scripts.tokens:extract:sketch"="dtifx extract sketch --file design-library.json --output tokens/sketch.json"
 ```
 
-You can pass `--token <value>` explicitly or rely on the `FIGMA_ACCESS_TOKEN` environment variable.
+You can pass `--token <value>` explicitly or rely on the `FIGMA_ACCESS_TOKEN` /
+`PENPOT_ACCESS_TOKEN` environment variables.
 
 ## 3. Run the extractor
 
@@ -52,8 +79,11 @@ Execute the script after setting the access token and choose an output location 
 document:
 
 ```bash
-FIGMA_ACCESS_TOKEN="<token>" pnpm run tokens:extract
-# yields tokens/figma.json with DTIF metadata, colours, gradients, typography, and image references
+FIGMA_ACCESS_TOKEN="<token>" pnpm run tokens:extract:figma
+PENPOT_ACCESS_TOKEN="<token>" pnpm run tokens:extract:penpot
+pnpm run tokens:extract:sketch
+# yields DTIF documents (for example tokens/figma.json or tokens/penpot.json) with metadata,
+# colours, gradients, typography, and image references where supported
 ```
 
 Override the destination with `--output`, restrict the extraction to specific node identifiers with
@@ -62,12 +92,14 @@ tests.
 
 ## 4. Automate in CI
 
-Store `FIGMA_ACCESS_TOKEN` as a masked secret in your CI platform. Your pipeline can then run the
-same script before invoking downstream DTIFx build or audit jobs:
+Store provider tokens as masked secrets in your CI platform. The example below runs the Figma
+extraction script before invoking downstream DTIFx build or audit jobs—adjust the command if you are
+targeting Penpot or Sketch:
 
 ```yaml
 env:
   FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+  PENPOT_ACCESS_TOKEN: ${{ secrets.PENPOT_ACCESS_TOKEN }}
 
 steps:
   - uses: actions/checkout@v4
@@ -75,7 +107,7 @@ steps:
     with:
       version: 9
   - run: pnpm install --frozen-lockfile
-  - run: pnpm run tokens:extract
+  - run: pnpm run tokens:extract:figma
   - run: pnpm run build:generate
 ```
 
@@ -93,7 +125,7 @@ node <<'NODE'
 import { readFile, writeFile } from 'node:fs/promises';
 
 const base = JSON.parse(await readFile('tokens/foundation.json', 'utf8'));
-const extracted = JSON.parse(await readFile('tokens/figma.json', 'utf8'));
+const extracted = JSON.parse(await readFile('tokens/provider.json', 'utf8'));
 
 const merged = {
   ...base,
@@ -107,6 +139,8 @@ await writeFile('tokens/foundation.merged.json', `${JSON.stringify(merged, null,
 console.log('Merged tokens written to tokens/foundation.merged.json');
 NODE
 ```
+
+Replace `provider.json` with the actual output file (`figma.json`, `penpot.json`, or `sketch.json`).
 
 Feed `tokens/foundation.merged.json` into `dtifx build` or `dtifx diff` to validate the combined
 token set. Tailor the merge logic to your layering strategy—some teams persist extracted files
