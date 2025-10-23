@@ -4,6 +4,7 @@
     console.error('Design token documentation data was not initialised.');
     return;
   }
+  let snippetIdCounter = 0;
   const root = document.querySelector('#docs-app');
   if (!root) {
     console.error('Unable to locate documentation root container.');
@@ -202,6 +203,11 @@
     pre.textContent = stringify(example.payload);
     details.append(pre);
 
+    const snippets = renderSnippetTabs(example.snippets);
+    if (snippets) {
+      details.append(snippets);
+    }
+
     if (Array.isArray(example.assets) && example.assets.length > 0) {
       details.append(renderAssetList(example.assets, assetIndex));
     }
@@ -256,6 +262,92 @@
     return list;
   }
 
+  function renderSnippetTabs(snippetList) {
+    if (!Array.isArray(snippetList) || snippetList.length === 0) {
+      return;
+    }
+
+    const snippets = snippetList.filter((snippet) => {
+      return snippet && typeof snippet.language === 'string' && typeof snippet.code === 'string';
+    });
+
+    if (snippets.length === 0) {
+      return;
+    }
+
+    const container = document.createElement('div');
+    container.className = 'docs-snippet';
+
+    const tabList = document.createElement('div');
+    tabList.className = 'docs-snippet__tabs';
+    tabList.setAttribute('role', 'tablist');
+    container.append(tabList);
+
+    const panels = document.createElement('div');
+    panels.className = 'docs-snippet__panels';
+    container.append(panels);
+
+    const snippetId = `snippet-${snippetIdCounter++}`;
+    const tabs = [];
+    const panelsList = [];
+
+    for (const [index, snippet] of snippets.entries()) {
+      const tab = document.createElement('button');
+      tab.className = 'docs-snippet__tab';
+      tab.type = 'button';
+      tab.id = `${snippetId}-tab-${index}`;
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+      tab.setAttribute('aria-controls', `${snippetId}-panel-${index}`);
+      tab.tabIndex = index === 0 ? 0 : -1;
+      tab.textContent = formatSnippetLabel(snippet);
+      if (index === 0) {
+        tab.classList.add('is-active');
+      }
+      tab.addEventListener('click', () => selectSnippet(index));
+      tab.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+          event.preventDefault();
+          const direction = event.key === 'ArrowRight' ? 1 : -1;
+          const nextIndex = (index + direction + snippets.length) % snippets.length;
+          selectSnippet(nextIndex);
+          tabs[nextIndex].focus();
+        }
+      });
+      tabList.append(tab);
+      tabs.push(tab);
+
+      const panel = document.createElement('div');
+      panel.className = 'docs-snippet__panel';
+      panel.id = `${snippetId}-panel-${index}`;
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', tab.id);
+      panel.hidden = index !== 0;
+
+      const pre = document.createElement('pre');
+      pre.className = 'docs-snippet__pre';
+      const code = document.createElement('code');
+      code.className = `docs-snippet__code language-${snippet.language}`;
+      code.textContent = snippet.code;
+      pre.append(code);
+      panel.append(pre);
+      panels.append(panel);
+      panelsList.push(panel);
+    }
+
+    function selectSnippet(index) {
+      for (const [tabIndex, tab] of tabs.entries()) {
+        const selected = tabIndex === index;
+        tab.setAttribute('aria-selected', selected ? 'true' : 'false');
+        tab.classList.toggle('is-active', selected);
+        tab.tabIndex = selected ? 0 : -1;
+        panelsList[tabIndex].hidden = !selected;
+      }
+    }
+
+    return container;
+  }
+
   function createAssetPreview(asset) {
     if (asset.kind === 'image') {
       const img = document.createElement('img');
@@ -297,6 +389,17 @@
     } catch (error) {
       return String(error);
     }
+  }
+
+  function formatSnippetLabel(snippet) {
+    if (snippet && typeof snippet.label === 'string' && snippet.label.trim().length > 0) {
+      return snippet.label;
+    }
+    const language = typeof snippet.language === 'string' ? snippet.language : '';
+    if (language.length === 0) {
+      return 'Snippet';
+    }
+    return language.charAt(0).toUpperCase() + language.slice(1);
   }
 
   function slugify(value) {

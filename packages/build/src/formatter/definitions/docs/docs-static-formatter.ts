@@ -11,11 +11,15 @@ import type { FormatterDefinitionFactory } from '../../formatter-factory.js';
 import type { FormatterDefinition, FileArtifact } from '../../formatter-registry.js';
 import {
   createDocumentationPlan,
+  createAndroidComposeColorSnippets,
+  createCssColorVariableSnippets,
+  createSwiftUiColorSnippets,
   type DocumentationAssetPlan,
   type DocsAsset,
   type DocsAssetKind,
   type DocsDocumentationModel,
   type DocumentationModelOptions,
+  type DocsSnippetGenerator,
 } from './documentation-model.js';
 import {
   createAppScript,
@@ -100,7 +104,8 @@ function createDocsStaticFormatterDefinition(
         return [];
       }
 
-      const plan = createDocumentationPlan(tokens, toModelOptions(options));
+      const snippetGenerators = createDefaultSnippetGenerators();
+      const plan = createDocumentationPlan(tokens, toModelOptions(options, snippetGenerators));
       const {
         artifacts: assetArtifacts,
         assets,
@@ -139,12 +144,23 @@ function createDocsStaticFormatterDefinition(
   } satisfies FormatterDefinition;
 }
 
-function toModelOptions(options: DocsStaticFormatterOptions): DocumentationModelOptions {
-  const base: DocumentationModelOptions = { title: options.title };
+function toModelOptions(
+  options: DocsStaticFormatterOptions,
+  snippets: ReadonlyMap<string, DocsSnippetGenerator>,
+): DocumentationModelOptions {
+  const base: DocumentationModelOptions = { title: options.title, snippetGenerators: snippets };
   if (options.description === undefined) {
     return base;
   }
   return { ...base, description: options.description } satisfies DocumentationModelOptions;
+}
+
+function createDefaultSnippetGenerators(): ReadonlyMap<string, DocsSnippetGenerator> {
+  return new Map<string, DocsSnippetGenerator>([
+    ['color.toCss', createCssColorVariableSnippets],
+    ['color.toSwiftUIColor', createSwiftUiColorSnippets],
+    ['color.toAndroidComposeColor', createAndroidComposeColorSnippets],
+  ]);
 }
 
 async function processAssetPlans(plans: readonly DocumentationAssetPlan[]): Promise<{

@@ -15,6 +15,7 @@ function createFormatterToken(
   pointer: JsonPointer,
   assetPath: string,
   baseUri: string,
+  transformEntries?: readonly (readonly [string, unknown])[],
 ): FormatterToken {
   const snapshot = {
     pointer,
@@ -46,6 +47,10 @@ function createFormatterToken(
     preview: { url: './swatch.svg' },
   };
 
+  const transforms = transformEntries ?? [
+    ['css', { value: 'var(--color-primary)', swatch: 'url("./swatch.svg")', assetPath }],
+  ];
+
   return {
     snapshot,
     pointer,
@@ -53,18 +58,21 @@ function createFormatterToken(
     value: rawValue,
     raw: rawValue,
     metadata: snapshot.metadata,
-    transforms: new Map<string, unknown>([
-      ['css', { value: 'var(--color-primary)', swatch: 'url("./swatch.svg")', assetPath }],
-    ]),
+    transforms: new Map<string, unknown>(transforms),
   } satisfies FormatterToken;
 }
 
 function parseDocsModel(script: string): unknown {
-  const [, rhs] = script.split('=', 2);
-  if (!rhs) {
+  const marker = '__DTIFX_DOCS__';
+  const markerIndex = script.indexOf(marker);
+  if (markerIndex === -1) {
     throw new Error('Documentation data script is malformed.');
   }
-  const trimmed = rhs.trim();
+  const equalsIndex = script.indexOf('=', markerIndex);
+  if (equalsIndex === -1) {
+    throw new Error('Documentation data script is malformed.');
+  }
+  const trimmed = script.slice(equalsIndex + 1).trim();
   const json = trimmed.endsWith(';') ? trimmed.slice(0, -1) : trimmed;
   return JSON.parse(json);
 }
@@ -159,5 +167,86 @@ describe('createDocsStaticFormatterFactory', () => {
       title: 'Token Atlas',
       description: 'Brand documentation bundle',
     });
+  });
+
+  it('includes code snippets for supported transform outputs', async () => {
+    const factory = createDocsStaticFormatterFactory();
+    const entry = { name: 'docs.static', output: {} };
+    const context = { config: {} as BuildConfig };
+    const definition = factory.create(entry, context);
+
+    const pointer = '#/tokens/library/color/snippet' as JsonPointer;
+    const provenanceUri = pathToFileURL(path.join(tmpdir(), 'tokens.json')).toString();
+    const transforms: readonly (readonly [string, unknown])[] = [
+      [
+        'color.toCss',
+        {
+          srgbHex: '#3366ff',
+          oklch: { l: 0.6, c: 0.2, h: 250, css: 'oklch(0.6000 0.2000 250.0000)' },
+          relativeLuminance: 0.33,
+        },
+      ],
+      ['color.toSwiftUIColor', { red: 0.2, green: 0.4, blue: 0.9, opacity: 1, hex: '#3366ff' }],
+      ['color.toAndroidComposeColor', { argbHex: '#ff3366ff', hexLiteral: '0xFF3366FF' }],
+    ];
+    const token = createFormatterToken(
+      pointer,
+      path.join(tmpdir(), 'snippet.svg'),
+      provenanceUri,
+      transforms,
+    );
+
+    const artifacts = await definition.run({ tokens: [token] });
+    const dataArtifact = artifacts.find((artifact) => artifact.path === 'assets/docs-data.js');
+    const model = parseDocsModel(String(dataArtifact?.contents)) as {
+      readonly groups: readonly {
+        readonly type: string;
+        readonly tokens: readonly {
+          readonly pointer: string;
+          readonly examples: readonly {
+            readonly transform?: string;
+            readonly snippets?: readonly {
+              readonly language: string;
+              readonly code: string;
+            }[];
+          }[];
+        }[];
+      }[];
+    };
+
+    const group = model.groups.find((candidate) => candidate.type === 'color');
+    expect(group).toBeDefined();
+    const entryWithSnippets = group?.tokens.find((candidate) => candidate.pointer === pointer);
+    expect(entryWithSnippets).toBeDefined();
+
+    const cssExample = entryWithSnippets?.examples.find(
+      (example) => example.transform === 'color.toCss',
+    );
+    expect(cssExample?.snippets?.[0]).toEqual(
+      expect.objectContaining({
+        language: 'css',
+        code: expect.stringContaining('--tokens-library-color-snippet'),
+      }),
+    );
+
+    const swiftExample = entryWithSnippets?.examples.find(
+      (example) => example.transform === 'color.toSwiftUIColor',
+    );
+    expect(swiftExample?.snippets?.[0]).toEqual(
+      expect.objectContaining({
+        language: 'swift',
+        code: expect.stringContaining('Color('),
+      }),
+    );
+
+    const composeExample = entryWithSnippets?.examples.find(
+      (example) => example.transform === 'color.toAndroidComposeColor',
+    );
+    expect(composeExample?.snippets?.[0]).toEqual(
+      expect.objectContaining({
+        language: 'kotlin',
+        code: expect.stringContaining('Color(0xFF3366FF)'),
+      }),
+    );
   });
 });
