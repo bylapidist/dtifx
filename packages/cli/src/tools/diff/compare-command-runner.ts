@@ -1,4 +1,5 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import process from 'node:process';
 
 import type * as DiffModuleExports from '@dtifx/diff';
@@ -131,6 +132,7 @@ export const executeDiffCompareCommand = async ({
   const output = `${renderedReport}\n`;
 
   if (options.outputPath) {
+    await mkdir(path.dirname(options.outputPath), { recursive: true });
     await writeFile(options.outputPath, output, 'utf8');
   } else {
     io.writeOut(output);
