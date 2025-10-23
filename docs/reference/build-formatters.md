@@ -103,6 +103,24 @@ The bundle requires no build step—host the directory on any static site server
 copies local assets referenced by tokens or transform outputs, the documentation includes inline
 previews for images and download links for other file types.
 
+### Code snippets
+
+`docs.static` can surface language-specific code snippets alongside transform examples. When a token
+includes color transform outputs, the formatter maps them to small SwiftUI, Jetpack Compose, or CSS
+snippets and renders them in an accessible tabbed interface beneath the transform payload. The UI
+falls back gracefully when no snippets are available, so legacy bundles remain compatible.
+
+To enable the snippets bundled with the formatter, ensure your build configuration runs the relevant
+transforms for the tokens you want to showcase:
+
+- `color.toCss` — enables CSS variable snippets derived from the transform metadata.
+- `color.toSwiftUIColor` — generates SwiftUI initializer samples for the token’s color values.
+- `color.toAndroidComposeColor` — emits Jetpack Compose `Color(...)` literals for Android
+  previewers.
+
+You can register custom snippet generators by extending the formatter or by emitting additional
+transforms and mapping them to snippet templates in your own formatter entry.
+
 ### Customisation tips
 
 - Combine the formatter with [`dtifx build watch`](/api/build-workflows#watch) during design audits

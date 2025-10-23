@@ -7,6 +7,17 @@ import type { TokenMetadataSnapshot } from '@dtifx/core';
 
 import type { FormatterToken } from '../../formatter-registry.js';
 import { getDecodedPointerSegments } from '../../../infrastructure/formatting/token-pointer.js';
+import type {
+  ColorAndroidComposeTransformOutput,
+  ColorCssTransformOutput,
+  ColorSwiftUIColorTransformOutput,
+} from '../../../transform/color-transforms.js';
+
+export interface DocsTokenExampleSnippet {
+  readonly language: string;
+  readonly code: string;
+  readonly label?: string;
+}
 
 const SUPPORTED_ASSET_EXTENSIONS = new Set<string>([
   'svg',
@@ -46,6 +57,7 @@ export interface DocsTokenExample {
   readonly payload: unknown;
   readonly transform?: string;
   readonly assets?: readonly string[];
+  readonly snippets?: readonly DocsTokenExampleSnippet[];
 }
 
 export interface DocsTokenEntry {
@@ -118,7 +130,18 @@ export interface DocumentationPlan {
 export interface DocumentationModelOptions {
   readonly title: string;
   readonly description?: string;
+  readonly snippetGenerators?: ReadonlyMap<string, DocsSnippetGenerator>;
 }
+
+export interface DocsSnippetGeneratorContext {
+  readonly token: FormatterToken;
+  readonly transform: string;
+  readonly output: unknown;
+}
+
+export type DocsSnippetGenerator = (
+  context: DocsSnippetGeneratorContext,
+) => readonly DocsTokenExampleSnippet[] | undefined;
 
 interface AssetBuilderEntry {
   readonly key: string;
@@ -156,6 +179,8 @@ class DocumentationModelBuilder {
 
   private readonly transformNames = new Set<string>();
 
+  private readonly snippetGenerators: ReadonlyMap<string, DocsSnippetGenerator>;
+
   private readonly assetEntries = new Map<string, AssetBuilderEntry>();
 
   private readonly warnings = new Set<string>();
@@ -164,6 +189,7 @@ class DocumentationModelBuilder {
 
   constructor(options: DocumentationModelOptions) {
     this.options = options;
+    this.snippetGenerators = options.snippetGenerators ?? new Map();
   }
 
   addToken(token: FormatterToken): void {
@@ -293,16 +319,55 @@ class DocumentationModelBuilder {
     for (const [transform, output] of transformEntries) {
       this.transformNames.add(transform);
       const transformAssets = this.collectAssets(token, output);
+      const transformSnippets = this.createTransformSnippets(token, transform, output);
       examples.push({
         name: transform,
         kind: 'transform',
         transform,
         payload: cloneJson(output),
         ...(transformAssets === undefined ? {} : { assets: transformAssets }),
+        ...(transformSnippets === undefined ? {} : { snippets: transformSnippets }),
       });
     }
 
     return examples;
+  }
+
+  private createTransformSnippets(
+    token: FormatterToken,
+    transform: string,
+    output: unknown,
+  ): readonly DocsTokenExampleSnippet[] | undefined {
+    const generator = this.snippetGenerators.get(transform);
+    if (!generator) {
+      return undefined;
+    }
+
+    let snippets: readonly DocsTokenExampleSnippet[] | undefined;
+    try {
+      snippets = generator({ token, transform, output });
+    } catch (error) {
+      this.warnings.add(
+        `Failed to format code snippet for transform "${transform}" on token ${token.pointer}: ${String(
+          error,
+        )}.`,
+      );
+      return undefined;
+    }
+
+    if (!Array.isArray(snippets) || snippets.length === 0) {
+      return undefined;
+    }
+
+    const normalised = snippets
+      .map((snippet) => normaliseSnippet(snippet))
+      .filter((snippet): snippet is DocsTokenExampleSnippet => snippet !== undefined);
+
+    if (normalised.length === 0) {
+      return undefined;
+    }
+
+    return normalised;
   }
 
   private collectAssets(token: FormatterToken, value: unknown): readonly string[] | undefined {
@@ -471,4 +536,215 @@ function stripWrappingQuotes(value: string): string {
 
 function cloneJson<TValue>(value: TValue): TValue {
   return structuredClone(value);
+}
+
+function normaliseSnippet(snippet: DocsTokenExampleSnippet): DocsTokenExampleSnippet | undefined {
+  const language = typeof snippet.language === 'string' ? snippet.language.trim() : '';
+  const code = typeof snippet.code === 'string' ? snippet.code : '';
+
+  if (language.length === 0 || code.trim().length === 0) {
+    return undefined;
+  }
+
+  const label =
+    typeof snippet.label === 'string' && snippet.label.trim().length > 0
+      ? snippet.label.trim()
+      : undefined;
+
+  return {
+    language,
+    code,
+    ...(label === undefined ? {} : { label }),
+  } satisfies DocsTokenExampleSnippet;
+}
+
+/**
+ * Generates CSS code snippets for transforms that expose color metadata usable in CSS variables.
+ *
+ * @param {DocsSnippetGeneratorContext} context - Snippet generation context containing the transform output.
+ * @returns {ReadonlyArray<DocsTokenExampleSnippet> | undefined} Formatted CSS snippets when supported metadata is present.
+ */
+export function createCssColorVariableSnippets(
+  context: DocsSnippetGeneratorContext,
+): readonly DocsTokenExampleSnippet[] | undefined {
+  const output = context.output;
+  if (!isColorCssTransformOutput(output)) {
+    return undefined;
+  }
+
+  const variableName = formatCssVariableName(context.token.pointer);
+  const comment = `/* ${context.token.pointer} */`;
+  const lines = [
+    ':root {',
+    `  ${variableName}: ${output.srgbHex};`,
+    '}',
+    '',
+    `.example {`,
+    `  color: var(${variableName});`,
+    '}',
+    comment,
+  ];
+
+  return [
+    {
+      language: 'css',
+      label: 'CSS',
+      code: lines.join('\n'),
+    },
+  ];
+}
+
+/**
+ * Generates SwiftUI snippets that demonstrate how to initialise a `Color` from transform metadata.
+ *
+ * @param {DocsSnippetGeneratorContext} context - Snippet generation context containing the transform output.
+ * @returns {ReadonlyArray<DocsTokenExampleSnippet> | undefined} SwiftUI snippets when the output matches expectations.
+ */
+export function createSwiftUiColorSnippets(
+  context: DocsSnippetGeneratorContext,
+): readonly DocsTokenExampleSnippet[] | undefined {
+  const output = context.output;
+  if (!isColorSwiftUiTransformOutput(output)) {
+    return undefined;
+  }
+
+  const identifier = formatPascalIdentifier(context.token.pointer) || 'TokenColor';
+  const lines = [
+    'import SwiftUI',
+    '',
+    `let ${identifier} = Color(`,
+    `  red: ${formatComponent(output.red)},`,
+    `  green: ${formatComponent(output.green)},`,
+    `  blue: ${formatComponent(output.blue)},`,
+    `  opacity: ${formatComponent(output.opacity)}`,
+    ')',
+    `// ${context.token.pointer}`,
+  ];
+
+  return [
+    {
+      language: 'swift',
+      label: 'SwiftUI',
+      code: lines.join('\n'),
+    },
+  ];
+}
+
+/**
+ * Generates Jetpack Compose snippets that showcase a `Color(...)` literal for Android consumers.
+ *
+ * @param {DocsSnippetGeneratorContext} context - Snippet generation context containing the transform output.
+ * @returns {ReadonlyArray<DocsTokenExampleSnippet> | undefined} Compose snippets when supported metadata is present.
+ */
+export function createAndroidComposeColorSnippets(
+  context: DocsSnippetGeneratorContext,
+): readonly DocsTokenExampleSnippet[] | undefined {
+  const output = context.output;
+  if (!isColorComposeTransformOutput(output)) {
+    return undefined;
+  }
+
+  const identifier = formatPascalIdentifier(context.token.pointer) || 'TokenColor';
+  const lines = [
+    'import androidx.compose.ui.graphics.Color',
+    '',
+    `val ${identifier} = Color(${output.hexLiteral})`,
+    `// ${context.token.pointer}`,
+  ];
+
+  return [
+    {
+      language: 'kotlin',
+      label: 'Compose',
+      code: lines.join('\n'),
+    },
+  ];
+}
+
+function isColorCssTransformOutput(value: unknown): value is ColorCssTransformOutput {
+  if (Object(value) !== value) {
+    return false;
+  }
+  const candidate = value as Partial<ColorCssTransformOutput>;
+  if (typeof candidate.srgbHex !== 'string') {
+    return false;
+  }
+  return typeof candidate.oklch === 'object' || typeof candidate.relativeLuminance === 'number';
+}
+
+function isColorSwiftUiTransformOutput(value: unknown): value is ColorSwiftUIColorTransformOutput {
+  if (Object(value) !== value) {
+    return false;
+  }
+  const candidate = value as Partial<ColorSwiftUIColorTransformOutput>;
+  return (
+    typeof candidate.red === 'number' &&
+    typeof candidate.green === 'number' &&
+    typeof candidate.blue === 'number' &&
+    typeof candidate.opacity === 'number'
+  );
+}
+
+function isColorComposeTransformOutput(
+  value: unknown,
+): value is ColorAndroidComposeTransformOutput {
+  if (Object(value) !== value) {
+    return false;
+  }
+  const candidate = value as Partial<ColorAndroidComposeTransformOutput>;
+  return typeof candidate.hexLiteral === 'string';
+}
+
+function formatCssVariableName(pointer: JsonPointer): string {
+  const words = extractPointerWords(pointer);
+  if (words.length === 0) {
+    return '--token';
+  }
+  return `--${words.join('-')}`;
+}
+
+function formatPascalIdentifier(pointer: JsonPointer): string {
+  const words = extractPointerWords(pointer);
+  if (words.length === 0) {
+    return '';
+  }
+  return words.map((word) => capitalise(word)).join('');
+}
+
+function extractPointerWords(pointer: JsonPointer): readonly string[] {
+  const segments = getDecodedPointerSegments(pointer);
+  const words: string[] = [];
+  for (const segment of segments) {
+    if (!segment) {
+      continue;
+    }
+    const spaced = segment
+      .replaceAll(/([a-z0-9])([A-Z])/g, '$1 $2')
+      .replaceAll(/[^A-Za-z0-9]+/g, ' ')
+      .trim()
+      .toLowerCase();
+    if (spaced.length === 0) {
+      continue;
+    }
+    words.push(...spaced.split(/\s+/g));
+  }
+  return words;
+}
+
+function capitalise(value: string): string {
+  if (value.length === 0) {
+    return value;
+  }
+  return value[0]!.toUpperCase() + value.slice(1);
+}
+
+function formatComponent(value: number): string {
+  if (Number.isFinite(value) === false) {
+    return '0';
+  }
+  const rounded = Number(value.toFixed(4));
+  if (Number.isFinite(rounded) === false) {
+    return '0';
+  }
+  return rounded.toString();
 }
