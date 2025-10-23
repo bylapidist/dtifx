@@ -31,11 +31,11 @@ export default defineConfig({
       {
         text: 'Packages',
         items: [
-          { text: '@dtifx/core', link: '/core/' },
-          { text: '@dtifx/build', link: '/build/' },
-          { text: '@dtifx/diff', link: '/diff/' },
-          { text: '@dtifx/cli', link: '/cli/' },
           { text: '@dtifx/audit', link: '/audit/' },
+          { text: '@dtifx/build', link: '/build/' },
+          { text: '@dtifx/cli', link: '/cli/' },
+          { text: '@dtifx/core', link: '/core/' },
+          { text: '@dtifx/diff', link: '/diff/' },
           { text: '@dtifx/extractors', link: '/extractors/' },
         ],
       },

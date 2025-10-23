@@ -203,6 +203,10 @@
   box-shadow: 0 18px 40px -28px rgba(15, 23, 42, 0.45);
 }
 
+.VPHomeFeatures .items {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
 .VPHomeFeatures .icon img {
   display: block;
   width: 48px;
@@ -269,6 +273,10 @@
 
 @media (min-width: 1280px) {
   .dtifx-hubs__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .VPHomeFeatures .items {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
