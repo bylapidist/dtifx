@@ -1,5 +1,12 @@
 # @dtifx/extractors
 
+## 4.1.2
+
+### Patch Changes
+
+- b4206a4: ensure cli smoke test installs local peer packages
+  - @dtifx/core@4.1.2
+
 ## 4.1.1
 
 ### Patch Changes

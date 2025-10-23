@@ -1,5 +1,16 @@
 # @dtifx/cli
 
+## 4.1.2
+
+### Patch Changes
+
+- Updated dependencies [b4206a4]
+  - @dtifx/extractors@4.1.2
+  - @dtifx/core@4.1.2
+  - @dtifx/diff@4.1.2
+  - @dtifx/build@4.1.2
+  - @dtifx/audit@4.1.2
+
 ## 4.1.1
 
 ### Patch Changes

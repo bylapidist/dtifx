@@ -1,5 +1,11 @@
 # @dtifx/diff
 
+## 4.1.2
+
+### Patch Changes
+
+- @dtifx/core@4.1.2
+
 ## 4.1.1
 
 ### Patch Changes
