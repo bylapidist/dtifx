@@ -96,6 +96,37 @@ describe('extractFigmaTokens', () => {
     expect(assetToken?.$value).toMatch(`https://api.figma.com/v1/images/${fileKey}?`);
   });
 
+  it('uses the provided API base URL when constructing image tokens', async () => {
+    const fileFixture = await loadFixture('file');
+    const nodesFixture = await loadFixture('nodes');
+    const apiBaseUrl = 'https://proxy.example.com/api';
+    const expectedBaseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl : `${apiBaseUrl}/`;
+
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = resolveRequestUrl(input);
+      expect(url.startsWith(expectedBaseUrl)).toBe(true);
+      if (url.includes(`/v1/files/${fileKey}/nodes`)) {
+        return createResponse(nodesFixture);
+      }
+      if (url.includes(`/v1/files/${fileKey}`)) {
+        return createResponse(fileFixture);
+      }
+      throw new Error(`Unexpected request for ${url}`);
+    });
+
+    const { document } = await extractFigmaTokens({
+      fileKey,
+      personalAccessToken: 'token',
+      fetch: fetchMock as unknown as typeof fetch,
+      apiBaseUrl,
+    });
+
+    const assetToken = (document as Record<string, any>).asset?.illustration?.hero;
+    expect(assetToken?.$type).toBe('string');
+    expect(assetToken?.$value).toMatch(`${expectedBaseUrl}v1/images/${fileKey}?`);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
   it('records warnings when styles cannot be resolved', async () => {
     const fileFixture = await loadFixture('file');
     const nodesFixture = await loadFixture('nodes');
