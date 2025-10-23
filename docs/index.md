@@ -20,14 +20,14 @@ hero:
       link: /core/
 features:
   - icon:
-      src: /logos/dtifx-core.svg
-      alt: '@dtifx/core logo'
+      src: /logos/dtifx-audit.svg
+      alt: '@dtifx/audit logo'
     iconBackground: 'rgba(32, 41, 72, 0.06)'
-    title: '@dtifx/core'
+    title: '@dtifx/audit'
     details: |
-      Shared diagnostics, telemetry factories, configuration loaders, and runtime primitives for the suite.
-    link: /core/
-    linkText: Read the runtime guide
+      Evaluate governance policies, generate evidence, and automate compliance across DTIFx workflows.
+    link: /audit/
+    linkText: Visit the audit hub
   - icon:
       src: /logos/dtifx-build.svg
       alt: '@dtifx/build logo'
@@ -38,15 +38,6 @@ features:
     link: /build/
     linkText: Browse the build docs
   - icon:
-      src: /logos/dtifx-diff.svg
-      alt: '@dtifx/diff logo'
-    iconBackground: 'rgba(32, 41, 72, 0.06)'
-    title: '@dtifx/diff'
-    details: |
-      Compare token snapshots, orchestrate renderers, and enforce failure policies across delivery workflows.
-    link: /diff/
-    linkText: Review diff strategies
-  - icon:
       src: /logos/dtifx-cli.svg
       alt: '@dtifx/cli logo'
     iconBackground: 'rgba(32, 41, 72, 0.06)'
@@ -55,6 +46,24 @@ features:
       Operate the toolkit through an ergonomic CLI kernel with shared flags, IO adapters, and module runners.
     link: /cli/
     linkText: Open the CLI reference
+  - icon:
+      src: /logos/dtifx-core.svg
+      alt: '@dtifx/core logo'
+    iconBackground: 'rgba(32, 41, 72, 0.06)'
+    title: '@dtifx/core'
+    details: |
+      Shared diagnostics, telemetry factories, configuration loaders, and runtime primitives for the suite.
+    link: /core/
+    linkText: Read the runtime guide
+  - icon:
+      src: /logos/dtifx-diff.svg
+      alt: '@dtifx/diff logo'
+    iconBackground: 'rgba(32, 41, 72, 0.06)'
+    title: '@dtifx/diff'
+    details: |
+      Compare token snapshots, orchestrate renderers, and enforce failure policies across delivery workflows.
+    link: /diff/
+    linkText: Review diff strategies
   - icon:
       src: /logos/dtifx-extractors.svg
       alt: '@dtifx/extractors logo'
@@ -65,19 +74,8 @@ features:
       documents ready for downstream automation.
     link: /extractors/
     linkText: Explore extractor docs
-  - icon:
-      src: /logos/dtifx-audit.svg
-      alt: '@dtifx/audit logo'
-    iconBackground: 'rgba(32, 41, 72, 0.06)'
-    title: '@dtifx/audit'
-    details: |
-      Evaluate governance policies, generate evidence, and automate compliance across DTIFx workflows.
-    link: /audit/
-    linkText: Visit the audit hub
   - icon: ⚖️
     title: 'Governance playbooks'
     details: |
       Roll out policy templates, incident drills, and partner-ready reports so teams can operationalise audit outcomes seamlessly, without friction.
-    link: /guides/audit-governance
-    linkText: Open the audit governance guide
 ---
