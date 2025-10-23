@@ -427,12 +427,13 @@ const convertPaintToGradientToken = (paint: FigmaPaint): JsonObject | undefined 
 
 const convertPaintToImageToken = (
   paint: FigmaPaint,
-  context: { readonly fileKey: string; readonly node: FigmaNode },
+  context: { readonly fileKey: string; readonly node: FigmaNode; readonly baseUrl: string },
 ): JsonObject | undefined => {
   if (!paint.imageRef) {
     return undefined;
   }
-  const url = new URL(`/v1/images/${context.fileKey}`, DEFAULT_FIGMA_BASE_URL);
+  const baseUrl = context.baseUrl.endsWith('/') ? context.baseUrl : `${context.baseUrl}/`;
+  const url = new URL(`v1/images/${context.fileKey}`, baseUrl);
   url.searchParams.set('ids', context.node.id);
   url.searchParams.set('format', 'png');
   return {
@@ -728,7 +729,7 @@ export const extractFigmaTokens = async ({
         continue;
       }
     } else if (paint.type === 'IMAGE') {
-      token = convertPaintToImageToken(paint, { fileKey, node });
+      token = convertPaintToImageToken(paint, { fileKey, node, baseUrl: client.baseUrl });
     }
 
     if (!token) {
