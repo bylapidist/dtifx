@@ -1,5 +1,13 @@
 # @dtifx/audit
 
+## 4.0.0
+
+### Patch Changes
+
+- a398a6a: ensure CLI smoke tests install extractor tarballs for workspace builds
+- Updated dependencies [e5f6223]
+  - @dtifx/core@4.0.0
+
 ## 3.0.0
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # @dtifx/cli
 
+## 4.0.0
+
+### Minor Changes
+
+- a398a6a: Add the extractor package with Figma support and wire it into the CLI as
+  `dtifx extract figma`.
+
+### Patch Changes
+
+- 4234167: align CLI peer dependency ranges with the v3 major to avoid unnecessary major releases
+- Updated dependencies [e5f6223]
+- Updated dependencies [a398a6a]
+- Updated dependencies [a398a6a]
+- Updated dependencies [a398a6a]
+- Updated dependencies [a398a6a]
+  - @dtifx/core@4.0.0
+  - @dtifx/extractors@4.0.0
+  - @dtifx/build@4.0.0
+  - @dtifx/diff@4.0.0
+  - @dtifx/audit@4.0.0
+
 ## 3.0.0
 
 ### Minor Changes
