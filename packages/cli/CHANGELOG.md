@@ -1,5 +1,22 @@
 # @dtifx/cli
 
+## 4.1.0
+
+### Minor Changes
+
+- 6296f6f: add Penpot and Sketch extractors with CLI integrations and documentation
+
+### Patch Changes
+
+- Updated dependencies [6296f6f]
+- Updated dependencies [9a79525]
+- Updated dependencies [5e0810a]
+  - @dtifx/extractors@4.1.0
+  - @dtifx/build@4.1.0
+  - @dtifx/core@4.1.0
+  - @dtifx/audit@4.1.0
+  - @dtifx/diff@4.1.0
+
 ## 4.0.0
 
 ### Minor Changes

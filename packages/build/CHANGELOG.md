@@ -1,5 +1,17 @@
 # @dtifx/build
 
+## 4.1.0
+
+### Minor Changes
+
+- 9a79525: Add SwiftUI, Compose, and CSS code snippets to `docs.static` bundles by mapping supported
+  transform outputs into tabbed examples.
+
+### Patch Changes
+
+- Updated dependencies [5e0810a]
+  - @dtifx/core@4.1.0
+
 ## 4.0.0
 
 ### Patch Changes

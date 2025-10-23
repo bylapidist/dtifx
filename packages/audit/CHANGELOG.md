@@ -1,5 +1,12 @@
 # @dtifx/audit
 
+## 4.1.0
+
+### Patch Changes
+
+- Updated dependencies [5e0810a]
+  - @dtifx/core@4.1.0
+
 ## 4.0.0
 
 ### Patch Changes

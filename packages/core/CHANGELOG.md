@@ -1,5 +1,12 @@
 # @dtifx/core
 
+## 4.1.0
+
+### Minor Changes
+
+- 5e0810a: Add font, image, panel, and media query token prefabs with responsive helpers and guide
+  updates.
+
 ## 4.0.0
 
 ### Patch Changes
