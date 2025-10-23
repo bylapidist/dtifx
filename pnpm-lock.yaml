@@ -163,16 +163,16 @@ importers:
   packages/cli:
     dependencies:
       '@dtifx/audit':
-        specifier: workspace:*
+        specifier: workspace:^3.0.0
         version: link:../audit
       '@dtifx/build':
-        specifier: workspace:*
+        specifier: workspace:^3.0.0
         version: link:../build
       '@dtifx/core':
         specifier: workspace:*
         version: link:../core
       '@dtifx/diff':
-        specifier: workspace:*
+        specifier: workspace:^3.0.0
         version: link:../diff
       '@dtifx/extractors':
         specifier: workspace:*

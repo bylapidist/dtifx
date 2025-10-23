@@ -56,9 +56,9 @@
     "@dtifx/extractors": "workspace:*"
   },
   "peerDependencies": {
-    "@dtifx/audit": "workspace:*",
-    "@dtifx/build": "workspace:*",
-    "@dtifx/diff": "workspace:*"
+    "@dtifx/audit": "workspace:^3.0.0",
+    "@dtifx/build": "workspace:^3.0.0",
+    "@dtifx/diff": "workspace:^3.0.0"
   },
   "private": false,
   "publishConfig": {
