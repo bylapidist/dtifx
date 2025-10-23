@@ -64,6 +64,41 @@ try {
 Use the policy helpers to define governance rules, validate DTIF structures, and share policy
 metadata across build and audit workflows.
 
+### Token prefabs
+
+Prefab builders streamline the process of emitting serialisable token values with consistent
+metadata handling:
+
+```ts
+import {
+  FontTokenPrefab,
+  ImageTokenPrefab,
+  PanelTokenPrefab,
+  MediaQueryTokenPrefab,
+} from '@dtifx/core/prefabs';
+
+const heading = FontTokenPrefab.fromFamily(['fonts', 'heading'], 'Inter')
+  .addFallbacks('system-ui')
+  .withWeight(600);
+
+const hero = ImageTokenPrefab.responsive(['media', 'hero'], 'hero.png', { pixelRatios: [1, 2, 3] });
+
+const surface = PanelTokenPrefab.create(['components', 'card'], {
+  layers: [
+    { kind: 'fill', token: 'color.surface' },
+    { kind: 'shadow', token: 'shadow.raised', opacity: 0.4 },
+  ],
+}).withPadding([16, 24]);
+
+const tablet = MediaQueryTokenPrefab.forWidthRange(['queries', 'tablet'], {
+  mediaType: 'screen',
+  min: 768,
+});
+```
+
+Each prefab extends the shared `TokenPrefab` base class so you can call `toJSON()` or `toSnapshot()`
+and merge the output into larger token graphs.
+
 ## Examples
 
 - [Telemetry overview](../../docs/overview/telemetry.md)
