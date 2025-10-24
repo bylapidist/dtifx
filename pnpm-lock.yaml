@@ -102,8 +102,8 @@ importers:
         specifier: workspace:*
         version: link:../core
       '@lapidist/dtif-parser':
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 1.0.3
+        version: 1.0.3
 
   packages/build:
     dependencies:
@@ -114,14 +114,14 @@ importers:
         specifier: npm:keyv-file@5.2.0
         version: keyv-file@5.2.0
       '@lapidist/dtif-parser':
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 1.0.3
+        version: 1.0.3
       '@lapidist/dtif-schema':
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 1.0.3
+        version: 1.0.3
       '@lapidist/dtif-validator':
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 1.0.3
+        version: 1.0.3
       cacache:
         specifier: 20.0.1
         version: 20.0.1
@@ -178,8 +178,8 @@ importers:
         specifier: workspace:*
         version: link:../extractors
       '@lapidist/dtif-parser':
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 1.0.3
+        version: 1.0.3
       commander:
         specifier: 14.0.1
         version: 14.0.1
@@ -187,11 +187,11 @@ importers:
   packages/core:
     dependencies:
       '@lapidist/dtif-parser':
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 1.0.3
+        version: 1.0.3
       '@lapidist/dtif-schema':
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 1.0.3
+        version: 1.0.3
       '@opentelemetry/api':
         specifier: 1.9.0
         version: 1.9.0
@@ -230,14 +230,14 @@ importers:
         specifier: workspace:*
         version: link:../core
       '@lapidist/dtif-parser':
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 1.0.3
+        version: 1.0.3
       '@lapidist/dtif-schema':
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 1.0.3
+        version: 1.0.3
       '@lapidist/dtif-validator':
-        specifier: 1.0.2
-        version: 1.0.2
+        specifier: 1.0.3
+        version: 1.0.3
       ajv:
         specifier: 8.17.1
         version: 8.17.1
@@ -1481,15 +1481,15 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@lapidist/dtif-parser@1.0.2':
-    resolution: {integrity: sha512-10RWmB63K5BIcU/UOVrpGy1Fui5hsAi+UnOHH71kbld9gJ1JUCteHKAmRVOgt9zIkOS0Ic4GHcimVsLxWaC8sA==}
+  '@lapidist/dtif-parser@1.0.3':
+    resolution: {integrity: sha512-O7zLe9fY/DWlTCvqkSw0dhgcK4NyEwQoHh/fxojUJrUlTi+uWTTEwCrBGd6RYCJYMrzvEV1O4vy5hTL6KR6flw==}
     hasBin: true
 
-  '@lapidist/dtif-schema@1.0.2':
-    resolution: {integrity: sha512-9oudxu2sKvQRPseW5zNCB5Dp4yQCwGvXuFoPkVFyCR47iL4dCsfZtMgMORPcHCpxECYaClU3rVBxpmxKKJ/PMQ==}
+  '@lapidist/dtif-schema@1.0.3':
+    resolution: {integrity: sha512-XBO2t8JSydO3W8Ll/mJcuvhd0UoDzJpaQyVfkFbjhpFtAoM3L9bW2BYAJHQ+zXs8/vEC1mxEgu7rjfbd2zZ1lQ==}
 
-  '@lapidist/dtif-validator@1.0.2':
-    resolution: {integrity: sha512-hUwmBq069roEpPXnYEny3OJ5ZUoeaU/ivzTa6yFYk5i8dwjKdb4X5qmftSIS2LtZaIiCvkeKR1lOjwXoollBZw==}
+  '@lapidist/dtif-validator@1.0.3':
+    resolution: {integrity: sha512-g1/Dvwf2mJgnC7ndSBPa+u6hch3pv+McSoAB13se8yTIpRE9IBjO/zAI+d4kVvIN2yFSsOCqUk6ikzZ96i46pA==}
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -6195,17 +6195,17 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@lapidist/dtif-parser@1.0.2':
+  '@lapidist/dtif-parser@1.0.3':
     dependencies:
-      '@lapidist/dtif-schema': 1.0.2
-      '@lapidist/dtif-validator': 1.0.2
+      '@lapidist/dtif-schema': 1.0.3
+      '@lapidist/dtif-validator': 1.0.3
       yaml: 2.8.1
 
-  '@lapidist/dtif-schema@1.0.2': {}
+  '@lapidist/dtif-schema@1.0.3': {}
 
-  '@lapidist/dtif-validator@1.0.2':
+  '@lapidist/dtif-validator@1.0.3':
     dependencies:
-      '@lapidist/dtif-schema': 1.0.2
+      '@lapidist/dtif-schema': 1.0.3
       ajv: 8.17.1
       ajv-formats: 3.0.1(ajv@8.17.1)
 
