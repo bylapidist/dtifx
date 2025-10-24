@@ -12,6 +12,7 @@
 [![CLI smoke tests status][cli-smoke-badge]][cli-smoke-workflow]\
 [![Documentation build status][docs-badge]][docs-workflow]\
 [![DTIFx website][site-badge]][site-link]\
+[![npm version][npm-badge]][npm-link]\
 [![License: MIT][license-badge]][license-link]
 
 <!-- markdownlint-enable MD033 -->
@@ -26,6 +27,8 @@
 [site-badge]:
   https://img.shields.io/badge/website-dtifx.lapidist.net-1d4ed8?logo=vercel&logoColor=white
 [site-link]: https://dtifx.lapidist.net
+[npm-badge]: https://img.shields.io/npm/v/%40dtifx%2Fcli
+[npm-link]: https://www.npmjs.com/package/@dtifx/cli
 [license-badge]: https://img.shields.io/github/license/bylapidist/dtifx
 [license-link]: LICENSE
 
