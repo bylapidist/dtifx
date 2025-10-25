@@ -14,6 +14,12 @@ export default mergeConfig(
       name: 'core',
       coverage: {
         reportsDirectory: path.resolve(__dirname, 'coverage'),
+        include: [
+          'src/runtime/**/*',
+          'src/logging/**/*',
+          'src/collections/**/*',
+          'src/policy/colors/**/*',
+        ],
       },
     },
   }),
