@@ -59,4 +59,78 @@ describe('extractSketchTokens', () => {
       ]),
     );
   });
+
+  it('normalises gradients and typography metadata from Sketch payloads', async () => {
+    const payload = {
+      colorVariables: [
+        {
+          id: 'color-range',
+          name: 'Color/Range',
+          value: { red: 1.2, green: -0.2, blue: 0.4, alpha: 2 },
+        },
+      ],
+      gradientStyles: [
+        {
+          id: 'gradient-partial',
+          name: 'Gradient/Partial',
+          type: 'radial',
+          angle: 123.4567,
+          stops: [
+            { position: -0.5, color: { red: 0.2, green: 0.4, blue: 0.6, alpha: 0.5 } },
+            { position: 1.5 },
+          ],
+        },
+      ],
+      textStyles: [
+        {
+          id: 'typography-detailed',
+          name: 'Typography/Detailed',
+          fontFamily: 'Roboto',
+          fontSize: 16,
+          fontWeight: 575,
+          lineHeight: 20,
+          letterSpacing: 1.25,
+          paragraphSpacing: 8,
+          textCase: 'small-caps',
+          textDecoration: 'strikethrough',
+          color: { red: 0.3, green: 0.2, blue: 0.1, alpha: 0.75 },
+        },
+      ],
+    };
+
+    const { document, warnings } = await extractSketchTokens({
+      filePath: 'ignored',
+      readFile: async () => JSON.stringify(payload),
+    });
+
+    const colorToken = (document as Record<string, any>).color?.range;
+    expect(colorToken?.$value?.components).toEqual([1, 0, 0.4]);
+    expect(colorToken?.$value?.alpha).toBeUndefined();
+
+    const gradientToken = (document as Record<string, any>).gradient?.partial;
+    expect(gradientToken?.$value?.gradientType).toBe('radial');
+    expect(gradientToken?.$value?.stops).toHaveLength(1);
+    expect(gradientToken?.$value?.angle).toBeCloseTo(123.4567, 6);
+
+    const typographyToken = (document as Record<string, any>).typography?.detailed;
+    expect(typographyToken?.$value?.fontFamily).toBe('Roboto');
+    expect(typographyToken?.$value?.fontWeight).toBe(575);
+    expect(typographyToken?.$value?.textCase).toBe('small-caps');
+    expect(typographyToken?.$value?.textDecoration).toBe('line-through');
+    expect(typographyToken?.$value?.color?.hex).toBe('#4D331A');
+    expect(typographyToken?.$value?.color?.alpha).toBeCloseTo(0.75, 2);
+
+    expect(warnings).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: 'missing-gradient-stop' })]),
+    );
+  });
+
+  it('throws when the Sketch document payload is malformed', async () => {
+    await expect(
+      extractSketchTokens({
+        filePath: 'ignored',
+        readFile: async () => 'null',
+      }),
+    ).rejects.toThrow('Sketch document payload was not an object.');
+  });
 });
