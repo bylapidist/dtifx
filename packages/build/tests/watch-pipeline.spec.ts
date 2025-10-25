@@ -153,6 +153,10 @@ class TestWatcher implements WatcherPort {
   emit(id: string, event: WatchEvent): void {
     this.callbacks.get(id)?.onEvent(event);
   }
+
+  emitError(id: string, error: unknown): void {
+    this.callbacks.get(id)?.onError?.({ requestId: id, error });
+  }
 }
 
 /**
@@ -192,6 +196,99 @@ function createReporter(events: string[]): WatchPipelineReporter {
   } satisfies WatchPipelineReporter;
 }
 
+interface EnvironmentFactoryOptions {
+  readonly config: BuildConfig;
+  readonly configPath: string;
+  readonly telemetryRuntimes: TestTelemetryRuntime[];
+  readonly documentCaches?: DocumentCache[];
+  readonly tokenCaches?: TokenCache[];
+  readonly factoryRequests?: RuntimeEnvironmentFactoryRequest[];
+  readonly reuseCaches?: boolean;
+  readonly onDispose?: () => void;
+}
+
+function createTestEnvironmentFactory({
+  config,
+  configPath,
+  telemetryRuntimes,
+  documentCaches,
+  tokenCaches,
+  factoryRequests,
+  reuseCaches = false,
+  onDispose,
+}: EnvironmentFactoryOptions): RuntimeEnvironmentFactory {
+  let cachedDocumentCache: DocumentCache | undefined;
+  let cachedTokenCache: TokenCache | undefined;
+
+  return async (request: RuntimeEnvironmentFactoryRequest) => {
+    factoryRequests?.push(request);
+
+    const documentCache =
+      request.documentCache ??
+      (reuseCaches && cachedDocumentCache ? cachedDocumentCache : new InMemoryDocumentCache());
+
+    const tokenCache =
+      request.tokenCache ??
+      (reuseCaches && cachedTokenCache ? cachedTokenCache : new InMemoryTokenCache());
+
+    documentCaches?.push(documentCache);
+    tokenCaches?.push(tokenCache);
+
+    if (reuseCaches) {
+      cachedDocumentCache = documentCache;
+      cachedTokenCache = tokenCache;
+    }
+
+    const telemetry = new TestTelemetryRuntime();
+    telemetryRuntimes.push(telemetry);
+
+    const services = createBuildRuntime(config, {
+      documentCache,
+      tokenCache,
+      logger: noopLogger,
+    });
+
+    const policyConfiguration = createPolicyConfiguration(config);
+
+    const activeConfigPath = request.configPath ?? configPath;
+    const directory = path.dirname(activeConfigPath);
+
+    const environment: RuntimeEnvironment = {
+      loaded: {
+        path: activeConfigPath,
+        directory,
+        config,
+      },
+      logger: noopLogger,
+      telemetry,
+      documentCache,
+      tokenCache,
+      services,
+      policyConfiguration,
+      dispose() {
+        onDispose?.();
+      },
+    } satisfies RuntimeEnvironment;
+
+    return environment;
+  };
+}
+
+class ErrorOnCloseWatcher extends TestWatcher {
+  async watch(request: Parameters<WatcherPort['watch']>[0], callbacks: WatchCallbacks) {
+    const subscription = await super.watch(request, callbacks);
+    if (request.id !== 'config') {
+      return subscription;
+    }
+    return {
+      close: async () => {
+        await Promise.resolve(subscription.close());
+        throw new Error('close failure');
+      },
+    } satisfies WatchSubscription;
+  }
+}
+
 describe('startWatchPipeline', () => {
   it('schedules builds, reloads configuration, and reuses caches', async () => {
     const config = createTestConfig();
@@ -205,47 +302,22 @@ describe('startWatchPipeline', () => {
     const result = createBuildResult();
     let disposeCount = 0;
 
-    const environmentFactory: RuntimeEnvironmentFactory = async (request) => {
-      factoryRequests.push(request);
-      const documentCache = request.documentCache ?? new InMemoryDocumentCache();
-      const tokenCache = request.tokenCache ?? new InMemoryTokenCache();
-      documentCaches.push(documentCache);
-      tokenCaches.push(tokenCache);
-
-      const telemetry = new TestTelemetryRuntime();
-      telemetryRuntimes.push(telemetry);
-
-      const services = createBuildRuntime(config, {
-        documentCache,
-        tokenCache,
-        logger: noopLogger,
-      });
-
-      const policyConfiguration = createPolicyConfiguration(config);
-
-      const directory = path.join(process.cwd(), 'virtual-watch');
-      const environment: RuntimeEnvironment = {
-        loaded: {
-          path: path.join(directory, 'dtifx.config.mjs'),
-          directory,
-          config,
-        },
-        logger: noopLogger,
-        telemetry,
-        documentCache,
-        tokenCache,
-        services,
-        policyConfiguration,
-        dispose() {
-          disposeCount += 1;
-        },
-      } satisfies RuntimeEnvironment;
-
-      return environment;
-    };
+    const configPath = path.join(process.cwd(), 'virtual-watch', 'dtifx.config.mjs');
+    const environmentFactory = createTestEnvironmentFactory({
+      config,
+      configPath,
+      telemetryRuntimes,
+      documentCaches,
+      tokenCaches,
+      factoryRequests,
+      reuseCaches: true,
+      onDispose: () => {
+        disposeCount += 1;
+      },
+    });
 
     const pipeline = await startWatchPipeline({
-      configPath: path.join(process.cwd(), 'virtual-watch', 'dtifx.config.mjs'),
+      configPath,
       watcher,
       scheduler,
       environmentFactory,
@@ -298,5 +370,141 @@ describe('startWatchPipeline', () => {
     expect(disposeCount).toBe(2);
     expect(watcher.closed).toContain('config');
     expect(watcher.closed).toContain('source:design-tokens');
+  });
+
+  it('reports build failures and recovers on subsequent changes', async () => {
+    const config = createTestConfig();
+    const watcher = new TestWatcher();
+    const scheduler = new ImmediateScheduler();
+    const reporterEvents: string[] = [];
+    const telemetryRuntimes: TestTelemetryRuntime[] = [];
+    const result = createBuildResult();
+    let disposeCount = 0;
+    let callCount = 0;
+
+    const configPath = path.join(process.cwd(), 'failure-watch', 'dtifx.config.mjs');
+    const environmentFactory = createTestEnvironmentFactory({
+      config,
+      configPath,
+      telemetryRuntimes,
+      onDispose: () => {
+        disposeCount += 1;
+      },
+    });
+
+    const pipeline = await startWatchPipeline({
+      configPath,
+      watcher,
+      scheduler,
+      environmentFactory,
+      initialReason: 'initial build',
+      createReporter: () => createReporter(reporterEvents),
+      executeBuildImpl: async () => {
+        callCount += 1;
+        if (callCount === 1) {
+          throw new Error('boom');
+        }
+        return result;
+      },
+    });
+
+    await delay(0);
+
+    expect(reporterEvents.slice(0, 2)).toEqual([
+      'info:Watching DTIF sources for changes.',
+      'failure:initial build',
+    ]);
+
+    const telemetry = telemetryRuntimes[0];
+    expect(telemetry?.exportCount).toBe(1);
+
+    watcher.emit('source:design-tokens', {
+      requestId: 'source:design-tokens',
+      type: 'updated',
+      path: 'tokens.json',
+    });
+
+    await delay(0);
+
+    const directory = path.dirname(configPath);
+    expect(reporterEvents.at(-1)).toBe(
+      `success:design-tokens:updated:${path.join(directory, 'tokens.json')}`,
+    );
+    expect(telemetry?.exportCount).toBe(2);
+
+    await pipeline.close();
+    expect(telemetry?.exportCount).toBe(3);
+    expect(disposeCount).toBe(1);
+    expect(watcher.closed).toContain('config');
+    expect(watcher.closed).toContain('source:design-tokens');
+  });
+
+  it('surfaces watcher errors emitted by the watcher port', async () => {
+    const config = createTestConfig();
+    const watcher = new TestWatcher();
+    const scheduler = new ImmediateScheduler();
+    const reporterEvents: string[] = [];
+    const telemetryRuntimes: TestTelemetryRuntime[] = [];
+
+    const configPath = path.join(process.cwd(), 'watcher-error', 'dtifx.config.mjs');
+    const environmentFactory = createTestEnvironmentFactory({
+      config,
+      configPath,
+      telemetryRuntimes,
+    });
+
+    const pipeline = await startWatchPipeline({
+      configPath,
+      watcher,
+      scheduler,
+      environmentFactory,
+      createReporter: () => createReporter(reporterEvents),
+      executeBuildImpl: async () => createBuildResult(),
+    });
+
+    await delay(0);
+
+    watcher.emitError('source:design-tokens', new Error('source failure'));
+    watcher.emitError('config', new Error('config failure'));
+
+    expect(reporterEvents).toContain('error:Watcher error for source design-tokens');
+    expect(reporterEvents).toContain('error:Watcher error for configuration file');
+
+    await pipeline.close();
+    const telemetry = telemetryRuntimes[0];
+    expect(telemetry?.exportCount).toBeGreaterThanOrEqual(2);
+  });
+
+  it('reports watcher cleanup errors when closing the pipeline', async () => {
+    const config = createTestConfig();
+    const watcher = new ErrorOnCloseWatcher();
+    const scheduler = new ImmediateScheduler();
+    const reporterEvents: string[] = [];
+    const telemetryRuntimes: TestTelemetryRuntime[] = [];
+
+    const configPath = path.join(process.cwd(), 'watcher-cleanup', 'dtifx.config.mjs');
+    const environmentFactory = createTestEnvironmentFactory({
+      config,
+      configPath,
+      telemetryRuntimes,
+    });
+
+    const pipeline = await startWatchPipeline({
+      configPath,
+      watcher,
+      scheduler,
+      environmentFactory,
+      createReporter: () => createReporter(reporterEvents),
+      executeBuildImpl: async () => createBuildResult(),
+    });
+
+    await delay(0);
+
+    await expect(pipeline.close()).resolves.toBeUndefined();
+    expect(reporterEvents).toContain('error:Error while closing watchers');
+    expect(watcher.closed).toContain('config');
+    expect(watcher.closed).toContain('source:design-tokens');
+    const telemetry = telemetryRuntimes[0];
+    expect(telemetry?.exportCount).toBeGreaterThanOrEqual(2);
   });
 });
