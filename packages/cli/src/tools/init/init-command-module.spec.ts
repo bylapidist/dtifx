@@ -120,4 +120,74 @@ describe('initCommandModule', () => {
       destination: path.resolve(process.cwd(), 'workspace-demo'),
     });
   });
+
+  it('normalises interactive answers and validates prompts', async () => {
+    const scaffoldWorkspaceMock = await loadScaffoldMock();
+    const io = createMemoryCliIo();
+    const kernel = createCliKernel({ programName: 'dtifx', version: '0.0.0-test', io });
+
+    kernel.register(initCommandModule);
+
+    if (!questionMock || !writeMock || !closeMock) {
+      throw new Error('readline mocks not initialised');
+    }
+
+    questionMock.mockResolvedValueOnce('  @Scope / My App  '); // workspace name
+    questionMock.mockResolvedValueOnce('invalid-manager'); // package manager (invalid)
+    questionMock.mockResolvedValueOnce('bun'); // package manager retry
+    questionMock.mockResolvedValueOnce('maybe'); // sample data invalid
+    questionMock.mockResolvedValueOnce('n'); // sample data retry
+    questionMock.mockResolvedValueOnce('  '); // git prompt default
+
+    const exitCode = await kernel.run(['node', 'dtifx', 'init']);
+
+    expect(exitCode).toBe(0);
+    expect(writeMock).toHaveBeenCalledWith(expect.stringMatching(/Please choose one of/));
+    expect(writeMock).toHaveBeenCalledWith('Please answer yes or no.\n');
+    expect(scaffoldWorkspaceMock).toHaveBeenCalledTimes(1);
+
+    const call = scaffoldWorkspaceMock.mock.calls[0]?.[0];
+    expect(call?.metadata).toMatchObject({
+      name: '@scope/my-app',
+      displayName: '@Scope / My App',
+      packageManager: 'bun',
+      includeSampleData: false,
+      initializeGit: true,
+      destination: path.resolve(process.cwd(), '@scope/my-app'),
+    });
+  });
+
+  it('reports unknown package managers immediately', async () => {
+    const scaffoldWorkspaceMock = await loadScaffoldMock();
+    const io = createMemoryCliIo();
+    const kernel = createCliKernel({ programName: 'dtifx', version: '0.0.0-test', io });
+
+    kernel.register(initCommandModule);
+
+    const exitCode = await kernel.run(['node', 'dtifx', 'init', '--package-manager', 'deno']);
+
+    expect(exitCode).toBe(1);
+    expect(scaffoldWorkspaceMock).not.toHaveBeenCalled();
+    expect(io.stderrBuffer).toContain('Unknown package manager: deno');
+  });
+
+  it('sanitises scoped package names when using yes flag', async () => {
+    const scaffoldWorkspaceMock = await loadScaffoldMock();
+    const io = createMemoryCliIo();
+    const kernel = createCliKernel({ programName: 'dtifx', version: '0.0.0-test', io });
+
+    kernel.register(initCommandModule);
+
+    const exitCode = await kernel.run(['node', 'dtifx', 'init', '@Design-System/', '--yes']);
+
+    expect(exitCode).toBe(0);
+    expect(scaffoldWorkspaceMock).toHaveBeenCalledTimes(1);
+
+    const call = scaffoldWorkspaceMock.mock.calls[0]?.[0];
+    expect(call?.metadata).toMatchObject({
+      name: '@design-system/dtifx-workspace',
+      displayName: '@Design-System',
+      destination: path.resolve(process.cwd(), '@Design-System'),
+    });
+  });
 });

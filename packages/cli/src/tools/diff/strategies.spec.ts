@@ -35,7 +35,11 @@ describe('loadDiffStrategies', () => {
       remainingRemoved: [],
       remainingAdded: [],
     });
-    expect(strategies!.impactStrategy!.classifyAddition({} as never)).toBe('breaking');
+    const impactStrategy = strategies!.impactStrategy!;
+    expect(impactStrategy.classifyAddition({} as never)).toBe('breaking');
+    expect(impactStrategy.classifyRemoval({} as never)).toBe('non-breaking');
+    expect(impactStrategy.classifyRename({} as never)).toBe('breaking');
+    expect(impactStrategy.classifyModification({} as never)).toBe('non-breaking');
     const summary = strategies!.summaryStrategy!.createSummary({
       previous: new Map(),
       next: new Map(),
@@ -61,7 +65,16 @@ describe('loadDiffStrategies', () => {
       strategies!.impactStrategy!,
     );
     expect(renameResult?.remainingRemoved.length).toBe(0);
-    expect(strategies?.impactStrategy?.classifyRemoval({} as never)).toBe('breaking');
+    const impactStrategy = strategies?.impactStrategy!;
+    expect(impactStrategy.classifyAddition({} as never)).toBe('non-breaking');
+    expect(impactStrategy.classifyRemoval({} as never)).toBe('breaking');
+    expect(impactStrategy.classifyRename({} as never)).toBe('non-breaking');
+    expect(impactStrategy.classifyModification({ metadataChanged: true } as never)).toBe(
+      'non-breaking',
+    );
+    expect(impactStrategy.classifyModification({ metadataChanged: false } as never)).toBe(
+      'breaking',
+    );
 
     const summary = await strategies?.summaryStrategy?.createSummary({
       previous: new Map(),

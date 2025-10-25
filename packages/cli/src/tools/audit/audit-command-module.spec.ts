@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import process from 'node:process';
 
 import { createCliKernel } from '../../kernel/cli-kernel.js';
@@ -116,5 +116,25 @@ describe('auditCommandModule', () => {
     expect(executeAuditCommand).not.toHaveBeenCalled();
     expect(io.stderrBuffer).toContain('Please install @dtifx/audit');
     expect(process.exitCode).toBeUndefined();
+  });
+
+  it('shows help output when the audit command is invoked directly', async () => {
+    const io = createMemoryCliIo();
+    const kernel = createCliKernel({ ...kernelOptions, io });
+
+    kernel.register(auditCommandModule);
+
+    const helpSpy = vi.spyOn(Command.prototype, 'help').mockImplementation(function () {
+      io.writeOut('audit help\n');
+      return this as never;
+    });
+
+    const exitCode = await kernel.run(['node', 'dtifx', 'audit']);
+
+    expect(exitCode).toBe(0);
+    expect(helpSpy).toHaveBeenCalled();
+    expect(io.stdoutBuffer).toContain('audit help');
+
+    helpSpy.mockRestore();
   });
 });
