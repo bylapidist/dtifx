@@ -43,4 +43,25 @@ describe('createPolicySnapshot', () => {
     expect(snapshot.token.id).toBe('custom/token');
     expect(snapshot.token.type).toBe('dimension');
   });
+
+  it('retains metadata, resolution, and context overrides', () => {
+    const metadata = {
+      extensions: { 'example.extension': { owner: 'design-system' } },
+      deprecated: { since: '2023-01-01' },
+      tags: ['governance'],
+    } satisfies NonNullable<ReturnType<typeof createPolicySnapshot>['metadata']>;
+    const resolution = { value: { computed: true } } as NonNullable<
+      ReturnType<typeof createPolicySnapshot>['resolution']
+    >;
+    const context = {
+      component: 'button',
+      layer: { absolute: '/workspace/tokens/button.json' },
+    } as const;
+
+    const snapshot = createPolicySnapshot({ metadata, resolution, context });
+
+    expect(snapshot.metadata).toEqual(metadata);
+    expect(snapshot.resolution).toEqual(resolution);
+    expect(snapshot.context).toBe(context);
+  });
 });
