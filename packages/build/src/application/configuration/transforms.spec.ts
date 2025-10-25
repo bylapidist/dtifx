@@ -10,7 +10,12 @@ import {
   createAndroidMaterialTransformFactories,
   createAndroidComposeTransformFactories,
   createIosSwiftUiTransformFactories,
+  createTransformConfiguration,
   loadTransformDefinitionRegistry,
+  TransformDefinitionFactoryRegistry,
+  type TransformDefinitionFactory,
+  type TransformDefinitionFactoryContext,
+  type TransformPluginImporter,
 } from './transforms.js';
 import {
   colorToCssTransform,
@@ -191,6 +196,111 @@ describe('createDefaultTransformDefinitionRegistry', () => {
   });
 });
 
+describe('createTransformConfiguration', () => {
+  const minimalConfig = { transforms: { entries: [] } } as BuildConfig;
+
+  it('throws when duplicate transform entries are provided', () => {
+    const config = {
+      ...minimalConfig,
+      transforms: {
+        entries: [{ name: 'color.toCss' }, { name: 'color.toCss' }],
+      },
+    } as BuildConfig;
+
+    expect(() => createTransformConfiguration(config)).toThrow(
+      'Duplicate transform configuration for "color.toCss".',
+    );
+  });
+
+  it('throws when a transform entry references an unknown factory', () => {
+    const config = {
+      ...minimalConfig,
+      transforms: {
+        entries: [{ name: 'example.transform' }],
+      },
+    } as BuildConfig;
+
+    expect(() =>
+      createTransformConfiguration(config, {
+        definitionRegistry: new TransformDefinitionFactoryRegistry(),
+      }),
+    ).toThrow('Unknown transform "example.transform" in configuration.');
+  });
+
+  it('normalises configuration entries and applies definition context overrides', () => {
+    const config = {
+      ...minimalConfig,
+      transforms: {
+        entries: [{ name: 'example.transform', group: '  custom-group  ' }],
+      },
+    } as BuildConfig;
+
+    let capturedContext: TransformDefinitionFactoryContext | undefined;
+    const factory: TransformDefinitionFactory = {
+      name: 'example.transform',
+      create(entry, context) {
+        capturedContext = context;
+        return {
+          name: entry.name,
+          selector: {} as never,
+          group: 'factory-group',
+          run: vi.fn(),
+        };
+      },
+    };
+    const registry = new TransformDefinitionFactoryRegistry([factory]);
+    const overridesContext = {
+      configDirectory: '/workspace/config',
+      configPath: '/workspace/config/dtifx.config.mjs',
+    } as unknown as TransformDefinitionFactoryContext;
+
+    const result = createTransformConfiguration(config, {
+      definitionRegistry: registry,
+      definitionContext: overridesContext,
+    });
+
+    expect(capturedContext).toEqual({
+      config,
+      configDirectory: '/workspace/config',
+      configPath: '/workspace/config/dtifx.config.mjs',
+    });
+    expect(result.definitions).toHaveLength(1);
+    expect(result.definitions[0]).toEqual(
+      expect.objectContaining({
+        name: 'example.transform',
+        group: 'custom-group',
+      }),
+    );
+    expect(result.registry.get('example.transform')).toBeDefined();
+  });
+
+  it('rejects non-string transform group overrides', () => {
+    const config = {
+      ...minimalConfig,
+      transforms: {
+        entries: [{ name: 'color.toCss', group: 123 as never }],
+      },
+    } as BuildConfig;
+
+    expect(() => createTransformConfiguration(config)).toThrow(
+      'Transform "color.toCss" group must be a string when provided.',
+    );
+  });
+
+  it('rejects empty transform group overrides', () => {
+    const config = {
+      ...minimalConfig,
+      transforms: {
+        entries: [{ name: 'color.toCss', group: '   ' }],
+      },
+    } as BuildConfig;
+
+    expect(() => createTransformConfiguration(config)).toThrow(
+      'Transform "color.toCss" group must be a non-empty string.',
+    );
+  });
+});
+
 describe('loadTransformDefinitionRegistry', () => {
   it('allows bare package names for transform plugins', async () => {
     const plugin = vi.fn();
@@ -240,5 +350,139 @@ describe('loadTransformDefinitionRegistry', () => {
     );
 
     expect(importer).not.toHaveBeenCalled();
+  });
+
+  it('resolves absolute filesystem plugin specifiers to file URLs', async () => {
+    const importer = vi.fn(async () => ({ default: vi.fn() }));
+    const absolutePath = path.resolve('/tmp/plugins/transform.js');
+
+    await loadTransformDefinitionRegistry({
+      ...baseOptions,
+      plugins: [absolutePath],
+      importModule: importer,
+    });
+
+    expect(importer).toHaveBeenCalledWith(pathToFileURL(absolutePath).href);
+  });
+
+  it('keeps file URL plugin specifiers unchanged', async () => {
+    const importer = vi.fn(async () => ({ default: vi.fn() }));
+    const fileUrl = 'file:///tmp/plugins/transform.js';
+
+    await loadTransformDefinitionRegistry({
+      ...baseOptions,
+      plugins: [fileUrl],
+      importModule: importer,
+    });
+
+    expect(importer).toHaveBeenCalledWith(fileUrl);
+  });
+
+  it('supports registerTransforms named exports and default object exports', async () => {
+    const namedPlugin = vi.fn(async () => {});
+    const defaultPlugin = vi.fn(async () => {});
+
+    const importer = vi
+      .fn<Parameters<TransformPluginImporter>, ReturnType<TransformPluginImporter>>()
+      .mockImplementationOnce(async () => ({ registerTransforms: namedPlugin }))
+      .mockImplementationOnce(async () => ({ default: { registerTransforms: defaultPlugin } }));
+
+    await loadTransformDefinitionRegistry({
+      ...baseOptions,
+      plugins: ['named-plugin', 'default-object-plugin'],
+      importModule: importer,
+    });
+
+    expect(namedPlugin).toHaveBeenCalledTimes(1);
+    expect(defaultPlugin).toHaveBeenCalledTimes(1);
+  });
+
+  it('normalises plugin object entries and freezes options', async () => {
+    const plugin = vi.fn(async () => {});
+    const importer = vi.fn(async () => ({ register: plugin }));
+
+    await loadTransformDefinitionRegistry({
+      ...baseOptions,
+      plugins: [
+        {
+          module: '  ./plugins/transform.js  ',
+          register: '  register  ',
+          options: { flag: true },
+        },
+      ],
+      importModule: importer,
+    });
+
+    const expectedSpecifier = pathToFileURL(
+      path.resolve(baseOptions.configDirectory, './plugins/transform.js'),
+    ).href;
+
+    expect(importer).toHaveBeenCalledWith(expectedSpecifier);
+    expect(plugin).toHaveBeenCalledTimes(1);
+    const call = plugin.mock.calls[0]?.[0];
+    expect(call?.options).toEqual({ flag: true });
+    expect(Object.isFrozen(call?.options)).toBe(true);
+  });
+
+  it('rejects plugin objects with non-string register values', async () => {
+    await expect(
+      loadTransformDefinitionRegistry({
+        ...baseOptions,
+        plugins: [{ module: 'example-plugin', register: 123 as never }],
+        importModule: vi.fn(),
+      }),
+    ).rejects.toThrow('Transform plugin "register" field must be a string when provided.');
+  });
+
+  it('rejects plugin objects with non-object options', async () => {
+    await expect(
+      loadTransformDefinitionRegistry({
+        ...baseOptions,
+        plugins: [{ module: 'example-plugin', options: ['invalid'] as never }],
+        importModule: vi.fn(),
+      }),
+    ).rejects.toThrow('Transform plugin "options" field must be an object when provided.');
+  });
+
+  it('rejects empty plugin specifier strings', async () => {
+    await expect(
+      loadTransformDefinitionRegistry({
+        ...baseOptions,
+        plugins: ['   '],
+        importModule: vi.fn(),
+      }),
+    ).rejects.toThrow('Transform plugin specifiers must be non-empty strings.');
+  });
+
+  it('rejects plugin entries that are not strings or objects', async () => {
+    await expect(
+      loadTransformDefinitionRegistry({
+        ...baseOptions,
+        plugins: [42 as never],
+        importModule: vi.fn(),
+      }),
+    ).rejects.toThrow('Transform plugin entries must be strings or objects with a "module" field.');
+  });
+
+  it('rejects named plugin exports that are not functions', async () => {
+    await expect(
+      loadTransformDefinitionRegistry({
+        ...baseOptions,
+        plugins: [{ module: 'example-plugin', register: 'register' }],
+        importModule: vi.fn(async () => ({ register: {} }) as never),
+      }),
+    ).rejects.toThrow('Transform plugin export "register" from example-plugin must be a function.');
+  });
+
+  it('rejects modules without register functions', async () => {
+    await expect(
+      loadTransformDefinitionRegistry({
+        ...baseOptions,
+        plugins: ['example-plugin'],
+        importModule: vi.fn(async () => ({})),
+      }),
+    ).rejects.toThrow(
+      'Transform plugin module example-plugin must export a function named "registerTransforms" or a default function export.',
+    );
   });
 });
