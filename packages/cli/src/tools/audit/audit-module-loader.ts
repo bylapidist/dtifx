@@ -10,9 +10,21 @@ export type AuditModule = typeof Audit;
 
 export type LoadAuditModule = (options: LoadAuditModuleOptions) => Promise<AuditModule | undefined>;
 
+type AuditModuleImporter = () => Promise<AuditModule>;
+
+const defaultImportAuditModule: AuditModuleImporter = () => import('@dtifx/audit');
+
+let importAuditModule: AuditModuleImporter = defaultImportAuditModule;
+
+export const setAuditModuleImporterForTesting = (
+  importer?: AuditModuleImporter | undefined,
+): void => {
+  importAuditModule = importer ?? defaultImportAuditModule;
+};
+
 export const loadAuditModule: LoadAuditModule = async ({ io }) => {
   try {
-    return await import('@dtifx/audit');
+    return await importAuditModule();
   } catch (error) {
     if (isModuleNotFoundError(error)) {
       io.writeErr('The "@dtifx/audit" package is required. Please install @dtifx/audit.\n');

@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-describe('@dtifx/cli/testing entry point', () => {
-  it('supports importing testing utilities', async () => {
-    // eslint-disable-next-line @nx/enforce-module-boundaries
-    await expect(import('@dtifx/cli/testing')).resolves.toHaveProperty('createMemoryCliIo');
+import * as testing from './index.js';
+import { createMemoryCliIo } from './memory-cli-io.js';
+
+describe('testing utilities public API', () => {
+  it('re-exports the in-memory CLI IO helpers', () => {
+    expect(testing.createMemoryCliIo).toBe(createMemoryCliIo);
   });
 });

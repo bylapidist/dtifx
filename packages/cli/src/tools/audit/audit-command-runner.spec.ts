@@ -248,6 +248,12 @@ describe('executeAuditCommand', () => {
     expect(reporter.auditFailure).not.toHaveBeenCalled();
     expect(environment.dispose).toHaveBeenCalled();
     expect(environment.telemetry.exportSpans).toHaveBeenCalled();
+    const reporterOptions = createAuditReporterMock.mock.calls[0]?.[0];
+    expect(reporterOptions).toBeDefined();
+    reporterOptions?.stdout.write('audit-output\n');
+    reporterOptions?.stderr.write('audit-error\n');
+    expect(io.stdoutBuffer).toContain('audit-output');
+    expect(io.stderrBuffer).toContain('audit-error');
     expect(process.exitCode).toBeUndefined();
   });
 
@@ -276,6 +282,18 @@ describe('executeAuditCommand', () => {
     expect(process.exitCode).toBe(1);
     expect(createAuditReporterMock).not.toHaveBeenCalled();
     expect(createAuditRuntimeMock).not.toHaveBeenCalled();
+  });
+
+  it('uses an injected audit module without reloading it', async () => {
+    const command = createCommandWithOptions({ reporter: 'json' });
+
+    await executeAuditCommand({
+      command,
+      io,
+      dependencies: { auditModule: auditModule as never },
+    });
+
+    expect(loadAuditModuleMock).not.toHaveBeenCalled();
   });
 
   it('sets exit code when violations are reported', async () => {

@@ -5,10 +5,13 @@ import type { CliIo } from '../../io/cli-io.js';
 
 let buildModulePromise: Promise<typeof BuildModule> | undefined;
 let buildReporterModulePromise: Promise<typeof BuildReporterModule> | undefined;
+let importBuildModule: () => Promise<typeof BuildModule> = () => import('@dtifx/build');
+let importBuildReporterModule: () => Promise<typeof BuildReporterModule> = () =>
+  import('@dtifx/build/cli/reporters');
 
 export const loadBuildModule = async (io: CliIo): Promise<typeof BuildModule | undefined> => {
   if (!buildModulePromise) {
-    buildModulePromise = import('@dtifx/build');
+    buildModulePromise = importBuildModule();
   }
 
   try {
@@ -29,7 +32,7 @@ export const loadBuildReporterModule = async (
   io: CliIo,
 ): Promise<typeof BuildReporterModule | undefined> => {
   if (!buildReporterModulePromise) {
-    buildReporterModulePromise = import('@dtifx/build/cli/reporters');
+    buildReporterModulePromise = importBuildReporterModule();
   }
 
   try {
@@ -53,3 +56,13 @@ const isModuleNotFoundError = (error: unknown): error is NodeJS.ErrnoException =
       'code' in error &&
       (error as NodeJS.ErrnoException).code === 'ERR_MODULE_NOT_FOUND',
   );
+
+export const setBuildModuleImportersForTesting = (options?: {
+  readonly build?: () => Promise<typeof BuildModule>;
+  readonly reporters?: () => Promise<typeof BuildReporterModule>;
+}): void => {
+  importBuildModule = options?.build ?? (() => import('@dtifx/build'));
+  importBuildReporterModule = options?.reporters ?? (() => import('@dtifx/build/cli/reporters'));
+  buildModulePromise = undefined;
+  buildReporterModulePromise = undefined;
+};
