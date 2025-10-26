@@ -366,7 +366,9 @@ function toPolicyTokenMetadata(snapshot: TokenResolutionSnapshot): PolicyTokenMe
   } satisfies PolicyTokenMetadata;
 }
 
-const defaultParserMetricsConsumer: () => ParserMetrics | undefined = () => {};
+function defaultParserMetricsConsumer(): ParserMetrics | undefined {
+  return;
+}
 
 function createParserMetricsConsumer(parser: ParserPort): () => ParserMetrics | undefined {
   const candidate = parser as ParserPort & { consumeMetrics?: () => ParserMetrics | undefined };

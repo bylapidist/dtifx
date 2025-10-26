@@ -39,7 +39,9 @@ export interface ResolutionSessionOptions {
   readonly eventBus?: DomainEventBusPort;
 }
 
-const defaultParserMetricsConsumer: () => ParserMetrics | undefined = () => {};
+function defaultParserMetricsConsumer(): ParserMetrics | undefined {
+  return;
+}
 
 export class ResolutionSession {
   private readonly service: TokenResolutionService;
