@@ -104,7 +104,7 @@ export class TokenResolutionService {
       readonly consumeMetrics?: () => ParserMetrics | undefined;
     };
     if (typeof candidate.consumeMetrics === 'function') {
-      return () => candidate.consumeMetrics?.();
+      return candidate.consumeMetrics.bind(candidate);
     }
 
     return undefined;

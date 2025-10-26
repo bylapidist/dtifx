@@ -53,20 +53,12 @@ export class ImageTokenPrefab extends TokenPrefab<ImageValue, ImageTokenPrefab> 
     options: Omit<ImageOptions, 'sources'> & ResponsiveImageOptions = {},
   ): ImageTokenPrefab {
     const sources = buildResponsiveSources(base, options);
-    const createOptions: Mutable<Partial<ImageOptions>> = {};
-    createOptions.sources = sources;
-
-    if (options.imageType !== undefined) {
-      createOptions.imageType = options.imageType;
-    }
-
-    if (options.alt !== undefined) {
-      createOptions.alt = options.alt;
-    }
-
-    if (options.placeholder !== undefined) {
-      createOptions.placeholder = options.placeholder;
-    }
+    const createOptions: Mutable<Partial<ImageOptions>> = {
+      sources,
+      ...(options.imageType === undefined ? {} : { imageType: options.imageType }),
+      ...(options.alt === undefined ? {} : { alt: options.alt }),
+      ...(options.placeholder === undefined ? {} : { placeholder: options.placeholder }),
+    };
 
     return ImageTokenPrefab.create(path, createOptions as ImageOptions);
   }

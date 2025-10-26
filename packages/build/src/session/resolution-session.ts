@@ -39,6 +39,8 @@ export interface ResolutionSessionOptions {
   readonly eventBus?: DomainEventBusPort;
 }
 
+const defaultParserMetricsConsumer: () => ParserMetrics | undefined = () => {};
+
 export class ResolutionSession {
   private readonly service: TokenResolutionService;
   private readonly consumeMetricsFn: () => ParserMetrics | undefined;
@@ -83,15 +85,15 @@ export class ResolutionSession {
     service: TokenResolutionService,
   ): () => ParserMetrics | undefined {
     if (typeof service.consumeMetrics === 'function') {
-      return () => service.consumeMetrics();
+      return service.consumeMetrics.bind(service);
     }
 
     const candidate = parser as ParserPort & {
       readonly consumeMetrics?: () => ParserMetrics | undefined;
     };
     if (typeof candidate.consumeMetrics === 'function') {
-      return () => candidate.consumeMetrics?.();
+      return candidate.consumeMetrics.bind(candidate);
     }
-    return () => undefined as ParserMetrics | undefined;
+    return defaultParserMetricsConsumer;
   }
 }

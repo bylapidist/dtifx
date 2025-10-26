@@ -74,12 +74,10 @@ export class MediaQueryTokenPrefab extends TokenPrefab<MediaQueryValue, MediaQue
       throw new TypeError('Width range prefabs require at least a min or max value.');
     }
 
-    const createOptions: Mutable<Partial<MediaQueryOptions>> = {};
-    createOptions.constraints = constraints;
-
-    if (options.mediaType !== undefined) {
-      createOptions.mediaType = options.mediaType;
-    }
+    const createOptions: Mutable<Partial<MediaQueryOptions>> = {
+      constraints,
+      ...(options.mediaType === undefined ? {} : { mediaType: options.mediaType }),
+    };
 
     return MediaQueryTokenPrefab.create(path, createOptions as MediaQueryOptions);
   }
