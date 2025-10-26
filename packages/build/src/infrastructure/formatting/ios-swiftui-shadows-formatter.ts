@@ -239,20 +239,14 @@ function formatShadow(metadata: ShadowSwiftUiTransformOutput): readonly string[]
     return [];
   }
 
-  const lines: string[] = ['ShadowToken('];
-  lines.push('    layers: [');
+  const header = ['ShadowToken(', '    layers: ['];
 
-  for (const layer of metadata.layers) {
-    const layerLines = formatShadowLayer(layer);
-    const formattedLayerLines = layerLines.map((line, index) =>
-      index === layerLines.length - 1 ? `${line},` : line,
-    );
-    lines.push(...formattedLayerLines);
-  }
+  const layerLines = metadata.layers.flatMap((layer) => {
+    const lines = formatShadowLayer(layer);
+    return lines.map((line, index) => (index === lines.length - 1 ? `${line},` : line));
+  });
 
-  lines.push('    ]', '  )');
-
-  return lines;
+  return [...header, ...layerLines, '    ]', '  )'];
 }
 
 function formatShadowLayer(
@@ -263,15 +257,9 @@ function formatShadowLayer(
     `x: ${formatNumber(layer.x)}`,
     `y: ${formatNumber(layer.y)}`,
     `radius: ${formatNumber(layer.radius)}`,
+    ...(layer.spread === undefined ? [] : [`spread: ${formatNumber(layer.spread)}`]),
+    ...(layer.opacity === undefined ? [] : [`opacity: ${formatNumber(layer.opacity)}`]),
   ];
-
-  if (layer.spread !== undefined) {
-    argumentsList.push(`spread: ${formatNumber(layer.spread)}`);
-  }
-
-  if (layer.opacity !== undefined) {
-    argumentsList.push(`opacity: ${formatNumber(layer.opacity)}`);
-  }
 
   if (argumentsList.length === 4) {
     return [`      ShadowLayer(${argumentsList.join(', ')})`];

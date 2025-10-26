@@ -8,12 +8,11 @@ import {
 } from './gradient-transforms.js';
 
 function createSnapshot(pointer: string, value: unknown, resolved?: unknown): TokenSnapshot {
-  const snapshot: Record<string, unknown> = { pointer };
-  snapshot.value = value;
-  if (resolved !== undefined) {
-    snapshot.resolution = { value: resolved };
-  }
-  return snapshot as TokenSnapshot;
+  return {
+    pointer,
+    value,
+    ...(resolved === undefined ? {} : { resolution: { value: resolved } }),
+  } as TokenSnapshot;
 }
 
 function createSrgbColor(hex: string) {

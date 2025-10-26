@@ -170,18 +170,13 @@ function formatTypographyResources(
   const usesEm = entries.some((entry) => usesEmUnits(entry.metadata));
   const usesDp = entries.some((entry) => usesDpUnits(entry.metadata));
 
-  const importLines = new Set<string>();
-  importLines.add('import androidx.compose.ui.unit.Dp');
-  importLines.add('import androidx.compose.ui.unit.TextUnit');
-  if (usesDp) {
-    importLines.add('import androidx.compose.ui.unit.dp');
-  }
-  if (usesSp) {
-    importLines.add('import androidx.compose.ui.unit.sp');
-  }
-  if (usesEm) {
-    importLines.add('import androidx.compose.ui.unit.em');
-  }
+  const importLines = new Set<string>([
+    'import androidx.compose.ui.unit.Dp',
+    'import androidx.compose.ui.unit.TextUnit',
+    ...(usesDp ? ['import androidx.compose.ui.unit.dp'] : []),
+    ...(usesSp ? ['import androidx.compose.ui.unit.sp'] : []),
+    ...(usesEm ? ['import androidx.compose.ui.unit.em'] : []),
+  ]);
 
   const blocks = entries.map((entry) => formatTypographyEntry(entry, options.dataClassName));
 

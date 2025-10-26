@@ -158,21 +158,18 @@ function formatComposeTypography(
   const usesSp = entries.some((entry) => usesSpUnits(entry.metadata));
   const usesEm = entries.some((entry) => usesEmUnits(entry.metadata));
 
-  const importLines = new Set<string>();
-  importLines.add('import androidx.compose.ui.text.TextStyle');
-  if (usesFontFamily) {
-    importLines.add('import androidx.compose.ui.text.font.Font');
-    importLines.add('import androidx.compose.ui.text.font.FontFamily');
-  }
-  if (usesFontWeight) {
-    importLines.add('import androidx.compose.ui.text.font.FontWeight');
-  }
-  if (usesSp) {
-    importLines.add('import androidx.compose.ui.unit.sp');
-  }
-  if (usesEm) {
-    importLines.add('import androidx.compose.ui.unit.em');
-  }
+  const importLines = new Set<string>([
+    'import androidx.compose.ui.text.TextStyle',
+    ...(usesFontFamily
+      ? [
+          'import androidx.compose.ui.text.font.Font',
+          'import androidx.compose.ui.text.font.FontFamily',
+        ]
+      : []),
+    ...(usesFontWeight ? ['import androidx.compose.ui.text.font.FontWeight'] : []),
+    ...(usesSp ? ['import androidx.compose.ui.unit.sp'] : []),
+    ...(usesEm ? ['import androidx.compose.ui.unit.em'] : []),
+  ]);
 
   const blocks = entries.map((entry) => formatTypographyEntry(entry));
 

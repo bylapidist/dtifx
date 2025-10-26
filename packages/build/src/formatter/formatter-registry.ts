@@ -291,9 +291,7 @@ function groupTransformResults(
       pointerTransforms.set(result.transform, result.output);
       continue;
     }
-    const map = new Map<string, unknown>();
-    map.set(result.transform, result.output);
-    grouped.set(result.pointer, map);
+    grouped.set(result.pointer, new Map<string, unknown>([[result.transform, result.output]]));
   }
-  return new Map([...grouped.entries()].map(([pointer, map]) => [pointer, new Map(map.entries())]));
+  return new Map([...grouped.entries()].map(([pointer, map]) => [pointer, new Map(map)]));
 }
