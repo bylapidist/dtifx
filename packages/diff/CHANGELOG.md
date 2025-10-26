@@ -1,5 +1,12 @@
 # @dtifx/diff
 
+## 4.1.3
+
+### Patch Changes
+
+- Updated dependencies [0684b5d]
+  - @dtifx/core@4.1.3
+
 ## 4.1.2
 
 ### Patch Changes

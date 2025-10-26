@@ -1,5 +1,13 @@
 # @dtifx/audit
 
+## 4.1.3
+
+### Patch Changes
+
+- 0684b5d: Align parser metrics consumers with eslint-plugin-unicorn 62's stricter rules.
+- Updated dependencies [0684b5d]
+  - @dtifx/core@4.1.3
+
 ## 4.1.2
 
 ### Patch Changes
