@@ -366,12 +366,16 @@ function toPolicyTokenMetadata(snapshot: TokenResolutionSnapshot): PolicyTokenMe
   } satisfies PolicyTokenMetadata;
 }
 
+function defaultParserMetricsConsumer(): ParserMetrics | undefined {
+  return;
+}
+
 function createParserMetricsConsumer(parser: ParserPort): () => ParserMetrics | undefined {
   const candidate = parser as ParserPort & { consumeMetrics?: () => ParserMetrics | undefined };
   if (typeof candidate.consumeMetrics === 'function') {
-    return () => candidate.consumeMetrics?.();
+    return candidate.consumeMetrics.bind(candidate);
   }
-  return () => void 0;
+  return defaultParserMetricsConsumer;
 }
 
 function toTokenMetricsSnapshot(snapshot: TokenResolutionSnapshot): TokenMetricsSnapshot {

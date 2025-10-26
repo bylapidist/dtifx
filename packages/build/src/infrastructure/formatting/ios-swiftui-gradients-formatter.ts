@@ -235,40 +235,29 @@ function formatGradient(metadata: GradientSwiftUiTransformOutput): readonly stri
     );
   }
 
-  const lines: string[] = ['GradientToken('];
-  lines.push(`    kind: .${metadata.kind},`);
+  const header = [
+    'GradientToken(',
+    `    kind: .${metadata.kind},`,
+    ...(metadata.angle === undefined ? [] : [`    angle: ${formatNumber(metadata.angle)},`]),
+    '    stops: [',
+  ];
 
-  if (metadata.angle !== undefined) {
-    lines.push(`    angle: ${formatNumber(metadata.angle)},`);
-  }
+  const stopLines = metadata.stops.flatMap((stop) => {
+    const lines = formatGradientStop(stop);
+    return lines.map((line, index) => (index === lines.length - 1 ? `${line},` : line));
+  });
 
-  lines.push('    stops: [');
-
-  for (const stop of metadata.stops) {
-    const stopLines = formatGradientStop(stop);
-    const formattedStopLines = stopLines.map((line, index) =>
-      index === stopLines.length - 1 ? `${line},` : line,
-    );
-    lines.push(...formattedStopLines);
-  }
-
-  lines.push('    ]', '  )');
-
-  return lines;
+  return [...header, ...stopLines, '    ]', '  )'];
 }
 
 function formatGradientStop(
   stop: GradientSwiftUiTransformOutput['stops'][number],
 ): readonly string[] {
-  const argumentsList = [`color: "${escapeString(stop.color)}"`];
-
-  if (stop.location !== undefined) {
-    argumentsList.push(`location: ${formatNumber(stop.location)}`);
-  }
-
-  if (stop.easing !== undefined) {
-    argumentsList.push(`easing: "${escapeString(stop.easing)}"`);
-  }
+  const argumentsList = [
+    `color: "${escapeString(stop.color)}"`,
+    ...(stop.location === undefined ? [] : [`location: ${formatNumber(stop.location)}`]),
+    ...(stop.easing === undefined ? [] : [`easing: "${escapeString(stop.easing)}"`]),
+  ];
 
   if (argumentsList.length === 1) {
     return [`      GradientStop(${argumentsList[0]!})`];

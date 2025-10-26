@@ -25,9 +25,9 @@ class MemoryDependencyCache implements TokenDependencyCache {
 
   async evaluate(snapshot: TokenDependencySnapshot): Promise<TokenDependencyDiff> {
     this.evaluations.push(snapshot);
-    const previousEntries = new Map(
-      this.previous?.entries.map((entry) => [entry.pointer, entry]) ?? [],
-    );
+    const previousEntries = this.previous
+      ? new Map(this.previous.entries.map((entry) => [entry.pointer, entry]))
+      : new Map();
     const changed = new Set<string>();
     const removed = new Set<string>();
 
