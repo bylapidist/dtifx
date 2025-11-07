@@ -1,5 +1,17 @@
 # @dtifx/cli
 
+## 4.1.4
+
+### Patch Changes
+
+- 52bf465: soften the Node.js engine requirement to allow any 22.x release.
+- Updated dependencies [52bf465]
+  - @dtifx/build@4.1.4
+  - @dtifx/audit@4.1.4
+  - @dtifx/diff@4.1.4
+  - @dtifx/core@4.1.4
+  - @dtifx/extractors@4.1.4
+
 ## 4.1.3
 
 ### Patch Changes
