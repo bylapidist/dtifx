@@ -23,7 +23,7 @@
     "compliance"
   ],
   "engines": {
-    "node": ">=22.20.0"
+    "node": ">=22"
   },
   "exports": {
     ".": {

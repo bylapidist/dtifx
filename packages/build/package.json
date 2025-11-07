@@ -38,7 +38,7 @@
   ],
   "sideEffects": false,
   "engines": {
-    "node": ">=22.20.0"
+    "node": ">=22"
   },
   "scripts": {
     "build": "nx build build",

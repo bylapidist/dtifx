@@ -3,6 +3,7 @@ coverage
 node_modules
 .pnpm-store
 .nx
+.claude
 .markdownlint.jsonc
 pnpm-lock.yaml
 packages/diff/src/reporting/templates/**/*.hbs
