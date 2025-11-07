@@ -1,5 +1,11 @@
 # @dtifx/core
 
+## 4.1.4
+
+### Patch Changes
+
+- 52bf465: soften the Node.js engine requirement to allow any 22.x release.
+
 ## 4.1.3
 
 ### Patch Changes
