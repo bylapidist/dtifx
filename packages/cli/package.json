@@ -51,7 +51,7 @@
   "sideEffects": false,
   "dependencies": {
     "@dtifx/core": "workspace:*",
-    "@lapidist/dtif-parser": "1.0.3",
+    "@lapidist/dtif-parser": "1.0.4",
     "commander": "14.0.2",
     "@dtifx/extractors": "workspace:*"
   },
