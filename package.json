@@ -33,7 +33,7 @@
     "@nx/eslint-plugin": "22.0.3",
     "@nx/js": "22.0.3",
     "@nx/vite": "22.0.3",
-    "@types/node": "24.9.2",
+    "@types/node": "24.10.1",
     "@typescript-eslint/eslint-plugin": "8.46.2",
     "@typescript-eslint/parser": "8.46.2",
     "@vitest/coverage-v8": "4.0.6",
