@@ -111,8 +111,8 @@ importers:
         specifier: workspace:*
         version: link:../core
       '@keyv/file':
-        specifier: npm:keyv-file@5.3.1
-        version: keyv-file@5.3.1
+        specifier: npm:keyv-file@5.3.3
+        version: keyv-file@5.3.3
       '@lapidist/dtif-parser':
         specifier: 1.0.4
         version: 1.0.4
@@ -3516,8 +3516,8 @@ packages:
     resolution: {integrity: sha512-7VlC1hsEEolL9xNO05v9VjrvWZePkCVBJqj8ruICxYjZfHaHbaU53AlP+PODyFIXEnaEIEWi3wJy7FPZ95JAVg==}
     hasBin: true
 
-  keyv-file@5.3.1:
-    resolution: {integrity: sha512-oannRZr1BVE6LFZ6e42ZuB+48xRCyhdFnDD0qsN8UQdg+Bh5Dky5M1fpFIByK+27E3E/gBOfvyBG00Q3VlbAYg==}
+  keyv-file@5.3.3:
+    resolution: {integrity: sha512-uCFUhiVYf+BcA6DP4smhnRLOR4yzUUA15yJSk4/rP5oAPnF3MpfajejwvSV8l+okm+EGiW4IHP3gn+xahpvZcQ==}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -8544,7 +8544,7 @@ snapshots:
     dependencies:
       commander: 8.3.0
 
-  keyv-file@5.3.1:
+  keyv-file@5.3.3:
     dependencies:
       '@keyv/serialize': 1.1.1
       tslib: 1.14.1

@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@dtifx/core": "workspace:*",
-    "@keyv/file": "npm:keyv-file@5.3.1",
+    "@keyv/file": "npm:keyv-file@5.3.3",
     "@lapidist/dtif-parser": "1.0.4",
     "@lapidist/dtif-schema": "1.0.4",
     "@lapidist/dtif-validator": "1.0.4",
