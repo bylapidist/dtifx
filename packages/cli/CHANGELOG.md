@@ -1,5 +1,17 @@
 # @dtifx/cli
 
+## 4.1.5
+
+### Patch Changes
+
+- 76961cc: Switch Vite Vitest targets to the new Nx Vitest executor.
+- Updated dependencies [76961cc]
+  - @dtifx/audit@4.1.5
+  - @dtifx/build@4.1.5
+  - @dtifx/core@4.1.5
+  - @dtifx/diff@4.1.5
+  - @dtifx/extractors@4.1.5
+
 ## 4.1.4
 
 ### Patch Changes

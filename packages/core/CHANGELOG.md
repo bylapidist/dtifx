@@ -1,5 +1,11 @@
 # @dtifx/core
 
+## 4.1.5
+
+### Patch Changes
+
+- 76961cc: Switch Vite Vitest targets to the new Nx Vitest executor.
+
 ## 4.1.4
 
 ### Patch Changes
