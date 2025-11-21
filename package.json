@@ -37,7 +37,7 @@
     "@types/node": "24.10.1",
     "@typescript-eslint/eslint-plugin": "8.47.0",
     "@typescript-eslint/parser": "8.47.0",
-    "@vitest/coverage-v8": "4.0.12",
+    "@vitest/coverage-v8": "4.0.13",
     "eslint": "9.39.1",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "2.32.0",
@@ -54,7 +54,7 @@
     "vite": "7.2.4",
     "vite-tsconfig-paths": "5.1.4",
     "vitepress": "1.6.4",
-    "vitest": "4.0.12"
+    "vitest": "4.0.13"
   },
   "lint-staged": {
     "*.{js,ts,tsx,cjs,mjs,cts,mts}": [
