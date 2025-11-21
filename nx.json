@@ -43,5 +43,5 @@
   "tui": {
     "enabled": false
   },
-  "plugins": ["@nx/js", "@nx/vite"]
+  "plugins": ["@nx/js", "@nx/vite", "@nx/vitest"]
 }

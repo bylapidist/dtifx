@@ -23,7 +23,7 @@
       }
     },
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "outputs": ["{projectRoot}/coverage"],
       "options": {
         "config": "packages/audit/vitest.config.ts"
