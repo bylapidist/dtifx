@@ -51,7 +51,7 @@
     "@lapidist/dtif-parser": "1.0.4",
     "@lapidist/dtif-schema": "1.0.4",
     "@lapidist/dtif-validator": "1.0.4",
-    "cacache": "20.0.2",
+    "cacache": "20.0.3",
     "chokidar": "4.0.3",
     "dependency-graph": "1.0.0",
     "fast-glob": "3.3.3",
