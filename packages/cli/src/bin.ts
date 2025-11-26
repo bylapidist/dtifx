@@ -68,9 +68,11 @@ const exitCode = await kernel.run();
 
 if (process.argv.length <= 2) {
   const name = packageManifest.name ?? '@dtifx/cli';
-  const message =
-    `${name} supports init, diff, build, audit, and extract workflows. ` +
-    'Explore `dtifx init --help`, `dtifx diff --help`, `dtifx build --help`, `dtifx audit --help`, or `dtifx extract --help` to get started.\n';
+  const message = [
+    `${name} supports init, diff, build, audit, and extract workflows.`,
+    'Explore `dtifx init --help`, `dtifx diff --help`, `dtifx build --help`,',
+    '`dtifx audit --help`, or `dtifx extract --help` to get started.\n',
+  ].join(' ');
   io.writeOut(message);
 }
 
