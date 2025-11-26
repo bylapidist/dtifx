@@ -131,6 +131,76 @@ describe('prepareAuditEnvironment', () => {
     );
   });
 
+  it('prefers injected audit helpers without loading the audit module', async () => {
+    const io = createMemoryCliIo();
+    const tokens = { resolve: vi.fn() } as const;
+    const dispose = vi.fn();
+    const policyConfiguration = { definitions: [] } as const;
+    const createTokenEnvironment = vi.fn(async () => ({
+      tokens,
+      policyConfiguration,
+      dispose,
+    }));
+    const resolveAuditConfigPath = vi.fn(async ({ configPath }: { configPath?: string }) =>
+      configPath ? `/custom/${configPath}` : '/custom/dtifx.config.mjs',
+    );
+    const loadAuditConfiguration = vi.fn(async ({ path }: { path: string }) => ({
+      path,
+      directory: '/custom',
+      config: { audit: { policies: [] } },
+    }));
+
+    const environment = await prepareAuditEnvironment(
+      {
+        config: 'dtifx.config.mjs',
+        jsonLogs: true,
+        telemetry: 'stdout',
+        reporter: 'json',
+        timings: true,
+      },
+      io,
+      undefined,
+      undefined,
+      {
+        createTokenEnvironment,
+        resolveConfigPath: resolveAuditConfigPath,
+        loadConfig: loadAuditConfiguration,
+      },
+    );
+
+    expect(loadAuditModuleMock).not.toHaveBeenCalled();
+    expect(auditModule.resolveAuditConfigPath).not.toHaveBeenCalled();
+    expect(auditModule.loadAuditConfiguration).not.toHaveBeenCalled();
+    expect(auditModule.createAuditTokenResolutionEnvironment).not.toHaveBeenCalled();
+
+    expect(resolveAuditConfigPath).toHaveBeenCalledWith({ configPath: 'dtifx.config.mjs' });
+    expect(loadAuditConfiguration).toHaveBeenCalledWith({ path: '/custom/dtifx.config.mjs' });
+    expect(createTokenEnvironment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        logger: expect.any(JsonLineLoggerMock),
+        telemetry: telemetryRuntime,
+        configuration: {
+          path: '/custom/dtifx.config.mjs',
+          directory: '/custom',
+          config: { audit: { policies: [] } },
+        },
+      }),
+    );
+
+    expect(environment?.logger).toBeInstanceOf(JsonLineLoggerMock);
+    expect(environment?.telemetry).toBe(telemetryRuntime);
+    expect(environment?.policyConfiguration).toBe(policyConfiguration);
+    expect(environment?.tokens).toBe(tokens);
+
+    environment?.dispose();
+    expect(dispose).toHaveBeenCalledTimes(1);
+
+    expect(createTelemetryRuntimeMock).toHaveBeenCalledWith(
+      'stdout',
+      expect.objectContaining({ logger: expect.any(JsonLineLoggerMock) }),
+    );
+  });
+
   it('uses the default token environment when not overridden', async () => {
     const policyConfiguration = { definitions: [] } as const;
     const tokens = { resolve: vi.fn() } as const;
