@@ -52,8 +52,9 @@ into span attributes so the telemetry payload records token counts, formatter co
 metrics, and failure conditions.
 
 Commands call `exportSpans()` before exiting to ensure spans reach the configured sink even when the
-process encounters an error. When using `watch`, spans are exported after each cycle so long-running
-sessions still flush regularly.
+process encounters an error. Audit commands also dispose their environments and flush telemetry when
+module resolution or environment preparation fails, so spans still export on early exits. When using
+`watch`, spans are exported after each cycle so long-running sessions still flush regularly.
 
 ## Diagnostics correlation
 
