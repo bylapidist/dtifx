@@ -1,5 +1,18 @@
 # @dtifx/cli
 
+## 4.1.6
+
+### Patch Changes
+
+- 09d26ed: fix dtifx help message formatting when no subcommands are provided
+- 2dea7a3: ensure audit telemetry flushes and environments dispose on failures
+- d77abc3: ensure injected audit factories skip module loading and fail fast when incomplete
+  - @dtifx/core@4.1.6
+  - @dtifx/diff@4.1.6
+  - @dtifx/build@4.1.6
+  - @dtifx/audit@4.1.6
+  - @dtifx/extractors@4.1.6
+
 ## 4.1.5
 
 ### Patch Changes
