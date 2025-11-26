@@ -159,8 +159,6 @@ describe('executeAuditCommand', () => {
       expect(runtimeOptions.tokens).toBe(environment.tokens);
       const resolution = await runtimeOptions.tokens.resolve({ span: activeSpan });
       expect(resolution.snapshots).toEqual(buildResult.tokens);
-      await runtimeOptions.telemetry.exportSpans();
-      await runtimeOptions.dispose?.();
       const reporter = createAuditReporterMock.mock.results[0]!.value as {
         auditSuccess: ReturnType<typeof vi.fn>;
       };
@@ -343,8 +341,6 @@ describe('executeAuditCommand', () => {
       }
       const activeSpan = runtimeOptions.telemetry.tracer.startSpan(runtimeOptions.spanName!);
       await runtimeOptions.tokens.resolve({ span: activeSpan });
-      await runtimeOptions.telemetry.exportSpans();
-      await runtimeOptions.dispose?.();
       const reporter = createAuditReporterMock.mock.results[0]!.value as {
         auditFailure: ReturnType<typeof vi.fn>;
       };
@@ -360,5 +356,19 @@ describe('executeAuditCommand', () => {
       auditFailure: ReturnType<typeof vi.fn>;
     };
     expect(reporter.auditFailure).toHaveBeenCalledWith(error);
+    expect(environment.dispose).toHaveBeenCalled();
+    expect(environment.telemetry.exportSpans).toHaveBeenCalled();
+  });
+
+  it('flushes telemetry and disposes the environment when runtime execution rejects', async () => {
+    const error = new Error('fatal runtime failure');
+    runtimeRunMock.mockRejectedValueOnce(error);
+    const command = createCommandWithOptions({});
+
+    await executeAuditCommand({ command, io });
+
+    expect(process.exitCode).toBe(1);
+    expect(environment.dispose).toHaveBeenCalledTimes(1);
+    expect(environment.telemetry.exportSpans).toHaveBeenCalledTimes(1);
   });
 });
