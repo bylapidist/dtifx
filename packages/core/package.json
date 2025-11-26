@@ -1,6 +1,6 @@
 {
   "name": "@dtifx/core",
-  "version": "4.1.5",
+  "version": "4.1.6",
   "description": "Foundational runtime, logging, and manifest utilities that power DTIFx automation.",
   "license": "MIT",
   "type": "module",
