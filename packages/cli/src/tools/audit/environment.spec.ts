@@ -170,6 +170,27 @@ describe('prepareAuditEnvironment', () => {
     expect(environment?.tokens).toBe(tokens);
   });
 
+  it('returns undefined when injected factories are incomplete without loading the audit module', async () => {
+    const loadAuditModule = vi.fn(() => {
+      throw new Error('should not be called');
+    });
+
+    const options = {
+      reporter: 'human',
+      jsonLogs: false,
+      timings: false,
+    } as const;
+    const io = createMemoryCliIo();
+
+    const environment = await prepareAuditEnvironment(options, io, undefined, undefined, {
+      createTokenEnvironment: vi.fn(),
+      loadAuditModule,
+    });
+
+    expect(environment).toBeUndefined();
+    expect(loadAuditModule).not.toHaveBeenCalled();
+  });
+
   it('returns undefined when the audit module cannot be loaded', async () => {
     loadAuditModuleMock.mockImplementationOnce(async ({ io: commandIo }) => {
       commandIo.writeErr('Please install @dtifx/audit.\n');

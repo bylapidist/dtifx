@@ -36,7 +36,8 @@ export const prepareAuditEnvironment = async (
   tokenCache?: TokenCache,
   dependencies: PrepareAuditEnvironmentDependencies = {},
 ): Promise<PreparedAuditEnvironment | undefined> => {
-  const auditModule = await resolveAuditModule(io, dependencies);
+  const injectedAuditModule = createAuditModuleFromDependencies(dependencies);
+  const auditModule = injectedAuditModule ?? (await resolveAuditModule(io, dependencies));
   const createTokenEnvironment =
     dependencies.createTokenEnvironment ?? auditModule?.createAuditTokenResolutionEnvironment;
   const resolveConfigPath = dependencies.resolveConfigPath ?? auditModule?.resolveAuditConfigPath;
@@ -91,20 +92,41 @@ const createLogger = (jsonLogs: boolean, io: CliIo): StructuredLogger => {
   return noopLogger;
 };
 
-const resolveAuditModule = async (
-  io: CliIo,
+const createAuditModuleFromDependencies = (
   dependencies: PrepareAuditEnvironmentDependencies,
-): Promise<AuditModule | undefined> => {
+): AuditModule | undefined => {
   if (dependencies.auditModule) {
     return dependencies.auditModule;
   }
 
   if (
-    dependencies.createTokenEnvironment &&
-    dependencies.resolveConfigPath &&
+    dependencies.createTokenEnvironment ||
+    dependencies.resolveConfigPath ||
     dependencies.loadConfig
   ) {
-    return undefined;
+    return {
+      ...(dependencies.createTokenEnvironment
+        ? {
+            createAuditTokenResolutionEnvironment: dependencies.createTokenEnvironment,
+          }
+        : {}),
+      ...(dependencies.resolveConfigPath
+        ? { resolveAuditConfigPath: dependencies.resolveConfigPath }
+        : {}),
+      ...(dependencies.loadConfig ? { loadAuditConfiguration: dependencies.loadConfig } : {}),
+    } as AuditModule;
+  }
+
+  return undefined;
+};
+
+const resolveAuditModule = async (
+  io: CliIo,
+  dependencies: PrepareAuditEnvironmentDependencies,
+): Promise<AuditModule | undefined> => {
+  const auditModuleFromDependencies = createAuditModuleFromDependencies(dependencies);
+  if (auditModuleFromDependencies) {
+    return auditModuleFromDependencies;
   }
 
   const loader = dependencies.loadAuditModule ?? loadAuditModule;
