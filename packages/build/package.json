@@ -56,7 +56,7 @@
     "dependency-graph": "1.0.0",
     "fast-glob": "3.3.3",
     "handlebars": "4.7.8",
-    "keyv": "5.5.4",
+    "keyv": "5.5.5",
     "p-queue": "9.0.1",
     "safe-stable-stringify": "2.5.0",
     "zod": "4.1.13"
