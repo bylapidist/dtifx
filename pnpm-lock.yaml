@@ -157,8 +157,8 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(@opentelemetry/api@1.9.0)
       '@types/cacache':
-        specifier: 19.0.0
-        version: 19.0.0
+        specifier: 20.0.0
+        version: 20.0.0
       '@types/handlebars':
         specifier: 4.1.0
         version: 4.1.0
@@ -1804,8 +1804,8 @@ packages:
   '@tybys/wasm-util@0.9.0':
     resolution: {integrity: sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw==}
 
-  '@types/cacache@19.0.0':
-    resolution: {integrity: sha512-O4V427CUunRaoaoG6awmIbamf/gTmsys9PHJNb2ujB+tGtSiDkAtkT+M8Lc04jhDxVBIWnBkFoKjFyne4zjKEw==}
+  '@types/cacache@20.0.0':
+    resolution: {integrity: sha512-/x8RJB3vyZrK02TBtV2cAItcr9IWinYzxX9nJY2kpM5af5BLaCPwXFaHCUpVD/141QjpzQtk1tdTsb7WFIh80Q==}
 
   '@types/chai@5.2.2':
     resolution: {integrity: sha512-8kB30R7Hwqf40JPiKhVzodJs2Qc1ZJ5zuT3uzw5Hq/dhNCl3G3l83jfpdI1e20BP348+fV7VIL/+FxaXkqBmWg==}
@@ -6553,9 +6553,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@types/cacache@19.0.0':
+  '@types/cacache@20.0.0':
     dependencies:
       '@types/node': 24.10.4
+      minipass: 7.1.2
 
   '@types/chai@5.2.2':
     dependencies:
