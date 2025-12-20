@@ -63,7 +63,7 @@
   },
   "devDependencies": {
     "@opentelemetry/sdk-trace-base": "2.2.0",
-    "@types/cacache": "19.0.0",
+    "@types/cacache": "20.0.0",
     "@types/handlebars": "4.1.0"
   },
   "private": false,
