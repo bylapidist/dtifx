@@ -2,7 +2,7 @@
   "name": "@dtifx/root",
   "private": true,
   "version": "0.0.1",
-  "packageManager": "pnpm@10.26.1",
+  "packageManager": "pnpm@10.26.2",
   "type": "module",
   "scripts": {
     "build": "nx run-many -t build --all --exclude docs-site",
