@@ -150,8 +150,8 @@ importers:
         specifier: 2.5.0
         version: 2.5.0
       zod:
-        specifier: 4.3.2
-        version: 4.3.2
+        specifier: 4.3.4
+        version: 4.3.4
     devDependencies:
       '@opentelemetry/sdk-trace-base':
         specifier: 2.2.0
@@ -220,8 +220,8 @@ importers:
         specifier: 7.0.4
         version: 7.0.4
       zod:
-        specifier: 4.3.2
-        version: 4.3.2
+        specifier: 4.3.4
+        version: 4.3.4
     devDependencies:
       '@types/color':
         specifier: 4.2.0
@@ -4827,8 +4827,8 @@ packages:
     resolution: {integrity: sha512-AyeEbWOu/TAXdxlV9wmGcR0+yh2j3vYPGOECcIj2S7MkrLyC7ne+oye2BKTItt0ii2PHk4cDy+95+LshzbXnGg==}
     engines: {node: '>=12.20'}
 
-  zod@4.3.2:
-    resolution: {integrity: sha512-b8L8yn4rIVfiXyHAmnr52/ZEpDumlT0bmxiq3Ws1ybrinhflGpt12Hvv54kYnEsGPRs6o/Ka3/ppA2OWY21IVg==}
+  zod@4.3.4:
+    resolution: {integrity: sha512-Zw/uYiiyF6pUT1qmKbZziChgNPRu+ZRneAsMUDU6IwmXdWt5JwcUfy2bvLOCUtz5UniaN/Zx5aFttZYbYc7O/A==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -10048,6 +10048,6 @@ snapshots:
 
   yocto-queue@1.2.1: {}
 
-  zod@4.3.2: {}
+  zod@4.3.4: {}
 
   zwitch@2.0.4: {}
