@@ -17,9 +17,8 @@ vi.mock('../../formatter/formatter-registry.js', async (importOriginal) => {
   };
 });
 
-const registryModule = (await import(
-  '../../formatter/formatter-registry.js'
-)) as typeof FormatterRegistryModule;
+const registryModule =
+  (await import('../../formatter/formatter-registry.js')) as typeof FormatterRegistryModule;
 const mockedCreateContext = vi.mocked(registryModule.createFormatterExecutionContext);
 const mockedRunDefinition = vi.mocked(registryModule.runFormatterDefinition);
 

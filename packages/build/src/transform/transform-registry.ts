@@ -65,9 +65,9 @@ export type { PointerPattern } from '@dtifx/core/policy/selectors';
 export interface TransformSelector<
   TType extends TokenTypeIdentifier | undefined = TokenTypeIdentifier | undefined,
 > extends TokenSelector<
-    TokenSnapshot,
-    TType extends TokenTypeIdentifier ? TType : TokenTypeIdentifier
-  > {}
+  TokenSnapshot,
+  TType extends TokenTypeIdentifier ? TType : TokenTypeIdentifier
+> {}
 
 /**
  * Resolves the union of token types represented by a transform selector.
