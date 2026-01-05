@@ -165,8 +165,8 @@ async function resolveExportedValue<T>(candidate: T): Promise<unknown> {
 function isMissingFileError(error: unknown): error is NodeJS.ErrnoException {
   return Boolean(
     error &&
-      typeof error === 'object' &&
-      'code' in error &&
-      (error as NodeJS.ErrnoException).code === 'ENOENT',
+    typeof error === 'object' &&
+    'code' in error &&
+    (error as NodeJS.ErrnoException).code === 'ENOENT',
   );
 }
