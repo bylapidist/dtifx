@@ -17,9 +17,8 @@ describe('build module loaders', () => {
   });
 
   it('loads the @dtifx/build module once and reuses the cached promise', async () => {
-    const { loadBuildModule, setBuildModuleImportersForTesting } = await import(
-      './build-module.js'
-    );
+    const { loadBuildModule, setBuildModuleImportersForTesting } =
+      await import('./build-module.js');
     const buildModule = { symbol: Symbol('build') } as Awaited<ReturnType<typeof loadBuildModule>>;
     setBuildModuleImportersForTesting({ build: async () => buildModule });
     const io = createIo();
@@ -32,9 +31,8 @@ describe('build module loaders', () => {
   });
 
   it('informs users when @dtifx/build cannot be resolved', async () => {
-    const { loadBuildModule, setBuildModuleImportersForTesting } = await import(
-      './build-module.js'
-    );
+    const { loadBuildModule, setBuildModuleImportersForTesting } =
+      await import('./build-module.js');
     setBuildModuleImportersForTesting({
       build: async () => {
         const error = new Error('module not found') as NodeJS.ErrnoException;
@@ -60,9 +58,8 @@ describe('build module loaders', () => {
   });
 
   it('rethrows unexpected load errors for @dtifx/build', async () => {
-    const { loadBuildModule, setBuildModuleImportersForTesting } = await import(
-      './build-module.js'
-    );
+    const { loadBuildModule, setBuildModuleImportersForTesting } =
+      await import('./build-module.js');
     setBuildModuleImportersForTesting({
       build: async () => {
         throw new Error('unexpected failure');
@@ -74,9 +71,8 @@ describe('build module loaders', () => {
   });
 
   it('loads the @dtifx/build reporter module and caches results', async () => {
-    const { loadBuildReporterModule, setBuildModuleImportersForTesting } = await import(
-      './build-module.js'
-    );
+    const { loadBuildReporterModule, setBuildModuleImportersForTesting } =
+      await import('./build-module.js');
     const reporterModule = { reporters: true } as Awaited<
       ReturnType<typeof loadBuildReporterModule>
     >;
@@ -91,9 +87,8 @@ describe('build module loaders', () => {
   });
 
   it('reports missing reporter modules gracefully', async () => {
-    const { loadBuildReporterModule, setBuildModuleImportersForTesting } = await import(
-      './build-module.js'
-    );
+    const { loadBuildReporterModule, setBuildModuleImportersForTesting } =
+      await import('./build-module.js');
     setBuildModuleImportersForTesting({
       reporters: async () => {
         const error = new Error('module not found') as NodeJS.ErrnoException;

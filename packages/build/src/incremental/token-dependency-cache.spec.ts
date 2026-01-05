@@ -13,9 +13,8 @@ const mkdir = vi.mocked(fs.mkdir);
 const readFile = vi.mocked(fs.readFile);
 const writeFile = vi.mocked(fs.writeFile);
 
-const { createTokenDependencySnapshot, FileSystemTokenDependencyCache } = await import(
-  './token-dependency-cache.js'
-);
+const { createTokenDependencySnapshot, FileSystemTokenDependencyCache } =
+  await import('./token-dependency-cache.js');
 
 describe('token dependency cache hashing', () => {
   it('produces a stable hash regardless of object key ordering', () => {

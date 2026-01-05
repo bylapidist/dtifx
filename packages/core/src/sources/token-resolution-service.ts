@@ -6,8 +6,10 @@ import type { ParserExecutionOptions, ParserMetrics, ParserPort, ParserResult } 
 import type { BuildLifecycleObserverPort, DomainEventBusPort } from '../runtime/index.js';
 import { resolveLifecycleEventBus } from '../runtime/lifecycle-event-adapter.js';
 
-export interface TokenResolutionServiceOptions
-  extends Omit<ParserExecutionOptions, 'documentCache' | 'tokenCache'> {
+export interface TokenResolutionServiceOptions extends Omit<
+  ParserExecutionOptions,
+  'documentCache' | 'tokenCache'
+> {
   readonly parser: ParserPort;
   readonly documentCache?: ParserExecutionOptions['documentCache'];
   readonly tokenCache?: ParserExecutionOptions['tokenCache'];

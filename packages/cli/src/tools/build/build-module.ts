@@ -52,9 +52,9 @@ export const loadBuildReporterModule = async (
 const isModuleNotFoundError = (error: unknown): error is NodeJS.ErrnoException =>
   Boolean(
     error &&
-      typeof error === 'object' &&
-      'code' in error &&
-      (error as NodeJS.ErrnoException).code === 'ERR_MODULE_NOT_FOUND',
+    typeof error === 'object' &&
+    'code' in error &&
+    (error as NodeJS.ErrnoException).code === 'ERR_MODULE_NOT_FOUND',
   );
 
 export const setBuildModuleImportersForTesting = (options?: {
