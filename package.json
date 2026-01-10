@@ -34,7 +34,7 @@
     "@nx/js": "22.3.3",
     "@nx/vitest": "22.3.3",
     "@nx/vite": "22.3.3",
-    "@types/node": "24.10.4",
+    "@types/node": "24.10.6",
     "@typescript-eslint/eslint-plugin": "8.52.0",
     "@typescript-eslint/parser": "8.52.0",
     "@vitest/coverage-v8": "4.0.16",
