@@ -62,7 +62,7 @@
     "zod": "4.3.5"
   },
   "devDependencies": {
-    "@opentelemetry/sdk-trace-base": "2.4.0",
+    "@opentelemetry/sdk-trace-base": "2.5.0",
     "@types/cacache": "20.0.0",
     "@types/handlebars": "4.1.0"
   },
