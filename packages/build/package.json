@@ -59,7 +59,7 @@
     "keyv": "5.6.0",
     "p-queue": "9.1.0",
     "safe-stable-stringify": "2.5.0",
-    "zod": "4.3.5"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@opentelemetry/sdk-trace-base": "2.5.0",
