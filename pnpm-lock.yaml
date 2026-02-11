@@ -63,8 +63,8 @@ importers:
         specifier: 5.5.5
         version: 5.5.5(eslint-config-prettier@10.1.8(eslint@9.39.2(jiti@2.6.1)))(eslint@9.39.2(jiti@2.6.1))(prettier@3.8.1)
       eslint-plugin-unicorn:
-        specifier: 62.0.0
-        version: 62.0.0(eslint@9.39.2(jiti@2.6.1))
+        specifier: 63.0.0
+        version: 63.0.0(eslint@9.39.2(jiti@2.6.1))
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -1380,10 +1380,6 @@ packages:
     resolution: {integrity: sha512-gBrxN88gOIf3R7ja5K9slwNayVcZgK6SOUORm2uBzTeIEfeVaIhOpCtTox3P6R7o2jLFwLFTLnC7kU/RGcYEgw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/core@0.16.0':
-    resolution: {integrity: sha512-nmC8/totwobIiFcGkDza3GIKfAw1+hLiYVrh3I1nIomQ8PEr5cxg34jnkmGawul/ep52wGRAcyeDCNtWKSOj4Q==}
-    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
   '@eslint/core@0.17.0':
     resolution: {integrity: sha512-yL/sLrpmtDaFEiUj1osRP4TI2MDz1AddJL+jZ7KSqvBuliN4xqYY54IfdN8qD8Toa6g1iloph1fxQNkjOxrrpQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -1398,10 +1394,6 @@ packages:
 
   '@eslint/object-schema@2.1.7':
     resolution: {integrity: sha512-VtAOaymWVfZcmZbp6E2mympDIHvyjXs/12LqWYjVw6qjrfF+VK+fyG33kChz3nnK+SU5/NeHOqrTEHS8sXO3OA==}
-    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@eslint/plugin-kit@0.4.0':
-    resolution: {integrity: sha512-sB5uyeq+dwCWyPi31B2gQlVlo+j5brPlWx4yZBrEaRo/nhdDE8Xke1gsGgtiBdaBTxuTkceLVuVt/pclrasb0A==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/plugin-kit@0.4.1':
@@ -2792,8 +2784,8 @@ packages:
       eslint-config-prettier:
         optional: true
 
-  eslint-plugin-unicorn@62.0.0:
-    resolution: {integrity: sha512-HIlIkGLkvf29YEiS/ImuDZQbP12gWyx5i3C6XrRxMvVdqMroCI9qoVYCoIl17ChN+U89pn9sVwLxhIWj5nEc7g==}
+  eslint-plugin-unicorn@63.0.0:
+    resolution: {integrity: sha512-Iqecl9118uQEXYh7adylgEmGfkn5es3/mlQTLLkd4pXkIk9CTGrAbeUux+YljSa2ohXCBmQQ0+Ej1kZaFgcfkA==}
     engines: {node: ^20.10.0 || >=21.0.0}
     peerDependencies:
       eslint: '>=9.38.0'
@@ -6055,10 +6047,6 @@ snapshots:
     dependencies:
       '@eslint/core': 0.17.0
 
-  '@eslint/core@0.16.0':
-    dependencies:
-      '@types/json-schema': 7.0.15
-
   '@eslint/core@0.17.0':
     dependencies:
       '@types/json-schema': 7.0.15
@@ -6080,11 +6068,6 @@ snapshots:
   '@eslint/js@9.39.2': {}
 
   '@eslint/object-schema@2.1.7': {}
-
-  '@eslint/plugin-kit@0.4.0':
-    dependencies:
-      '@eslint/core': 0.16.0
-      levn: 0.4.1
 
   '@eslint/plugin-kit@0.4.1':
     dependencies:
@@ -7680,17 +7663,15 @@ snapshots:
     optionalDependencies:
       eslint-config-prettier: 10.1.8(eslint@9.39.2(jiti@2.6.1))
 
-  eslint-plugin-unicorn@62.0.0(eslint@9.39.2(jiti@2.6.1)):
+  eslint-plugin-unicorn@63.0.0(eslint@9.39.2(jiti@2.6.1)):
     dependencies:
       '@babel/helper-validator-identifier': 7.28.5
-      '@eslint-community/eslint-utils': 4.9.0(eslint@9.39.2(jiti@2.6.1))
-      '@eslint/plugin-kit': 0.4.0
+      '@eslint-community/eslint-utils': 4.9.1(eslint@9.39.2(jiti@2.6.1))
       change-case: 5.4.4
       ci-info: 4.3.1
       clean-regexp: 1.0.0
       core-js-compat: 3.46.0
       eslint: 9.39.2(jiti@2.6.1)
-      esquery: 1.6.0
       find-up-simple: 1.0.1
       globals: 16.4.0
       indent-string: 5.0.0
