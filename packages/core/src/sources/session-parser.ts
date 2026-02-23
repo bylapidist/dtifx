@@ -3,18 +3,19 @@ import { performance } from 'node:perf_hooks';
 import {
   JSON_POINTER_ROOT,
   appendJsonPointer,
-  application,
   createDocumentResolver,
-  createSession,
   InMemoryDocumentCache,
   InMemoryTokenCache,
+  parseTokens,
   splitJsonPointer,
   type DocumentCache,
   type DocumentGraph,
+  type ParseDocumentResult,
   type DocumentResolver,
   type DtifFlattenedToken,
   type GraphTokenNode,
   type JsonPointer,
+  type ParseTokensResult,
   type ParseSessionOptions,
   type TokenCache,
   type TokenId,
@@ -63,8 +64,42 @@ interface SnapshotMeta {
   readonly resolutionIndex: ReadonlyMap<TokenId, ResolvedTokenView>;
 }
 
-type TokensUseCaseInstance = ReturnType<typeof application.createParseTokensUseCase>;
-type TokensExecution = Awaited<ReturnType<TokensUseCaseInstance['execute']>>;
+interface TokensExecution extends ParseTokensResult {
+  readonly tokensFromCache: boolean;
+}
+
+interface TokenCacheProbe {
+  hit: boolean;
+}
+
+function resolveTokensFromCache(result: ParseTokensResult): boolean {
+  const candidate = result as ParseTokensResult & { readonly tokensFromCache?: unknown };
+  return typeof candidate.tokensFromCache === 'boolean' ? candidate.tokensFromCache : false;
+}
+
+function createObservedTokenCache(cache: TokenCache, probe: TokenCacheProbe): TokenCache {
+  return {
+    get(key) {
+      const snapshot = cache.get(key);
+      if (snapshot instanceof Promise) {
+        return snapshot.then((resolved) => {
+          if (resolved !== undefined) {
+            probe.hit = true;
+          }
+          return resolved;
+        });
+      }
+
+      if (snapshot !== undefined) {
+        probe.hit = true;
+      }
+      return snapshot;
+    },
+    set(key, value) {
+      return cache.set(key, value);
+    },
+  } satisfies TokenCache;
+}
 
 interface BuildTokenSetOptions {
   readonly planned: TokenSourcePlan['entries'][number];
@@ -224,17 +259,8 @@ export class SessionTokenParser implements ParserPort {
       ...(documentCache ? { documentCache } : {}),
     } satisfies ParseSessionOptions;
 
-    const session = createSession(sessionOptions);
-    const resolvedOptions = session.options;
-    const documents = application.createParseDocumentUseCase({
-      ...resolvedOptions,
-      ...(documentCache ? { documentCache } : {}),
-    });
-    const tokens = application.createParseTokensUseCase(documents, resolvedOptions, tokenCache);
-
     const sources: TokenResolvedSource[] = [];
     const snapshots: TokenResolutionSnapshot[] = [];
-    const aggregatedDiagnostics: DiagnosticEvent[] = [];
     const metadataIndex = new Map<TokenId, TokenMetadataSnapshot>();
     const resolutionIndex = new Map<TokenId, ResolvedTokenView>();
     const totalStart = performance.now();
@@ -245,21 +271,32 @@ export class SessionTokenParser implements ParserPort {
 
     for (const planned of plan.entries) {
       const entryParseStart = performance.now();
-      const execution = await tokens.execute({
-        request: {
+      const tokenCacheProbe: TokenCacheProbe = { hit: false };
+      const observedTokenCache = tokenCache
+        ? createObservedTokenCache(tokenCache, tokenCacheProbe)
+        : undefined;
+      const tokenResult = await parseTokens(
+        {
           uri: planned.uri,
-          inlineData: planned.document,
-          contentTypeHint: 'application/json',
+          data: planned.document,
+          contentType: 'application/json',
         },
-        flatten,
-        includeGraphs: exposeGraphs,
-      });
+        {
+          ...sessionOptions,
+          ...(observedTokenCache ? { tokenCache: observedTokenCache } : {}),
+          flatten,
+          includeGraphs: exposeGraphs,
+        },
+      );
+      const execution: TokensExecution = {
+        ...tokenResult,
+        tokensFromCache: resolveTokensFromCache(tokenResult) || tokenCacheProbe.hit,
+      };
       parseMs += performance.now() - entryParseStart;
 
       const diagnostics = this.collectDiagnostics(execution, {
         diagnostics: options.diagnostics,
       });
-      aggregatedDiagnostics.push(...diagnostics);
 
       const { tokens: resolvedTokens, tokenSet } = this.buildTokenArtifacts({
         planned,
@@ -280,19 +317,15 @@ export class SessionTokenParser implements ParserPort {
         }
       }
 
-      if (execution.tokens?.token.metadataIndex) {
-        for (const [tokenId, metadata] of execution.tokens.token.metadataIndex) {
-          if (!metadataIndex.has(tokenId)) {
-            metadataIndex.set(tokenId, metadata as TokenMetadataSnapshot);
-          }
+      for (const [tokenId, metadata] of execution.metadataIndex) {
+        if (!metadataIndex.has(tokenId)) {
+          metadataIndex.set(tokenId, metadata as TokenMetadataSnapshot);
         }
       }
 
-      if (execution.tokens?.token.resolutionIndex) {
-        for (const [tokenId, resolution] of execution.tokens.token.resolutionIndex) {
-          if (!resolutionIndex.has(tokenId)) {
-            resolutionIndex.set(tokenId, resolution);
-          }
+      for (const [tokenId, resolution] of execution.resolutionIndex) {
+        if (!resolutionIndex.has(tokenId)) {
+          resolutionIndex.set(tokenId, resolution);
         }
       }
 
@@ -319,11 +352,11 @@ export class SessionTokenParser implements ParserPort {
         tokens: resolvedTokens,
         tokenSet,
         diagnostics,
-        metadataIndex: execution.tokens?.token.metadataIndex ?? new Map(),
-        resolutionIndex: execution.tokens?.token.resolutionIndex ?? new Map(),
+        metadataIndex: execution.metadataIndex ?? new Map(),
+        resolutionIndex: execution.resolutionIndex ?? new Map(),
         ...(exposeGraphs && execution.document ? { document: execution.document } : {}),
-        ...(exposeGraphs && execution.graph ? { graph: execution.graph.graph } : {}),
-        ...(exposeGraphs && execution.resolution ? { resolver: execution.resolution.result } : {}),
+        ...(exposeGraphs && execution.graph ? { graph: execution.graph } : {}),
+        ...(exposeGraphs && execution.resolver ? { resolver: execution.resolver } : {}),
         cacheStatus,
       });
     }
@@ -343,7 +376,7 @@ export class SessionTokenParser implements ParserPort {
     return {
       sources,
       snapshots,
-      diagnostics: dedupeDiagnostics(aggregatedDiagnostics),
+      diagnostics: dedupeDiagnostics(sources.flatMap((source) => source.diagnostics)),
       metadata: metadataIndex,
       resolutions: resolutionIndex,
     } satisfies ParserResult;
@@ -360,11 +393,6 @@ export class SessionTokenParser implements ParserPort {
     context: { readonly diagnostics?: DiagnosticsPort | undefined },
   ): DiagnosticEvent[] {
     const diagnostics = [...execution.diagnostics];
-
-    const tokenDiagnostics = execution.tokens?.token.diagnostics ?? [];
-    if (tokenDiagnostics.length > 0) {
-      diagnostics.push(...tokenDiagnostics);
-    }
 
     const converted = diagnostics.map((diagnostic) =>
       convertParserDiagnostic(
@@ -391,9 +419,9 @@ export class SessionTokenParser implements ParserPort {
     readonly tokenSet: TokenSet;
   } {
     const { planned, execution, pointerPrefix, exposeGraphs, flatten, diagnostics } = options;
-    const flattenedTokens = flatten ? (execution.tokens?.token.flattened ?? []) : [];
-    const metadataIndex = execution.tokens?.token.metadataIndex ?? new Map();
-    const resolutionIndex = execution.tokens?.token.resolutionIndex ?? new Map();
+    const flattenedTokens = flatten ? execution.flattened : [];
+    const metadataIndex = execution.metadataIndex;
+    const resolutionIndex = execution.resolutionIndex;
     const baseUri = normaliseUri(planned.uri);
     const flattenedByPointer = new Map<JsonPointer, DtifFlattenedToken>();
 
@@ -446,8 +474,8 @@ export class SessionTokenParser implements ParserPort {
 
     const tokenSet = this.createTokenSet(planned, tokens, {
       ...(exposeGraphs && execution.document ? { document: execution.document } : {}),
-      ...(exposeGraphs && execution.graph ? { graph: execution.graph.graph } : {}),
-      ...(exposeGraphs && execution.resolution ? { resolver: execution.resolution.result } : {}),
+      ...(exposeGraphs && execution.graph ? { graph: execution.graph } : {}),
+      ...(exposeGraphs && execution.resolver ? { resolver: execution.resolver } : {}),
     });
 
     return { tokens, tokenSet };
@@ -598,9 +626,32 @@ export class SessionTokenParser implements ParserPort {
     exposeGraphs: boolean,
   ): Parameters<typeof createTokenSetFromParseResult>[0] {
     return {
+      diagnostics: execution.diagnostics,
+      fromCache: false,
       ...(exposeGraphs && execution.document ? { document: execution.document } : {}),
-      ...(exposeGraphs && execution.graph ? { graph: execution.graph } : {}),
-      ...(exposeGraphs && execution.resolution ? { resolution: execution.resolution } : {}),
-    } as Parameters<typeof createTokenSetFromParseResult>[0];
+      ...(exposeGraphs && execution.graph
+        ? {
+            graph: {
+              identity: execution.document?.identity ?? {
+                uri: execution.graph.uri,
+                contentType: 'application/json',
+              },
+              graph: execution.graph,
+            },
+          }
+        : {}),
+      ...(exposeGraphs && execution.resolver
+        ? {
+            resolution: {
+              identity: execution.document?.identity ?? {
+                uri: execution.graph?.uri ?? new URL('memory://dtifx/session-parser'),
+                contentType: 'application/json',
+              },
+              result: execution.resolver,
+              diagnostics: [],
+            },
+          }
+        : {}),
+    } satisfies ParseDocumentResult;
   }
 }

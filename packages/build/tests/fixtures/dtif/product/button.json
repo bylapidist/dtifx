@@ -2,32 +2,10 @@
   "$version": "1.0.0",
   "$schema": "https://dtif.lapidist.net/schema/core.json",
   "$description": "Product component tokens referencing shared values",
-  "color": {
-    "$type": "color",
-    "$value": {
-      "colorSpace": "srgb",
-      "components": [0, 0.5, 1]
-    },
-    "$description": "Primary button background"
-  },
   "background": {
     "$type": "color",
     "$ref": "#/color",
     "$description": "Alias to the primary button background"
-  },
-  "spacing": {
-    "$type": "dimension",
-    "$value": {
-      "dimensionType": "length",
-      "value": 12,
-      "unit": "px"
-    },
-    "$description": "Base component spacing"
-  },
-  "padding": {
-    "$type": "dimension",
-    "$ref": "#/spacing",
-    "$description": "Padding derived from the spacing token"
   },
   "borderRadius": {
     "$type": "dimension",
@@ -38,20 +16,42 @@
     },
     "$description": "Rounded corners"
   },
+  "color": {
+    "$type": "color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [0, 0.5, 1]
+    },
+    "$description": "Primary button background"
+  },
+  "padding": {
+    "$type": "dimension",
+    "$ref": "#/spacing",
+    "$description": "Padding derived from the spacing token"
+  },
+  "spacing": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "length",
+      "value": 12,
+      "unit": "px"
+    },
+    "$description": "Base component spacing"
+  },
   "textLabel": {
     "$type": "typography",
     "$value": {
       "fontFamily": "Inter",
       "fontSize": {
         "dimensionType": "length",
-        "unit": "px",
         "value": 16,
+        "unit": "px",
         "fontScale": true
       },
       "lineHeight": {
         "dimensionType": "length",
-        "unit": "px",
         "value": 24,
+        "unit": "px",
         "fontScale": true
       }
     },

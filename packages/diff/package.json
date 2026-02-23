@@ -42,9 +42,9 @@
   },
   "dependencies": {
     "@dtifx/core": "workspace:*",
-    "@lapidist/dtif-parser": "1.0.6",
-    "@lapidist/dtif-schema": "1.0.6",
-    "@lapidist/dtif-validator": "1.0.6",
+    "@lapidist/dtif-parser": "2.0.0",
+    "@lapidist/dtif-schema": "2.0.0",
+    "@lapidist/dtif-validator": "2.0.0",
     "ajv": "8.17.1",
     "cli-truncate": "5.1.1",
     "colord": "2.9.3",

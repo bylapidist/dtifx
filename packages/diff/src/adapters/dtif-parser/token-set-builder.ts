@@ -1,5 +1,6 @@
 import type { ParseDocumentResult } from '@lapidist/dtif-parser';
 import {
+  DiagnosticCodes,
   JSON_POINTER_ROOT,
   createDocumentResolver,
   InMemoryDocumentCache,
@@ -30,7 +31,7 @@ interface CreateTokenSetOptions extends TokenParserHooks {
 
 const FILE_DOCUMENT_CACHE = new InMemoryDocumentCache({ maxEntries: 32 });
 const INLINE_SCHEMA_VALIDATOR = createDtifValidator();
-const SCHEMA_VALIDATION_ERROR_CODE = 'SCHEMA_VALIDATION_ERROR';
+const INLINE_SCHEMA_VALIDATION_CODE = DiagnosticCodes.schemaGuard.INVALID_DOCUMENT;
 
 export type { TokenParserHooks };
 
@@ -199,7 +200,7 @@ function validateInlineTree(
       ? rawErrors.map((error) => convertAjvErrorToDiagnostic(error))
       : [
           {
-            code: SCHEMA_VALIDATION_ERROR_CODE,
+            code: INLINE_SCHEMA_VALIDATION_CODE,
             message: 'Inline DTIF payload failed schema validation.',
             severity: 'error',
             pointer: JSON_POINTER_ROOT,
@@ -223,8 +224,8 @@ function convertAjvErrorToDiagnostic(error: AjvErrorLike): Diagnostic {
       : 'Schema validation error';
 
   return {
-    code: `${SCHEMA_VALIDATION_ERROR_CODE}:${keyword}`,
-    message,
+    code: INLINE_SCHEMA_VALIDATION_CODE,
+    message: `[${keyword}] ${message}`,
     severity: 'error',
     pointer,
   } satisfies Diagnostic;

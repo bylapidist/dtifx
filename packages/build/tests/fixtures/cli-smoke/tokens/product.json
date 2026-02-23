@@ -30,6 +30,34 @@
       "net.lapidist.tags": ["product", "released"]
     }
   },
+  "shapeCard": {
+    "$type": "border",
+    "$description": "Asymmetric card corner radii",
+    "$value": {
+      "borderType": "css.border",
+      "color": {
+        "$ref": "#/colorCta"
+      },
+      "radius": {
+        "bottomLeft": { "dimensionType": "length", "value": 24, "unit": "px" },
+        "bottomRight": { "dimensionType": "length", "value": 8, "unit": "px" },
+        "topLeft": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "topRight": { "dimensionType": "length", "value": 8, "unit": "px" }
+      },
+      "style": "solid",
+      "width": {
+        "dimensionType": "length",
+        "value": 0,
+        "unit": "px"
+      }
+    },
+    "$extensions": {
+      "net.lapidist.governance": {
+        "owner": "Product"
+      },
+      "net.lapidist.tags": ["shape", "released"]
+    }
+  },
   "spacingCompact": {
     "$type": "dimension",
     "$description": "Compact spacing token",
@@ -43,34 +71,6 @@
         "owner": "Product"
       },
       "net.lapidist.tags": ["spacing"]
-    }
-  },
-  "shapeCard": {
-    "$type": "border",
-    "$description": "Asymmetric card corner radii",
-    "$value": {
-      "borderType": "css.border",
-      "width": {
-        "dimensionType": "length",
-        "value": 0,
-        "unit": "px"
-      },
-      "style": "solid",
-      "color": {
-        "$ref": "#/colorCta"
-      },
-      "radius": {
-        "topLeft": { "dimensionType": "length", "unit": "px", "value": 16 },
-        "topRight": { "dimensionType": "length", "unit": "px", "value": 8 },
-        "bottomRight": { "dimensionType": "length", "unit": "px", "value": 8 },
-        "bottomLeft": { "dimensionType": "length", "unit": "px", "value": 24 }
-      }
-    },
-    "$extensions": {
-      "net.lapidist.governance": {
-        "owner": "Product"
-      },
-      "net.lapidist.tags": ["shape", "released"]
     }
   }
 }

@@ -25,43 +25,43 @@ const srgb = (r: number, g: number, b: number, hex: string) => ({
 test('formatDiffAsMarkdown produces Markdown sections', () => {
   const previous = createTokenSetFromTree({
     color: {
+      alias: {
+        $type: 'color',
+        $ref: '#/color/brand/primary',
+      },
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
-      },
-      alias: {
-        $type: 'color',
-        $ref: '#/color/brand/primary',
       },
     },
   });
 
   const next = createTokenSetFromTree({
     color: {
+      alias: {
+        $type: 'color',
+        $ref: '#/color/brand/secondary',
+      },
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.2, 0.2, 0.2],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
-      },
-      alias: {
-        $type: 'color',
-        $ref: '#/color/brand/secondary',
       },
     },
   });
@@ -151,11 +151,11 @@ test('formatDiffAsMarkdown can return the summary section only', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
       },
     },
@@ -165,18 +165,18 @@ test('formatDiffAsMarkdown can return the summary section only', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.07, 0.07, 0.07],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -240,11 +240,11 @@ test('formatDiffAsMarkdown renders renamed tokens', () => {
     color: {
       brand: {
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -254,11 +254,11 @@ test('formatDiffAsMarkdown renders renamed tokens', () => {
     color: {
       brand: {
         secondaryRenamed: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -293,11 +293,11 @@ test('formatDiffAsMarkdown includes rationale when showWhy is enabled', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
       },
     },
@@ -307,18 +307,18 @@ test('formatDiffAsMarkdown includes rationale when showWhy is enabled', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.13, 0.13, 0.13],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -338,13 +338,13 @@ test('formatDiffAsMarkdown renders swatches for semi-transparent colors', () => 
   const next = createTokenSetFromTree({
     color: {
       overlay: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [15 / 255, 59 / 255, 255 / 255],
           hex: '#0F3BFF',
           alpha: 0.5,
         },
-        $type: 'color',
       },
     },
   });
@@ -383,23 +383,6 @@ test('formatDiffAsMarkdown renders typography previews alongside swatches', () =
 
   const next = createTokenSetFromTree({
     typography: {
-      heading: {
-        $type: 'typography',
-        $value: {
-          fontFamily: 'Inter',
-          fontWeight: '700',
-          fontSize: {
-            dimensionType: 'length',
-            value: 28,
-            unit: 'px',
-          },
-          lineHeight: {
-            dimensionType: 'length',
-            value: 36,
-            unit: 'px',
-          },
-        },
-      },
       body: {
         $type: 'typography',
         $value: {
@@ -419,6 +402,23 @@ test('formatDiffAsMarkdown renders typography previews alongside swatches', () =
             dimensionType: 'length',
             value: 0.01,
             unit: 'em',
+          },
+        },
+      },
+      heading: {
+        $type: 'typography',
+        $value: {
+          fontFamily: 'Inter',
+          fontWeight: '700',
+          fontSize: {
+            dimensionType: 'length',
+            value: 28,
+            unit: 'px',
+          },
+          lineHeight: {
+            dimensionType: 'length',
+            value: 36,
+            unit: 'px',
           },
         },
       },

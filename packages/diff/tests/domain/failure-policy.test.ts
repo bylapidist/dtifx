@@ -9,12 +9,12 @@ test('evaluateDiffFailure triggers on breaking changes when enabled', () => {
   const previous = createTokenSetFromTree({
     size: {
       medium: {
+        $type: 'dimension',
         $value: {
           dimensionType: 'length',
           value: 16,
           unit: 'px',
         },
-        $type: 'dimension',
       },
     },
   });
@@ -22,12 +22,12 @@ test('evaluateDiffFailure triggers on breaking changes when enabled', () => {
   const next = createTokenSetFromTree({
     size: {
       medium: {
+        $type: 'dimension',
         $value: {
           dimensionType: 'length',
           value: 20,
           unit: 'px',
         },
-        $type: 'dimension',
       },
     },
   });
@@ -47,12 +47,12 @@ test('evaluateDiffFailure triggers on any changes when enabled', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
             hex: '#000000',
           },
-          $type: 'color',
         },
       },
     },
@@ -62,20 +62,20 @@ test('evaluateDiffFailure triggers on any changes when enabled', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
             hex: '#000000',
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [17 / 255, 17 / 255, 17 / 255],
             hex: '#111111',
           },
-          $type: 'color',
         },
       },
     },
@@ -109,12 +109,12 @@ test('evaluateDiffFailure prioritises breaking policies', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
             hex: '#000000',
           },
-          $type: 'color',
         },
       },
     },
@@ -124,12 +124,12 @@ test('evaluateDiffFailure prioritises breaking policies', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [17 / 255, 17 / 255, 17 / 255],
             hex: '#111111',
           },
-          $type: 'color',
         },
       },
     },

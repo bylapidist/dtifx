@@ -7,12 +7,12 @@ import { diffTokenSets, createStructuralRenameStrategy } from '../../src/diff.js
 const baseTree = {
   color: {
     primary: {
+      $type: 'color',
       $value: {
         colorSpace: 'srgb',
         components: [13 / 255, 26 / 255, 51 / 255],
         hex: '#0D1A33',
       },
-      $type: 'color',
       $extensions: { 'example.audit': 'baseline' },
     },
   },
@@ -21,12 +21,12 @@ const baseTree = {
 const renamedTree = {
   color: {
     flagship: {
+      $type: 'color',
       $value: {
         colorSpace: 'srgb',
         components: [13 / 255, 26 / 255, 51 / 255],
         hex: '#0D1A33',
       },
-      $type: 'color',
       $extensions: { 'example.audit': 'updated' },
     },
   },

@@ -2,6 +2,10 @@
   "$version": "1.0.0",
   "color": {
     "brand": {
+      "alias": {
+        "$type": "color",
+        "$ref": "#/color/brand/tertiary"
+      },
       "primary": {
         "$type": "color",
         "$description": "Updated primary",
@@ -32,10 +36,26 @@
           "components": [0.8, 0.85, 0.9],
           "hex": "#CCD9E6"
         }
-      },
-      "alias": {
-        "$type": "color",
-        "$ref": "#/color/brand/tertiary"
+      }
+    }
+  },
+  "display": {
+    "density": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "resolution",
+        "value": 320,
+        "unit": "dpi"
+      }
+    }
+  },
+  "motion": {
+    "rotation": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "angle",
+        "value": 45,
+        "unit": "deg"
       }
     }
   },
@@ -44,46 +64,26 @@
       "100": {
         "$type": "dimension",
         "$value": {
-          "unit": "px",
+          "dimensionType": "length",
           "value": 4,
-          "dimensionType": "length"
+          "unit": "px"
         }
       },
       "150": {
         "$type": "dimension",
         "$value": {
-          "unit": "px",
+          "dimensionType": "length",
           "value": 6,
-          "dimensionType": "length"
+          "unit": "px"
         }
       },
       "200": {
         "$type": "dimension",
         "$value": {
-          "unit": "px",
+          "dimensionType": "length",
           "value": 10,
-          "dimensionType": "length"
+          "unit": "px"
         }
-      }
-    }
-  },
-  "motion": {
-    "rotation": {
-      "$type": "dimension",
-      "$value": {
-        "unit": "deg",
-        "value": 45,
-        "dimensionType": "angle"
-      }
-    }
-  },
-  "display": {
-    "density": {
-      "$type": "dimension",
-      "$value": {
-        "unit": "dpi",
-        "value": 320,
-        "dimensionType": "resolution"
       }
     }
   },
@@ -94,14 +94,14 @@
         "fontFamily": "Inter",
         "fontSize": {
           "dimensionType": "length",
-          "unit": "px",
           "value": 18,
+          "unit": "px",
           "fontScale": true
         },
         "lineHeight": {
           "dimensionType": "length",
-          "unit": "px",
           "value": 28,
+          "unit": "px",
           "fontScale": true
         }
       }

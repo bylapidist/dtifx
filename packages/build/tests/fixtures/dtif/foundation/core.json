@@ -11,15 +11,6 @@
     },
     "$description": "Soft neutral brand color"
   },
-  "spacing": {
-    "$type": "dimension",
-    "$value": {
-      "dimensionType": "length",
-      "value": 8,
-      "unit": "px"
-    },
-    "$description": "Base spacing unit"
-  },
   "rotation": {
     "$type": "dimension",
     "$value": {
@@ -37,5 +28,14 @@
       "unit": "dpi"
     },
     "$description": "Baseline device resolution"
+  },
+  "spacing": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "length",
+      "value": 8,
+      "unit": "px"
+    },
+    "$description": "Base spacing unit"
   }
 }

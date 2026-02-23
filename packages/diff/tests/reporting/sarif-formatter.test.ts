@@ -31,7 +31,7 @@ test('formatDiffAsSarif emits a SARIF log covering all change kinds', () => {
       scale: {
         medium: {
           $type: 'dimension',
-          $value: { dimensionType: 'length', unit: 'px', value: 8 },
+          $value: { dimensionType: 'length', value: 8, unit: 'px' },
         },
       },
     },
@@ -40,14 +40,6 @@ test('formatDiffAsSarif emits a SARIF log covering all change kinds', () => {
   const next = createTokenSetFromTree({
     color: {
       brand: {
-        primary: {
-          $type: 'color',
-          $value: {
-            colorSpace: 'srgb',
-            components: [34 / 255, 34 / 255, 34 / 255],
-            hex: '#222222',
-          },
-        },
         accent: {
           $type: 'color',
           $value: {
@@ -56,13 +48,21 @@ test('formatDiffAsSarif emits a SARIF log covering all change kinds', () => {
             hex: '#FF0000',
           },
         },
+        primary: {
+          $type: 'color',
+          $value: {
+            colorSpace: 'srgb',
+            components: [34 / 255, 34 / 255, 34 / 255],
+            hex: '#222222',
+          },
+        },
       },
     },
     spacing: {
       scale: {
         mid: {
           $type: 'dimension',
-          $value: { dimensionType: 'length', unit: 'px', value: 8 },
+          $value: { dimensionType: 'length', value: 8, unit: 'px' },
         },
       },
     },

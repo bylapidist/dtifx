@@ -29,11 +29,11 @@ test('formatDiffAsCli renders condensed output by default', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
       },
     },
@@ -43,18 +43,18 @@ test('formatDiffAsCli renders condensed output by default', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.13, 0.13, 0.13],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -114,11 +114,11 @@ test('formatDiffAsCli renders expanded metadata in full mode', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
       },
     },
@@ -128,18 +128,18 @@ test('formatDiffAsCli renders expanded metadata in full mode', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.13, 0.13, 0.13],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -203,11 +203,11 @@ test('formatDiffAsCli can fall back to ASCII-friendly glyphs', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
       },
     },
@@ -217,18 +217,18 @@ test('formatDiffAsCli can fall back to ASCII-friendly glyphs', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.13, 0.13, 0.13],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -261,11 +261,11 @@ test('formatDiffAsCli can render the summary only', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
       },
     },
@@ -275,18 +275,18 @@ test('formatDiffAsCli can render the summary only', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.13, 0.13, 0.13],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -327,11 +327,11 @@ test('formatDiffAsCli adapts to narrow widths', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
       },
     },
@@ -341,18 +341,18 @@ test('formatDiffAsCli adapts to narrow widths', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.13, 0.13, 0.13],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -388,43 +388,43 @@ test('formatDiffAsCli adapts to narrow widths', () => {
 test('formatDiffAsCli highlights pointer and metadata changes', () => {
   const previous = createTokenSetFromTree({
     color: {
+      alias: {
+        $type: 'color',
+        $ref: '#/color/brand/primary',
+      },
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
-      },
-      alias: {
-        $type: 'color',
-        $ref: '#/color/brand/primary',
       },
     },
   });
 
   const next = createTokenSetFromTree({
     color: {
+      alias: {
+        $type: 'color',
+        $ref: '#/color/brand/secondary',
+      },
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
-      },
-      alias: {
-        $type: 'color',
-        $ref: '#/color/brand/secondary',
       },
     },
   });
@@ -466,11 +466,11 @@ test('formatDiffAsCli includes rationale when --why is enabled', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
       },
     },
@@ -480,18 +480,18 @@ test('formatDiffAsCli includes rationale when --why is enabled', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.13, 0.13, 0.13],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -514,8 +514,8 @@ test('formatDiffAsCli emits OSC-8 hyperlinks when links are enabled', () => {
     color: {
       brand: {
         primary: {
-          $value: srgb(0, 0, 0, '#000000'),
           $type: 'color',
+          $value: srgb(0, 0, 0, '#000000'),
         },
       },
     },
@@ -525,8 +525,8 @@ test('formatDiffAsCli emits OSC-8 hyperlinks when links are enabled', () => {
     color: {
       brand: {
         primary: {
-          $value: srgb(17 / 255, 17 / 255, 17 / 255, '#111111'),
           $type: 'color',
+          $value: srgb(17 / 255, 17 / 255, 17 / 255, '#111111'),
         },
       },
     },
@@ -639,8 +639,8 @@ test('formatDiffAsCli disables hyperlinks by default in CI environments', () => 
     color: {
       brand: {
         primary: {
-          $value: srgb(0, 0, 0, '#000000'),
           $type: 'color',
+          $value: srgb(0, 0, 0, '#000000'),
           $extensions: {
             'example.source': {
               uri: 'file:///tmp/previous.json',
@@ -657,8 +657,8 @@ test('formatDiffAsCli disables hyperlinks by default in CI environments', () => 
     color: {
       brand: {
         primary: {
-          $value: srgb(17 / 255, 17 / 255, 17 / 255, '#111111'),
           $type: 'color',
+          $value: srgb(17 / 255, 17 / 255, 17 / 255, '#111111'),
           $extensions: {
             'example.source': {
               uri: 'file:///tmp/next.json',
@@ -706,11 +706,11 @@ test('formatDiffAsCli renders renamed tokens', () => {
     color: {
       brand: {
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -720,11 +720,11 @@ test('formatDiffAsCli renders renamed tokens', () => {
     color: {
       brand: {
         secondaryRenamed: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -778,13 +778,13 @@ test('formatDiffAsCli groups changes by token type', () => {
   const next = createTokenSetFromTree({
     color: {
       brand: {
-        primary: {
-          $type: 'color',
-          $value: srgb(34 / 255, 34 / 255, 34 / 255, '#222222'),
-        },
         accent: {
           $type: 'color',
           $value: srgb(1, 0, 0, '#FF0000'),
+        },
+        primary: {
+          $type: 'color',
+          $value: srgb(34 / 255, 34 / 255, 34 / 255, '#222222'),
         },
       },
     },
@@ -828,7 +828,6 @@ test('formatDiffAsCli renders ANSI color swatches when enabled', () => {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
       },
     },
@@ -838,18 +837,18 @@ test('formatDiffAsCli renders ANSI color swatches when enabled', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.13, 0.13, 0.13],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -920,23 +919,6 @@ test('formatDiffAsCli annotates typography changes', () => {
 
   const next = createTokenSetFromTree({
     typography: {
-      heading: {
-        $type: 'typography',
-        $value: {
-          fontFamily: 'Inter',
-          fontWeight: '700',
-          fontSize: {
-            dimensionType: 'length',
-            value: 28,
-            unit: 'px',
-          },
-          lineHeight: {
-            dimensionType: 'length',
-            value: 36,
-            unit: 'px',
-          },
-        },
-      },
       body: {
         $type: 'typography',
         $value: {
@@ -956,6 +938,23 @@ test('formatDiffAsCli annotates typography changes', () => {
             dimensionType: 'length',
             value: 0.01,
             unit: 'em',
+          },
+        },
+      },
+      heading: {
+        $type: 'typography',
+        $value: {
+          fontFamily: 'Inter',
+          fontWeight: '700',
+          fontSize: {
+            dimensionType: 'length',
+            value: 28,
+            unit: 'px',
+          },
+          lineHeight: {
+            dimensionType: 'length',
+            value: 36,
+            unit: 'px',
           },
         },
       },
@@ -1204,8 +1203,8 @@ test('formatDiffAsCli preserves hyperlinks and ANSI styling when wrapping entrie
       color: {
         brand: {
           primary: {
-            $value: srgb(0, 0, 0, '#000000'),
             $type: 'color',
+            $value: srgb(0, 0, 0, '#000000'),
           },
         },
       },
@@ -1218,14 +1217,14 @@ test('formatDiffAsCli preserves hyperlinks and ANSI styling when wrapping entrie
       color: {
         brand: {
           primary: {
-            $value: srgb(0.13, 0.13, 0.13, '#212121'),
             $type: 'color',
+            $value: srgb(0.13, 0.13, 0.13, '#212121'),
           },
           secondaryButtonBackgroundCritical: {
+            $type: 'color',
             $description:
               'A critical button background with an extremely long description to force truncation in CLI outputs.',
             $value: srgb(1, 0, 0, '#FF0000'),
-            $type: 'color',
           },
         },
       },

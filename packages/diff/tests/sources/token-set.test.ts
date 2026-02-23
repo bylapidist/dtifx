@@ -181,7 +181,7 @@ test('createTokenSetFromTree rejects missing alias targets', () => {
     (error: unknown) => {
       assert.ok(error instanceof Error);
       assert.match(error.message, /Failed to parse DTIF document/);
-      assert.match(error.message, /DTIF6012/);
+      assert.match(error.message, /DTIF4010/);
       assert.match(error.message, /#\/color\/palette\/primary\/\$ref/);
       return true;
     },
@@ -189,7 +189,7 @@ test('createTokenSetFromTree rejects missing alias targets', () => {
 
   assert.ok(diagnostics.length > 0);
   assert.ok(diagnostics.every((diagnostic) => diagnostic.severity === 'error'));
-  assert.ok(diagnostics.some((diagnostic) => diagnostic.code === 'DTIF6012'));
+  assert.ok(diagnostics.some((diagnostic) => diagnostic.code === 'DTIF4010'));
   assert.ok(
     diagnostics.some((diagnostic) => diagnostic.pointer === '#/color/palette/primary/$ref'),
   );
@@ -219,7 +219,7 @@ test('createTokenSetFromTree rejects cyclic alias pointers', () => {
     (error: unknown) => {
       assert.ok(error instanceof Error);
       assert.match(error.message, /Failed to parse DTIF document/);
-      assert.match(error.message, /DTIF1012/);
+      assert.match(error.message, /DTIF4010/);
       assert.match(error.message, /#\/color\/palette\/primary/);
       return true;
     },
@@ -227,8 +227,10 @@ test('createTokenSetFromTree rejects cyclic alias pointers', () => {
 
   assert.ok(diagnostics.length > 0);
   assert.ok(diagnostics.every((diagnostic) => diagnostic.severity === 'error'));
-  assert.ok(diagnostics.some((diagnostic) => diagnostic.code === 'DTIF1012'));
-  assert.ok(diagnostics.some((diagnostic) => diagnostic.pointer === '#/color/palette/primary'));
+  assert.ok(diagnostics.some((diagnostic) => diagnostic.code === 'DTIF4010'));
+  assert.ok(
+    diagnostics.some((diagnostic) => diagnostic.pointer === '#/color/palette/primary/$ref'),
+  );
 });
 
 test('createTokenSetFromTree resolves nested alias chains', () => {
@@ -431,9 +433,7 @@ test('createInlineTokenSet forwards schema diagnostics to hooks', () => {
 
   assert.ok(diagnostics.length > 0);
   assert.ok(diagnostics.every((diagnostic) => diagnostic.severity === 'error'));
-  assert.ok(
-    diagnostics.every((diagnostic) => diagnostic.code?.startsWith('SCHEMA_VALIDATION_ERROR')),
-  );
+  assert.ok(diagnostics.every((diagnostic) => diagnostic.code?.startsWith('DTIF')));
   assert.ok(diagnostics.some((diagnostic) => diagnostic.pointer === '#/color/invalid/$value'));
   assert.ok(
     diagnostics.every(
