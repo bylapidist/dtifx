@@ -1,5 +1,16 @@
 # @dtifx/diff
 
+## 5.0.0
+
+### Major Changes
+
+- 62e1c48: Align parser integration and token-set construction with DTIF v2 semantic conformance.
+
+### Patch Changes
+
+- Updated dependencies [62e1c48]
+  - @dtifx/core@5.0.0
+
 ## 4.1.6
 
 ### Patch Changes
