@@ -1,5 +1,12 @@
 # @dtifx/extractors
 
+## 5.0.0
+
+### Patch Changes
+
+- Updated dependencies [62e1c48]
+  - @dtifx/core@5.0.0
+
 ## 4.1.6
 
 ### Patch Changes
