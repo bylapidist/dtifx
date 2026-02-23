@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@dtifx/core": "workspace:*",
-    "@lapidist/dtif-parser": "1.0.6"
+    "@lapidist/dtif-parser": "2.0.0"
   },
   "private": false,
   "publishConfig": {
