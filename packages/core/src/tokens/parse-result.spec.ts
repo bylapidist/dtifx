@@ -60,7 +60,7 @@ describe('createTokenSetFromParseResult', () => {
     expect(diagnostics).toHaveLength(0);
   });
 
-  it('omits invalid replacement pointers without diagnostics', () => {
+  it('omits invalid replacement pointers and reports diagnostics', () => {
     const result = createParseResultWithDeprecatedReplacement({
       replacementValue: '  ',
     });
@@ -71,7 +71,9 @@ describe('createTokenSetFromParseResult', () => {
     const snapshot = tokenSet.tokens.get('#/palette/primary');
 
     expect(snapshot?.deprecated?.supersededBy).toBeUndefined();
-    expect(diagnostics).toHaveLength(0);
+    expect(diagnostics).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: 'DTIF1010', severity: 'error' })]),
+    );
   });
 
   it('marks tokens as deprecated when replacement metadata is omitted', () => {
@@ -88,7 +90,7 @@ describe('createTokenSetFromParseResult', () => {
     expect(diagnostics).toHaveLength(0);
   });
 
-  it('retains replacement pointers when replacement type differs from deprecated token type', () => {
+  it('retains replacement pointers and reports type mismatch diagnostics', () => {
     const result = createParseResultWithDeprecatedReplacement({
       targetType: 'dimension',
     });
@@ -102,7 +104,9 @@ describe('createTokenSetFromParseResult', () => {
       pointer: '#/palette/secondary',
       uri: 'memory://test.tokens.json',
     });
-    expect(diagnostics).toHaveLength(0);
+    expect(diagnostics).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: 'DTIF1021', severity: 'error' })]),
+    );
   });
 
   it('populates canonical references, resolution paths, and alias trails', () => {

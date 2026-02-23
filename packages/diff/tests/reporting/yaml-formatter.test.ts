@@ -16,20 +16,20 @@ test('formatDiffAsYaml emits a structured change payload', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.1, 0.2, 0.3],
             hex: '#1A334D',
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.9, 0.9, 0.9],
             hex: '#E5E5E5',
           },
-          $type: 'color',
         },
       },
     },
@@ -39,29 +39,29 @@ test('formatDiffAsYaml emits a structured change payload', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.2, 0.3, 0.4],
             hex: '#334D66',
           },
-          $type: 'color',
           $description: 'Updated',
         },
         secondaryRenamed: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.9, 0.9, 0.9],
             hex: '#E5E5E5',
           },
-          $type: 'color',
         },
         tertiary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.8, 0.85, 0.9],
             hex: '#CCD9E6',
           },
-          $type: 'color',
         },
       },
     },
@@ -87,20 +87,20 @@ test('formatDiffAsYaml honours the requested top risk limit', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
             hex: '#000000',
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [17 / 255, 17 / 255, 17 / 255],
             hex: '#111111',
           },
-          $type: 'color',
         },
       },
     },
@@ -110,28 +110,28 @@ test('formatDiffAsYaml honours the requested top risk limit', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [34 / 255, 34 / 255, 34 / 255],
             hex: '#222222',
           },
-          $type: 'color',
         },
         secondaryRenamed: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [51 / 255, 51 / 255, 51 / 255],
             hex: '#333333',
           },
-          $type: 'color',
         },
         tertiary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [68 / 255, 68 / 255, 68 / 255],
             hex: '#444444',
           },
-          $type: 'color',
         },
       },
     },
@@ -152,12 +152,12 @@ test('formatDiffAsYaml can render only the summary', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.1, 0.2, 0.3],
             hex: '#1A334D',
           },
-          $type: 'color',
         },
       },
     },
@@ -167,12 +167,12 @@ test('formatDiffAsYaml can render only the summary', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.2, 0.3, 0.4],
             hex: '#334D66',
           },
-          $type: 'color',
         },
       },
     },

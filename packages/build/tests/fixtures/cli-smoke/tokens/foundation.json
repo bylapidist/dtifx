@@ -2,6 +2,17 @@
   "$version": "1.0.0",
   "$schema": "https://dtif.lapidist.net/schema/core.json",
   "$description": "Foundation tokens for CLI smoke tests",
+  "colorBackground": {
+    "$type": "color",
+    "$description": "Background alias to brand",
+    "$ref": "#/colorBrand",
+    "$extensions": {
+      "net.lapidist.governance": {
+        "owner": "Design Systems"
+      },
+      "net.lapidist.tags": ["foundation", "released"]
+    }
+  },
   "colorBrand": {
     "$type": "color",
     "$description": "Primary brand color",
@@ -14,17 +25,6 @@
         "owner": "Design Systems"
       },
       "net.lapidist.tags": ["brand", "released"]
-    }
-  },
-  "colorBackground": {
-    "$type": "color",
-    "$description": "Background alias to brand",
-    "$ref": "#/colorBrand",
-    "$extensions": {
-      "net.lapidist.governance": {
-        "owner": "Design Systems"
-      },
-      "net.lapidist.tags": ["foundation", "released"]
     }
   },
   "spacingBase": {

@@ -115,7 +115,7 @@ describe('build runtime integration', () => {
             $schema: baseSchema,
             virtual: {
               $type: 'dimension',
-              $value: { dimensionType: 'length', unit: 'px', value: 16 },
+              $value: { dimensionType: 'length', value: 16, unit: 'px' },
             },
           }),
         },

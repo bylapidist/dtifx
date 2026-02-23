@@ -22,20 +22,20 @@ test('formatDiffAsJson emits a structured change payload', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.1, 0.2, 0.3],
             hex: '#1A334D',
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.9, 0.9, 0.9],
             hex: '#E5E5E5',
           },
-          $type: 'color',
         },
       },
     },
@@ -45,29 +45,29 @@ test('formatDiffAsJson emits a structured change payload', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.2, 0.3, 0.4],
             hex: '#334D66',
           },
-          $type: 'color',
           $description: 'Updated',
         },
         secondaryRenamed: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.9, 0.9, 0.9],
             hex: '#E5E5E5',
           },
-          $type: 'color',
         },
         tertiary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.8, 0.85, 0.9],
             hex: '#CCD9E6',
           },
-          $type: 'color',
         },
       },
     },
@@ -259,12 +259,12 @@ test('formatDiffAsJson can render only the summary', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.1, 0.2, 0.3],
             hex: '#1A334D',
           },
-          $type: 'color',
         },
       },
     },
@@ -274,12 +274,12 @@ test('formatDiffAsJson can render only the summary', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.2, 0.3, 0.4],
             hex: '#334D66',
           },
-          $type: 'color',
         },
       },
     },
@@ -355,12 +355,12 @@ test('formatDiffAsJson treats detailed mode as full output', () => {
   const previous = createTokenSetFromTree({
     color: {
       primary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0, 0, 0],
           hex: '#000000',
         },
-        $type: 'color',
       },
     },
   });
@@ -368,20 +368,20 @@ test('formatDiffAsJson treats detailed mode as full output', () => {
   const next = createTokenSetFromTree({
     color: {
       primary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [17 / 255, 17 / 255, 17 / 255],
           hex: '#111111',
         },
-        $type: 'color',
       },
       secondary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [1, 1, 1],
           hex: '#FFFFFF',
         },
-        $type: 'color',
       },
     },
   });
@@ -411,20 +411,20 @@ test('createJsonPayload returns deterministic change ordering', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
             hex: '#000000',
           },
-          $type: 'color',
         },
         removed: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [17 / 255, 17 / 255, 17 / 255],
             hex: '#111111',
           },
-          $type: 'color',
         },
       },
     },
@@ -433,29 +433,29 @@ test('createJsonPayload returns deterministic change ordering', () => {
   const next = createTokenSetFromTree({
     color: {
       brand: {
-        primary: {
-          $value: {
-            colorSpace: 'srgb',
-            components: [1 / 255, 1 / 255, 1 / 255],
-            hex: '#010101',
-          },
-          $type: 'color',
-        },
         added: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [34 / 255, 34 / 255, 34 / 255],
             hex: '#222222',
           },
+        },
+        primary: {
           $type: 'color',
+          $value: {
+            colorSpace: 'srgb',
+            components: [1 / 255, 1 / 255, 1 / 255],
+            hex: '#010101',
+          },
         },
         renamed: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [17 / 255, 17 / 255, 17 / 255],
             hex: '#111111',
           },
-          $type: 'color',
         },
       },
     },
@@ -474,20 +474,20 @@ test('createJsonPayload honours the requested top risk limit', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
             hex: '#000000',
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [17 / 255, 17 / 255, 17 / 255],
             hex: '#111111',
           },
-          $type: 'color',
         },
       },
     },
@@ -497,28 +497,28 @@ test('createJsonPayload honours the requested top risk limit', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [34 / 255, 34 / 255, 34 / 255],
             hex: '#222222',
           },
-          $type: 'color',
         },
         secondaryRenamed: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [51 / 255, 51 / 255, 51 / 255],
             hex: '#333333',
           },
-          $type: 'color',
         },
         tertiary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [68 / 255, 68 / 255, 68 / 255],
             hex: '#444444',
           },
-          $type: 'color',
         },
       },
     },

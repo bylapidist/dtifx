@@ -29,76 +29,76 @@ function expectGroupSummary(summary: TokenDiffSummary, group: string): TokenDiff
 test('filterTokenDiff filters changes by token type', () => {
   const previous = createTokenSetFromTree({
     color: {
+      accent: {
+        $type: 'color',
+        $value: {
+          colorSpace: 'srgb',
+          components: [0, 1, 0],
+        },
+      },
       primary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.1, 0.2, 0.3],
           hex: '#1A334D',
         },
-        $type: 'color',
-      },
-      accent: {
-        $value: {
-          colorSpace: 'srgb',
-          components: [0, 1, 0],
-        },
-        $type: 'color',
       },
     },
     size: {
       small: {
+        $type: 'dimension',
         $value: {
           dimensionType: 'length',
           value: 4,
           unit: 'px',
         },
-        $type: 'dimension',
       },
     },
   });
 
   const next = createTokenSetFromTree({
     color: {
+      accentRenamed: {
+        $type: 'color',
+        $value: {
+          colorSpace: 'srgb',
+          components: [0, 1, 0],
+        },
+      },
       primary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.15, 0.25, 0.35],
           hex: '#263F59',
         },
-        $type: 'color',
-      },
-      accentRenamed: {
-        $value: {
-          colorSpace: 'srgb',
-          components: [0, 1, 0],
-        },
-        $type: 'color',
       },
       tertiary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.2, 0.2, 0.2],
           hex: '#333333',
         },
-        $type: 'color',
       },
     },
     size: {
-      small: {
-        $value: {
-          dimensionType: 'length',
-          value: 8,
-          unit: 'px',
-        },
-        $type: 'dimension',
-      },
       large: {
+        $type: 'dimension',
         $value: {
           dimensionType: 'length',
           value: 16,
           unit: 'px',
         },
+      },
+      small: {
         $type: 'dimension',
+        $value: {
+          dimensionType: 'length',
+          value: 8,
+          unit: 'px',
+        },
       },
     },
   });
@@ -165,31 +165,31 @@ test('filterTokenDiff filters changes by top-level group', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
             hex: '#000000',
           },
-          $type: 'color',
         },
       },
     },
     spacing: {
-      small: {
-        $value: {
-          dimensionType: 'length',
-          value: 4,
-          unit: 'px',
-        },
-        $type: 'dimension',
-      },
       medium: {
+        $type: 'dimension',
         $value: {
           dimensionType: 'length',
           value: 12,
           unit: 'px',
         },
+      },
+      small: {
         $type: 'dimension',
+        $value: {
+          dimensionType: 'length',
+          value: 4,
+          unit: 'px',
+        },
       },
     },
   });
@@ -198,39 +198,39 @@ test('filterTokenDiff filters changes by top-level group', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.1, 0.1, 0.1],
             hex: '#1A1A1A',
           },
-          $type: 'color',
         },
       },
     },
     spacing: {
-      small: {
-        $value: {
-          dimensionType: 'length',
-          value: 8,
-          unit: 'px',
-        },
-        $type: 'dimension',
-      },
-      md: {
-        $value: {
-          dimensionType: 'length',
-          value: 12,
-          unit: 'px',
-        },
-        $type: 'dimension',
-      },
       large: {
+        $type: 'dimension',
         $value: {
           dimensionType: 'length',
           value: 24,
           unit: 'px',
         },
+      },
+      md: {
         $type: 'dimension',
+        $value: {
+          dimensionType: 'length',
+          value: 12,
+          unit: 'px',
+        },
+      },
+      small: {
+        $type: 'dimension',
+        $value: {
+          dimensionType: 'length',
+          value: 8,
+          unit: 'px',
+        },
       },
     },
   });
@@ -377,38 +377,38 @@ const scopedPreviousTokens = {
   color: {
     brand: {
       primary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.05, 0.1, 0.2],
           hex: '#0D1A33',
         },
-        $type: 'color',
       },
       secondary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.5, 0.5, 0.5],
           hex: '#808080',
         },
-        $type: 'color',
       },
       tertiary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.3, 0.3, 0.3],
           hex: '#4D4D4D',
         },
-        $type: 'color',
       },
     },
     neutrals: {
       base: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [1, 1, 1],
           hex: '#FFFFFF',
         },
-        $type: 'color',
       },
     },
   },
@@ -417,46 +417,46 @@ const scopedPreviousTokens = {
 const scopedNextTokens = {
   color: {
     brand: {
+      accent: {
+        $type: 'color',
+        $value: {
+          colorSpace: 'srgb',
+          components: [1, 0.8, 0],
+        },
+      },
       primary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.1, 0.1, 0.1],
           hex: '#1A1A1A',
         },
-        $type: 'color',
-      },
-      accent: {
-        $value: {
-          colorSpace: 'srgb',
-          components: [1, 0.8, 0],
-        },
-        $type: 'color',
       },
       tertiary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.3, 0.3, 0.3],
           hex: '#4D4D4D',
         },
-        $type: 'color',
       },
     },
     neutrals: {
       base: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [1, 1, 1],
           hex: '#FFFFFF',
         },
-        $type: 'color',
       },
       secondary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.5, 0.5, 0.5],
           hex: '#808080',
         },
-        $type: 'color',
       },
     },
   },
@@ -465,79 +465,79 @@ const scopedNextTokens = {
 const impactPreviousTokens = {
   color: {
     primary: {
+      $type: 'color',
       $value: {
         colorSpace: 'srgb',
         components: [0, 0, 0],
         hex: '#000000',
       },
-      $type: 'color',
     },
     secondary: {
+      $type: 'color',
       $value: {
         colorSpace: 'srgb',
         components: [1, 1, 1],
         hex: '#FFFFFF',
       },
-      $type: 'color',
       $description: 'Secondary brand color',
     },
     tertiary: {
+      $type: 'color',
       $value: {
         colorSpace: 'srgb',
         components: [0.94, 0.94, 0.94],
         hex: '#F0F0F0',
       },
-      $type: 'color',
     },
   },
   size: {
     small: {
+      $type: 'dimension',
       $value: {
         dimensionType: 'length',
         value: 8,
         unit: 'px',
       },
-      $type: 'dimension',
     },
   },
 } as const;
 
 const impactNextTokens = {
   color: {
-    primary: {
-      $value: {
-        colorSpace: 'srgb',
-        components: [0.1, 0.1, 0.1],
-        hex: '#1A1A1A',
-      },
-      $type: 'color',
-    },
-    secondary: {
-      $value: {
-        colorSpace: 'srgb',
-        components: [1, 1, 1],
-        hex: '#FFFFFF',
-      },
-      $type: 'color',
-      $description: 'Updated secondary color',
-    },
     accent: {
+      $type: 'color',
       $value: {
         colorSpace: 'srgb',
         components: [1, 0, 0],
         hex: '#FF0000',
       },
+    },
+    primary: {
       $type: 'color',
+      $value: {
+        colorSpace: 'srgb',
+        components: [0.1, 0.1, 0.1],
+        hex: '#1A1A1A',
+      },
+    },
+    secondary: {
+      $type: 'color',
+      $value: {
+        colorSpace: 'srgb',
+        components: [1, 1, 1],
+        hex: '#FFFFFF',
+      },
+      $description: 'Updated secondary color',
     },
   },
   size: {
     medium: {
+      $type: 'dimension',
       $value: {
         dimensionType: 'length',
         value: 8,
         unit: 'px',
       },
-      $type: 'dimension',
     },
   },
 } as const;
@@ -731,68 +731,68 @@ test('filterTokenDiff accepts the singular impact alias', () => {
 test('filterTokenDiff filters changes by change kind', () => {
   const previous = createTokenSetFromTree({
     color: {
-      primary: {
-        $value: {
-          colorSpace: 'srgb',
-          components: [0, 0, 0],
-          hex: '#000000',
-        },
-        $type: 'color',
-      },
       accent: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [1, 204 / 255, 0],
           hex: '#FFCC00',
         },
-        $type: 'color',
       },
       alias: {
         $type: 'color',
         $ref: '#/color/accent',
       },
+      primary: {
+        $type: 'color',
+        $value: {
+          colorSpace: 'srgb',
+          components: [0, 0, 0],
+          hex: '#000000',
+        },
+      },
     },
     spacing: {
       small: {
+        $type: 'dimension',
         $value: {
           dimensionType: 'length',
           value: 4,
           unit: 'px',
         },
-        $type: 'dimension',
       },
     },
   });
 
   const next = createTokenSetFromTree({
     color: {
-      primary: {
-        $value: {
-          colorSpace: 'srgb',
-          components: [17 / 255, 17 / 255, 17 / 255],
-          hex: '#111111',
-        },
-        $type: 'color',
-      },
       accent: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [1, 204 / 255, 0],
           hex: '#FFCC00',
         },
-        $type: 'color',
       },
       aliasRenamed: {
         $type: 'color',
         $ref: '#/color/accent',
       },
+      primary: {
+        $type: 'color',
+        $value: {
+          colorSpace: 'srgb',
+          components: [17 / 255, 17 / 255, 17 / 255],
+          hex: '#111111',
+        },
+      },
       tertiary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [1, 1, 1],
           hex: '#FFFFFF',
         },
-        $type: 'color',
       },
     },
   });

@@ -12,28 +12,28 @@ import { createTokenSetFromTree } from '../../src/token-set.js';
 const baseTokens = {
   color: {
     brand: {
+      alias: {
+        $ref: '#/color/brand/primary',
+        $type: 'color',
+      },
       primary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.05, 0.1, 0.2],
           hex: '#0D1A33',
         },
-        $type: 'color',
         $description: 'Brand primary',
         $extensions: { 'example.audit': { status: 'baseline' } },
         $deprecated: { $replacement: '#/color/brand/secondary' },
       },
       secondary: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.9, 0.9, 0.9],
           hex: '#E5E5E5',
         },
-        $type: 'color',
-      },
-      alias: {
-        $ref: '#/color/brand/primary',
-        $type: 'color',
       },
     },
   },
@@ -60,36 +60,36 @@ test('diffTokenSets detects additions, renames, and modifications', () => {
   const next = createTokenSetFromTree({
     color: {
       brand: {
+        alias: {
+          $ref: '#/color/brand/tertiary',
+          $type: 'color',
+        },
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.2, 0.15, 0.1],
             hex: '#332619',
           },
-          $type: 'color',
           $description: 'Updated primary',
           $extensions: { 'example.audit': { status: 'updated' } },
           $deprecated: true,
         },
         secondaryRenamed: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.9, 0.9, 0.9],
             hex: '#E5E5E5',
           },
-          $type: 'color',
         },
         tertiary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.8, 0.85, 0.9],
             hex: '#CCD9E6',
           },
-          $type: 'color',
-        },
-        alias: {
-          $ref: '#/color/brand/tertiary',
-          $type: 'color',
         },
       },
     },
@@ -205,14 +205,22 @@ test('diffTokenSets counts metadata-only modifications separately', () => {
   const previous = createTokenSetFromTree({
     color: {
       info: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0, 85 / 255, 1],
           hex: '#0055FF',
         },
-        $type: 'color',
         $description: 'Informational blue',
-        $deprecated: { $replacement: '#/color/info/new' },
+        $deprecated: { $replacement: '#/color/infoNew' },
+      },
+      infoNew: {
+        $type: 'color',
+        $value: {
+          colorSpace: 'srgb',
+          components: [0, 85 / 255, 1],
+          hex: '#0055FF',
+        },
       },
     },
   });
@@ -220,14 +228,22 @@ test('diffTokenSets counts metadata-only modifications separately', () => {
   const next = createTokenSetFromTree({
     color: {
       info: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0, 85 / 255, 1],
           hex: '#0055FF',
         },
-        $type: 'color',
         $description: 'Updated informational blue',
         $deprecated: true,
+      },
+      infoNew: {
+        $type: 'color',
+        $value: {
+          colorSpace: 'srgb',
+          components: [0, 85 / 255, 1],
+          hex: '#0055FF',
+        },
       },
     },
   });
@@ -264,12 +280,12 @@ test('diffTokenSets recognises renames when descriptions change', () => {
   const previous = createTokenSetFromTree({
     color: {
       accent: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.5, 0.6, 0.7],
           hex: '#8099B2',
         },
-        $type: 'color',
         $description: 'Accent',
       },
     },
@@ -278,12 +294,12 @@ test('diffTokenSets recognises renames when descriptions change', () => {
   const next = createTokenSetFromTree({
     color: {
       accentNew: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.5, 0.6, 0.7],
           hex: '#8099B2',
         },
-        $type: 'color',
         $description: 'Accent updated',
       },
     },

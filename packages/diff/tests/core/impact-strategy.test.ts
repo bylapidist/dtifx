@@ -8,34 +8,34 @@ test('createFieldImpactStrategy customises addition and metadata impacts', () =>
   const previous = createTokenSetFromTree({
     color: {
       base: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0, 0, 0],
           hex: '#000000',
         },
-        $type: 'color',
       },
     },
   });
 
   const next = createTokenSetFromTree({
     color: {
-      base: {
-        $value: {
-          colorSpace: 'srgb',
-          components: [0, 0, 0],
-          hex: '#000000',
-        },
-        $type: 'color',
-        $description: 'Updated copy',
-      },
       accent: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [1, 1, 1],
           hex: '#ffffff',
         },
+      },
+      base: {
         $type: 'color',
+        $value: {
+          colorSpace: 'srgb',
+          components: [0, 0, 0],
+          hex: '#000000',
+        },
+        $description: 'Updated copy',
       },
     },
   });

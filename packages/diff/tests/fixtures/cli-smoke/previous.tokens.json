@@ -2,6 +2,10 @@
   "$version": "1.0.0",
   "color": {
     "brand": {
+      "alias": {
+        "$type": "color",
+        "$ref": "#/color/brand/primary"
+      },
       "primary": {
         "$type": "color",
         "$description": "Brand primary",
@@ -26,10 +30,26 @@
           "components": [0.9, 0.9, 0.9],
           "hex": "#E5E5E5"
         }
-      },
-      "alias": {
-        "$type": "color",
-        "$ref": "#/color/brand/primary"
+      }
+    }
+  },
+  "display": {
+    "density": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "resolution",
+        "value": 300,
+        "unit": "dpi"
+      }
+    }
+  },
+  "motion": {
+    "rotation": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "angle",
+        "value": 30,
+        "unit": "deg"
       }
     }
   },
@@ -38,38 +58,18 @@
       "100": {
         "$type": "dimension",
         "$value": {
-          "unit": "px",
+          "dimensionType": "length",
           "value": 4,
-          "dimensionType": "length"
+          "unit": "px"
         }
       },
       "200": {
         "$type": "dimension",
         "$value": {
-          "unit": "px",
+          "dimensionType": "length",
           "value": 8,
-          "dimensionType": "length"
+          "unit": "px"
         }
-      }
-    }
-  },
-  "motion": {
-    "rotation": {
-      "$type": "dimension",
-      "$value": {
-        "unit": "deg",
-        "value": 30,
-        "dimensionType": "angle"
-      }
-    }
-  },
-  "display": {
-    "density": {
-      "$type": "dimension",
-      "$value": {
-        "unit": "dpi",
-        "value": 300,
-        "dimensionType": "resolution"
       }
     }
   },
@@ -80,14 +80,14 @@
         "fontFamily": "Inter",
         "fontSize": {
           "dimensionType": "length",
-          "unit": "px",
           "value": 16,
+          "unit": "px",
           "fontScale": true
         },
         "lineHeight": {
           "dimensionType": "length",
-          "unit": "px",
           "value": 24,
+          "unit": "px",
           "fontScale": true
         }
       }

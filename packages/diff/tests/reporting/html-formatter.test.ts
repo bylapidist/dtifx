@@ -21,22 +21,22 @@ test('formatDiffAsHtml renders a complete document with sections', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
       },
     },
     size: {
       small: {
+        $type: 'dimension',
         $value: {
           dimensionType: 'length',
           value: 4,
           unit: 'px',
         },
-        $type: 'dimension',
       },
     },
   });
@@ -45,37 +45,37 @@ test('formatDiffAsHtml renders a complete document with sections', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.13, 0.13, 0.13],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
     size: {
-      small: {
-        $value: {
-          dimensionType: 'length',
-          value: 8,
-          unit: 'px',
-        },
-        $type: 'dimension',
-      },
       medium: {
+        $type: 'dimension',
         $value: {
           dimensionType: 'length',
           value: 16,
           unit: 'px',
         },
+      },
+      small: {
         $type: 'dimension',
+        $value: {
+          dimensionType: 'length',
+          value: 8,
+          unit: 'px',
+        },
       },
     },
   });
@@ -193,11 +193,11 @@ test('formatDiffAsHtml can emit the summary section only', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0, 0, 0],
           },
-          $type: 'color',
         },
       },
     },
@@ -207,18 +207,18 @@ test('formatDiffAsHtml can emit the summary section only', () => {
     color: {
       brand: {
         primary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [0.2, 0.2, 0.2],
           },
-          $type: 'color',
         },
         secondary: {
+          $type: 'color',
           $value: {
             colorSpace: 'srgb',
             components: [1, 1, 1],
           },
-          $type: 'color',
         },
       },
     },
@@ -238,11 +238,11 @@ test('formatDiffAsHtml renders rename and metadata changes with escaping', () =>
   const previous = createTokenSetFromTree({
     color: {
       accent: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.67, 0.8, 0.94],
         },
-        $type: 'color',
       },
       alias: {
         $type: 'color',
@@ -254,11 +254,11 @@ test('formatDiffAsHtml renders rename and metadata changes with escaping', () =>
   const next = createTokenSetFromTree({
     color: {
       accentRenamed: {
+        $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0.67, 0.8, 0.94],
         },
-        $type: 'color',
       },
       alias: {
         $type: 'color',
@@ -321,21 +321,21 @@ test('formatDiffAsHtml reveals why text when requested', () => {
 test('formatDiffAsHtml limits pointer lists by default', () => {
   const previous = createTokenSetFromTree({
     color: {
-      base: { $type: 'color', $value: { colorSpace: 'srgb', components: [0, 0, 0] } },
       aliasA: { $type: 'color', $ref: '#/color/base' },
       aliasB: { $type: 'color', $ref: '#/color/aliasA' },
       aliasC: { $type: 'color', $ref: '#/color/aliasB' },
       aliasD: { $type: 'color', $ref: '#/color/aliasC' },
+      base: { $type: 'color', $value: { colorSpace: 'srgb', components: [0, 0, 0] } },
     },
   });
 
   const next = createTokenSetFromTree({
     color: {
-      base: { $type: 'color', $value: { colorSpace: 'srgb', components: [0, 0, 0] } },
       aliasA: { $type: 'color', $ref: '#/color/base' },
       aliasB: { $type: 'color', $ref: '#/color/aliasA' },
       aliasC: { $type: 'color', $ref: '#/color/aliasB' },
       aliasD: { $type: 'color', $ref: '#/color/aliasA' },
+      base: { $type: 'color', $value: { colorSpace: 'srgb', components: [0, 0, 0] } },
     },
   });
 
@@ -383,23 +383,6 @@ test('formatDiffAsHtml renders typography previews for additions and changes', (
 
   const next = createTokenSetFromTree({
     typography: {
-      heading: {
-        $type: 'typography',
-        $value: {
-          fontFamily: 'Inter',
-          fontWeight: '700',
-          fontSize: {
-            dimensionType: 'length',
-            value: 28,
-            unit: 'px',
-          },
-          lineHeight: {
-            dimensionType: 'length',
-            value: 36,
-            unit: 'px',
-          },
-        },
-      },
       body: {
         $type: 'typography',
         $value: {
@@ -419,6 +402,23 @@ test('formatDiffAsHtml renders typography previews for additions and changes', (
             dimensionType: 'length',
             value: 0.01,
             unit: 'em',
+          },
+        },
+      },
+      heading: {
+        $type: 'typography',
+        $value: {
+          fontFamily: 'Inter',
+          fontWeight: '700',
+          fontSize: {
+            dimensionType: 'length',
+            value: 28,
+            unit: 'px',
+          },
+          lineHeight: {
+            dimensionType: 'length',
+            value: 36,
+            unit: 'px',
           },
         },
       },
@@ -456,16 +456,16 @@ test('formatDiffAsHtml renders typography previews for additions and changes', (
 test('formatDiffAsHtml renders detail panels in detailed mode', () => {
   const previous = createTokenSetFromTree({
     color: {
+      accent: {
+        $type: 'color',
+        $value: { colorSpace: 'srgb', components: [1, 0, 0] },
+      },
       primary: {
         $type: 'color',
         $value: {
           colorSpace: 'srgb',
           components: [0, 0, 0],
         },
-      },
-      accent: {
-        $type: 'color',
-        $value: { colorSpace: 'srgb', components: [1, 0, 0] },
       },
       secondary: {
         $type: 'color',
@@ -486,13 +486,6 @@ test('formatDiffAsHtml renders detail panels in detailed mode', () => {
 
   const next = createTokenSetFromTree({
     color: {
-      primary: {
-        $type: 'color',
-        $value: {
-          colorSpace: 'srgb',
-          components: [0.1, 0.1, 0.1],
-        },
-      },
       accentRenamed: {
         $type: 'color',
         $value: { colorSpace: 'srgb', components: [1, 0, 0] },
@@ -500,6 +493,13 @@ test('formatDiffAsHtml renders detail panels in detailed mode', () => {
       highlight: {
         $type: 'color',
         $value: { colorSpace: 'srgb', components: [1, 1, 1] },
+      },
+      primary: {
+        $type: 'color',
+        $value: {
+          colorSpace: 'srgb',
+          components: [0.1, 0.1, 0.1],
+        },
       },
     },
     spacing: {
