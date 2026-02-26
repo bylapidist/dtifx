@@ -19,6 +19,7 @@ export default mergeConfig(
       name: 'build',
       coverage: {
         reportsDirectory: path.resolve(__dirname, 'coverage'),
+        processingConcurrency: 1,
       },
     },
   }),
