@@ -2,4 +2,5 @@
 '@dtifx/build': patch
 ---
 
-stabilize build package test coverage output by serializing coverage processing
+fix flaky build tests in CI by disabling test file parallelism and using istanbul coverage for the
+build package

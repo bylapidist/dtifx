@@ -17,9 +17,10 @@ export default mergeConfig(
     },
     test: {
       name: 'build',
+      fileParallelism: false,
       coverage: {
+        provider: 'istanbul',
         reportsDirectory: path.resolve(__dirname, 'coverage'),
-        processingConcurrency: 1,
       },
     },
   }),
