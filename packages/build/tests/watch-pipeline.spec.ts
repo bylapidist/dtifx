@@ -32,6 +32,21 @@ import type { TaskSchedulerPort } from '../src/domain/ports/scheduler.js';
 import { noopLogger } from '@dtifx/core/logging';
 import { noopTelemetryTracer } from '@dtifx/core/telemetry';
 
+async function waitForCondition(
+  predicate: () => boolean,
+  timeoutMs = 2000,
+  intervalMs = 10,
+): Promise<void> {
+  const timeoutAt = Date.now() + timeoutMs;
+
+  while (!predicate()) {
+    if (Date.now() >= timeoutAt) {
+      throw new Error('Timed out waiting for expected watch pipeline state.');
+    }
+    await delay(intervalMs);
+  }
+}
+
 /**
  * Provides a minimal file-based build configuration for watch pipeline tests.
  * @returns {BuildConfig} Synthetic configuration describing a single file source.
@@ -339,7 +354,7 @@ describe('startWatchPipeline', () => {
       type: 'updated',
       path: 'tokens.json',
     });
-    await delay(0);
+    await waitForCondition(() => reporterEvents.length >= 3);
 
     const latestEvent = reporterEvents.at(-1);
     const absoluteTokenPath = path.join(process.cwd(), 'virtual-watch', 'tokens.json');
@@ -351,7 +366,7 @@ describe('startWatchPipeline', () => {
       type: 'updated',
       path: 'dtifx.config.mjs',
     });
-    await delay(0);
+    await waitForCondition(() => factoryRequests.length >= 2);
 
     expect(factoryRequests).toHaveLength(2);
     expect(documentCaches[0]).toBe(documentCaches[1]);
@@ -408,7 +423,7 @@ describe('startWatchPipeline', () => {
       },
     });
 
-    await delay(0);
+    await waitForCondition(() => reporterEvents.length >= 2);
 
     expect(reporterEvents.slice(0, 2)).toEqual([
       'info:Watching DTIF sources for changes.',
@@ -424,7 +439,7 @@ describe('startWatchPipeline', () => {
       path: 'tokens.json',
     });
 
-    await delay(0);
+    await waitForCondition(() => reporterEvents.some((event) => event.startsWith('success:')));
 
     const directory = path.dirname(configPath);
     expect(reporterEvents.at(-1)).toBe(
@@ -462,7 +477,7 @@ describe('startWatchPipeline', () => {
       executeBuildImpl: async () => createBuildResult(),
     });
 
-    await delay(0);
+    await waitForCondition(() => reporterEvents.length >= 2);
 
     watcher.emitError('source:design-tokens', new Error('source failure'));
     watcher.emitError('config', new Error('config failure'));
@@ -498,7 +513,7 @@ describe('startWatchPipeline', () => {
       executeBuildImpl: async () => createBuildResult(),
     });
 
-    await delay(0);
+    await waitForCondition(() => reporterEvents.length >= 2);
 
     await expect(pipeline.close()).resolves.toBeUndefined();
     expect(reporterEvents).toContain('error:Error while closing watchers');
