@@ -1,5 +1,19 @@
 # @dtifx/build
 
+## 5.0.1
+
+### Patch Changes
+
+- 001a347: stabilize watch pipeline tests by waiting for async state transitions
+- b006615: improve CI diagnostics for build tests by forcing stream output and enabling coverage
+  reporting on failures
+- b006615: increase build package branch coverage with tests for config option validation and schema
+  error mapping
+- b006615: increase watch pipeline test polling timeout to reduce CI flakiness under load
+- b006615: stabilize CI test diagnostics by removing noisy color warnings and running tests
+  sequentially in stream mode
+  - @dtifx/core@5.0.1
+
 ## 5.0.0
 
 ### Patch Changes

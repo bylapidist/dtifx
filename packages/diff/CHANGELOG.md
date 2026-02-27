@@ -1,5 +1,11 @@
 # @dtifx/diff
 
+## 5.0.1
+
+### Patch Changes
+
+- @dtifx/core@5.0.1
+
 ## 5.0.0
 
 ### Major Changes
