@@ -167,6 +167,99 @@ describe('SourcePlanner', () => {
     ).toBe(true);
   });
 
+  it('groups repository issues into planner failures', async () => {
+    const config: BuildConfig = {
+      layers: [{ name: 'foundation' }],
+      sources: [
+        {
+          kind: 'file',
+          id: 'tokens',
+          layer: 'foundation',
+          pointerTemplate: pointerTemplate('foundation', placeholder('stem')),
+          patterns: ['foundation/core.json'],
+          rootDir: fixturesRoot,
+        },
+      ],
+    };
+
+    const planner = new SourcePlanner(config);
+    const now = new Date();
+    const repositoryIssue = {
+      kind: 'repository',
+      sourceId: 'tokens',
+      uri: 'source:tokens',
+      pointerPrefix: '#',
+      code: 'repository',
+      message: 'unable to read source',
+      details: { reason: 'io' },
+      severity: 'error',
+    } as const;
+
+    (planner as { service: { plan(config: BuildConfig): Promise<unknown> } }).service = {
+      plan: async () => ({
+        plan: { createdAt: now, entries: [] },
+        issues: [repositoryIssue, repositoryIssue],
+        durationMs: 1,
+      }),
+    };
+
+    await expect(planner.plan()).rejects.toMatchObject({
+      failures: [
+        {
+          sourceId: 'tokens',
+          uri: 'source:tokens',
+          pointerPrefix: '#',
+          errors: [
+            {
+              keyword: 'repository',
+              instancePath: '',
+              schemaPath: '',
+              message: 'unable to read source',
+              params: { reason: 'io' },
+            },
+            {
+              keyword: 'repository',
+              instancePath: '',
+              schemaPath: '',
+              message: 'unable to read source',
+              params: { reason: 'io' },
+            },
+          ],
+        },
+      ],
+      diagnostics: [
+        expect.objectContaining({ code: 'repository', scope: 'token-source:tokens' }),
+        expect.objectContaining({ code: 'repository', scope: 'token-source:tokens' }),
+      ],
+    });
+  });
+
+  it('reports virtual source URIs for unknown layer failures', async () => {
+    const config: BuildConfig = {
+      layers: [{ name: 'foundation' }],
+      sources: [
+        {
+          kind: 'virtual',
+          id: 'virtual-missing-layer',
+          layer: 'product',
+          pointerTemplate: pointerTemplate('product', placeholder('stem')),
+          tokens: [],
+        },
+      ],
+    };
+
+    const planner = new SourcePlanner(config);
+
+    await expect(planner.plan()).rejects.toMatchObject({
+      failures: [
+        expect.objectContaining({
+          sourceId: 'virtual-missing-layer',
+          uri: 'virtual:virtual-missing-layer',
+          errors: [expect.objectContaining({ keyword: 'layer' })],
+        }),
+      ],
+    });
+  });
   it('rejects sources targeting unknown layers', async () => {
     const config: BuildConfig = {
       layers: [{ name: 'foundation' }],

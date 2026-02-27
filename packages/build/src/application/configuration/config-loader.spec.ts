@@ -77,6 +77,74 @@ describe('config-loader', () => {
     expect(formatter?.output.directory).toBe('./dist');
   });
 
+  it('maps missing default config errors to build-specific messaging', async () => {
+    await expect(resolveConfigPath({ cwd: workspace })).rejects.toThrow(
+      'Unable to locate dtifx-build configuration file in the current directory.',
+    );
+  });
+
+  it('preserves explicit path resolution errors when a configPath is provided', async () => {
+    await expect(
+      resolveConfigPath({ cwd: workspace, configPath: 'missing.config.json' }),
+    ).rejects.toThrow('Configuration file not found: missing.config.json');
+  });
+
+  it('loads plugin-based sections and normalises formatter outputs', async () => {
+    const configPath = path.join(workspace, 'dtifx.config.json');
+    await writeConfig(configPath, {
+      formatters: {
+        entries: [
+          {
+            name: 'tokens.docs',
+          },
+        ],
+        plugins: ['@acme/formatter-plugin', { module: '@acme/formatter-module', register: 'init' }],
+      },
+      transforms: {
+        entries: [
+          {
+            name: 'token.rename',
+            options: { prefix: 'web' },
+          },
+        ],
+        plugins: ['@acme/transform-plugin'],
+      },
+      dependencies: {
+        strategy: { name: 'default' },
+        plugins: ['@acme/dependency-plugin'],
+      },
+      audit: {
+        policies: [{ name: 'tokens.no-orphans' }],
+        plugins: ['@acme/audit-plugin'],
+      },
+    });
+
+    const loaded = await loadConfig(configPath);
+    const formatterEntries = getFormatterConfigEntries(loaded.config);
+
+    expect(formatterEntries).toEqual([
+      {
+        name: 'tokens.docs',
+        output: {},
+      },
+    ]);
+
+    expect(loaded.config.formatters).toMatchObject({
+      plugins: ['@acme/formatter-plugin', { module: '@acme/formatter-module', register: 'init' }],
+    });
+    expect(loaded.config.transforms).toMatchObject({
+      entries: [{ name: 'token.rename', options: { prefix: 'web' } }],
+      plugins: ['@acme/transform-plugin'],
+    });
+    expect(loaded.config.dependencies).toMatchObject({
+      strategy: { name: 'default' },
+      plugins: ['@acme/dependency-plugin'],
+    });
+    expect(loaded.config.audit).toMatchObject({
+      policies: [{ name: 'tokens.no-orphans' }],
+      plugins: ['@acme/audit-plugin'],
+    });
+  });
   it('defaults file source root directories to the configuration directory', async () => {
     const configPath = path.join(workspace, 'dtifx.config.json');
     await writeConfig(configPath);
@@ -98,6 +166,9 @@ describe('config-loader', () => {
 interface PartialConfigOverrides {
   readonly sources?: readonly unknown[];
   readonly formatters?: unknown;
+  readonly transforms?: unknown;
+  readonly dependencies?: unknown;
+  readonly audit?: unknown;
 }
 
 /**
@@ -132,6 +203,9 @@ async function writeConfig(
           },
         ],
       } satisfies Record<string, unknown>),
+    ...(overrides.transforms ? { transforms: overrides.transforms } : {}),
+    ...(overrides.dependencies ? { dependencies: overrides.dependencies } : {}),
+    ...(overrides.audit ? { audit: overrides.audit } : {}),
   } satisfies Record<string, unknown>;
 
   await writeFile(filePath, `${JSON.stringify(config, undefined, 2)}\n`, 'utf8');

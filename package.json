@@ -8,7 +8,7 @@
     "build": "nx run-many -t build --all --exclude docs-site",
     "lint": "nx run-many -t lint --all --exclude docs-site",
     "lint:markdown": "nx run docs-site:lint",
-    "test": "nx run-many -t test --all",
+    "test": "env -u NO_COLOR nx run-many -t test --all --outputStyle=stream --parallel=1",
     "format": "nx format:write --all",
     "format:check": "nx format:check --all",
     "graph": "nx graph",
