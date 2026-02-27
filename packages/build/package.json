@@ -1,6 +1,6 @@
 {
   "name": "@dtifx/build",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "DTIF-aware build orchestrator for planning sources, executing transforms, and packaging token outputs.",
   "license": "MIT",
   "type": "module",

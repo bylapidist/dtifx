@@ -1,5 +1,20 @@
 # @dtifx/cli
 
+## 5.0.1
+
+### Patch Changes
+
+- Updated dependencies [001a347]
+- Updated dependencies [b006615]
+- Updated dependencies [b006615]
+- Updated dependencies [b006615]
+- Updated dependencies [b006615]
+  - @dtifx/build@5.0.1
+  - @dtifx/core@5.0.1
+  - @dtifx/diff@5.0.1
+  - @dtifx/audit@5.0.1
+  - @dtifx/extractors@5.0.1
+
 ## 5.0.0
 
 ### Patch Changes
