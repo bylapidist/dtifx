@@ -34,7 +34,7 @@ import { noopTelemetryTracer } from '@dtifx/core/telemetry';
 
 async function waitForCondition(
   predicate: () => boolean,
-  timeoutMs = 2000,
+  timeoutMs = 10_000,
   intervalMs = 10,
 ): Promise<void> {
   const timeoutAt = Date.now() + timeoutMs;

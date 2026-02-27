@@ -17,8 +17,10 @@ export default mergeConfig(
     },
     test: {
       name: 'build',
+      silent: false,
       coverage: {
         reportsDirectory: path.resolve(__dirname, 'coverage'),
+        reportOnFailure: true,
       },
     },
   }),
