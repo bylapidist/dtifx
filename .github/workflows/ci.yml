@@ -50,7 +50,7 @@ jobs:
 
       - name: Post coverage comment
         if: github.event_name == 'pull_request' && steps.coverage_comment.outcome == 'success'
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           path: coverage/coverage-comment.md
           header: coverage-report
