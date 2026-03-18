@@ -112,7 +112,7 @@
     "zod": "4.3.6"
   },
   "devDependencies": {
-    "@types/color": "4.2.0"
+    "@types/color": "4.2.1"
   },
   "publishConfig": {
     "access": "public"
