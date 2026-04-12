@@ -1,0 +1,33 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "dscp",
+  "projectType": "library",
+  "sourceRoot": "packages/dscp/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}/src", "{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/dscp/dist",
+        "main": "packages/dscp/src/index.ts",
+        "tsConfig": "packages/dscp/tsconfig.lib.json"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "options": {
+        "command": "ESLINT_USE_FLAT_CONFIG=true pnpm exec eslint --config eslint.config.mjs \"packages/dscp/**/*.{ts,tsx,cts,mts}\" --max-warnings=0",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "outputs": ["{projectRoot}/coverage"],
+      "options": {
+        "config": "packages/dscp/vitest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:dscp", "type:library"]
+}
