@@ -35,8 +35,5 @@
     "build": "nx build dscp",
     "test": "nx test dscp",
     "lint": "nx lint dscp"
-  },
-  "devDependencies": {
-    "typescript": "catalog:"
   }
 }
