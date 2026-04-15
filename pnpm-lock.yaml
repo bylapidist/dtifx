@@ -269,7 +269,14 @@ importers:
         specifier: 2.8.3
         version: 2.8.3
 
-  packages/dscp: {}
+  packages/dscp:
+    dependencies:
+      '@dtifx/dscp':
+        specifier: 'link:'
+        version: 'link:'
+      '@lapidist/dscp':
+        specifier: ^0.1.0
+        version: 0.1.0
 
   packages/extractors:
     dependencies:
@@ -1477,6 +1484,10 @@ packages:
 
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
+
+  '@lapidist/dscp@0.1.0':
+    resolution: {integrity: sha512-EQJvfgK4rRWKEys0cETB6etIZPgwyvjfFUC6LR1MBaEIA3F0M159UzO9vSmZT+O37SDlhqe0pV9XzfQ1G4+s5Q==}
+    engines: {node: '>=22'}
 
   '@lapidist/dtif-parser@2.0.0':
     resolution: {integrity: sha512-iMXH3RMWBJhsLbtq5zFyq2A6Xv/X2sSrgo5Xft1YFPk8z+7LZEnQI308Dz3aYmlzW88ifXS9aF4a5sB4Z9uV2A==}
@@ -6361,6 +6372,10 @@ snapshots:
       jsep: 1.4.0
 
   '@keyv/serialize@1.1.1': {}
+
+  '@lapidist/dscp@0.1.0':
+    dependencies:
+      '@lapidist/dtif-parser': 2.0.0
 
   '@lapidist/dtif-parser@2.0.0':
     dependencies:

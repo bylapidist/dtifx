@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtemp, writeFile, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { generate, buildDocument, renderMarkdown } from './generator.js';
+import { generate, buildDocument } from './generator.js';
+import { renderMarkdown } from '@lapidist/dscp';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -39,7 +40,20 @@ describe('buildDocument', () => {
     await rm(dir, { recursive: true, force: true });
   });
 
-  it('parses a flat token array into typed sections', async () => {
+  it('produces a canonical DSCPDocument envelope', async () => {
+    const tokens = [colorToken('c1', '/color/primary', '#ff0000')];
+    await writeFile(path.join(dir, 'tokens.json'), makeTokenSnapshot(tokens));
+
+    const doc = await buildDocument(dir);
+
+    expect(doc.$schema).toBe('https://dscp.lapidist.net/schema/v1.json');
+    expect(doc.specVersion).toBe('1.0.0');
+    expect(typeof doc.generatedAt).toBe('string');
+    expect(typeof doc.kernelSnapshotHash).toBe('string');
+    expect(doc.kernelSnapshotHash).toHaveLength(64); // SHA-256 hex
+  });
+
+  it('parses a flat token array into the token graph', async () => {
     const tokens = [
       colorToken('c1', '/color/primary', '#ff0000'),
       dimensionToken('d1', '/spacing/small', '4px'),
@@ -48,50 +62,47 @@ describe('buildDocument', () => {
 
     const doc = await buildDocument(dir);
 
-    expect(doc.version).toBe(1);
-    expect(typeof doc.generatedAt).toBe('string');
-    expect(doc.sections).toHaveLength(2);
+    expect(doc.tokenGraph.totalCount).toBe(2);
+    const colorEntries = doc.tokenGraph.byType['color'];
+    expect(colorEntries).toBeDefined();
+    expect(colorEntries!).toHaveLength(1);
+    expect(colorEntries![0].pointer).toBe('/color/primary');
+    expect(colorEntries![0].value).toBe('#ff0000');
 
-    const colorSection = doc.sections.find((s) => s.type === 'color');
-    expect(colorSection).toBeDefined();
-    expect(colorSection!.tokens).toHaveLength(1);
-    expect(colorSection!.tokens[0].pointer).toBe('/color/primary');
-    expect(colorSection!.tokens[0].value).toBe('#ff0000');
-
-    const dimSection = doc.sections.find((s) => s.type === 'dimension');
-    expect(dimSection).toBeDefined();
-    expect(dimSection!.tokens).toHaveLength(1);
+    const dimEntries = doc.tokenGraph.byType['dimension'];
+    expect(dimEntries).toBeDefined();
+    expect(dimEntries!).toHaveLength(1);
   });
 
-  it('groups tokens without a type under "unknown"', async () => {
+  it('groups tokens without a type outside byType', async () => {
     const tokens = [typelessToken('t1', '/mystery/token')];
     await writeFile(path.join(dir, 'tokens.json'), makeTokenSnapshot(tokens));
 
     const doc = await buildDocument(dir);
 
-    expect(doc.sections).toHaveLength(1);
-    expect(doc.sections[0].type).toBe('unknown');
-    expect(doc.sections[0].tokens[0].pointer).toBe('/mystery/token');
+    // Typeless tokens are counted in totalCount but not placed in byType
+    expect(doc.tokenGraph.totalCount).toBe(1);
+    expect(Object.keys(doc.tokenGraph.byType)).toHaveLength(0);
   });
 
-  it('returns an empty sections array for an empty token list', async () => {
+  it('returns empty token graph for an empty token list', async () => {
     await writeFile(path.join(dir, 'tokens.json'), makeTokenSnapshot([]));
     const doc = await buildDocument(dir);
-    expect(doc.sections).toHaveLength(0);
+    expect(doc.tokenGraph.totalCount).toBe(0);
+    expect(Object.keys(doc.tokenGraph.byType)).toHaveLength(0);
   });
 
-  it('sorts sections alphabetically by type', async () => {
-    const tokens = [
-      dimensionToken('d1', '/sp/sm', '4px'),
-      colorToken('c1', '/col/pri', '#f00'),
-      { id: 'a1', pointer: '/ani/fade', name: '/ani/fade', type: 'animation', value: '200ms' },
-    ];
+  it('produces empty component registry, deprecation ledger, violations, and rules by default', async () => {
+    const tokens = [colorToken('c1', '/color/primary', '#ff0000')];
     await writeFile(path.join(dir, 'tokens.json'), makeTokenSnapshot(tokens));
 
     const doc = await buildDocument(dir);
 
-    const types = doc.sections.map((s) => s.type);
-    expect(types).toEqual(types.toSorted());
+    expect(doc.componentRegistry.totalCount).toBe(0);
+    expect(doc.componentRegistry.components).toHaveLength(0);
+    expect(doc.deprecationLedger).toHaveLength(0);
+    expect(doc.violations).toHaveLength(0);
+    expect(doc.rules).toHaveLength(0);
   });
 
   it('skips primitive leaf values in nested object trees', async () => {
@@ -102,8 +113,8 @@ describe('buildDocument', () => {
     await writeFile(path.join(dir, 'tokens.json'), makeTokenSnapshot(tree));
 
     const doc = await buildDocument(dir);
-    const colorSection = doc.sections.find((s) => s.type === 'color');
-    expect(colorSection!.tokens).toHaveLength(1);
+    const colorEntries = doc.tokenGraph.byType['color'];
+    expect(colorEntries!).toHaveLength(1);
   });
 
   it('flattens tokens nested inside an object tree', async () => {
@@ -116,8 +127,16 @@ describe('buildDocument', () => {
     await writeFile(path.join(dir, 'tokens.json'), makeTokenSnapshot(tree));
 
     const doc = await buildDocument(dir);
-    const colorSection = doc.sections.find((s) => s.type === 'color');
-    expect(colorSection!.tokens).toHaveLength(2);
+    expect(doc.tokenGraph.byType['color']!).toHaveLength(2);
+  });
+
+  it('produces a deterministic snapshot hash for the same tokens', async () => {
+    const tokens = [colorToken('c1', '/color/primary', '#ff0000')];
+    await writeFile(path.join(dir, 'tokens.json'), makeTokenSnapshot(tokens));
+
+    const doc1 = await buildDocument(dir);
+    const doc2 = await buildDocument(dir);
+    expect(doc1.kernelSnapshotHash).toBe(doc2.kernelSnapshotHash);
   });
 
   it('rejects when tokens.json does not exist', async () => {
@@ -131,94 +150,50 @@ describe('buildDocument', () => {
 });
 
 // ---------------------------------------------------------------------------
-// renderMarkdown
+// renderMarkdown (re-exported from @lapidist/dscp)
 // ---------------------------------------------------------------------------
 
 describe('renderMarkdown', () => {
-  it('includes dscp version and generatedAt comments', () => {
-    const doc = {
-      version: 1 as const,
-      generatedAt: '2026-01-01T00:00:00.000Z',
-      sections: [],
-    };
-    const md = renderMarkdown(doc);
-    expect(md).toContain('<!-- dscp:version:1 -->');
-    expect(md).toContain('<!-- dscp:generatedAt:2026-01-01T00:00:00.000Z -->');
+  it('includes a heading and snapshot hash', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'dscp-md-'));
+    try {
+      const tokens = [colorToken('c1', '/color/primary', '#ff0000')];
+      await writeFile(path.join(dir, 'tokens.json'), makeTokenSnapshot(tokens));
+      const doc = await buildDocument(dir);
+      const md = renderMarkdown(doc);
+      expect(md).toContain('# DESIGN_SYSTEM.md');
+      expect(md).toContain(doc.kernelSnapshotHash);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
 
-  it('wraps each section in typed block comments', () => {
-    const doc = {
-      version: 1 as const,
-      generatedAt: '2026-01-01T00:00:00.000Z',
-      sections: [
-        {
-          type: 'color',
-          tokens: [
-            {
-              id: 'c1',
-              pointer: '/color/primary',
-              name: '/color/primary',
-              type: 'color',
-              value: '#ff0000',
-            },
-          ],
-        },
-      ],
-    };
-    const md = renderMarkdown(doc);
-    expect(md).toContain('<!-- dscp:tokens:color -->');
-    expect(md).toContain('<!-- /dscp:tokens:color -->');
+  it('wraps each token section in typed block comments', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'dscp-md-'));
+    try {
+      const tokens = [colorToken('c1', '/color/primary', '#ff0000')];
+      await writeFile(path.join(dir, 'tokens.json'), makeTokenSnapshot(tokens));
+      const doc = await buildDocument(dir);
+      const md = renderMarkdown(doc);
+      expect(md).toContain('<!-- dscp:tokens:color -->');
+      expect(md).toContain('<!-- /dscp:tokens:color -->');
+      expect(md).toContain('/color/primary');
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
 
-  it('renders each token as a Markdown table row', () => {
-    const doc = {
-      version: 1 as const,
-      generatedAt: '2026-01-01T00:00:00.000Z',
-      sections: [
-        {
-          type: 'color',
-          tokens: [
-            {
-              id: 'c1',
-              pointer: '/color/primary',
-              name: '/color/primary',
-              type: 'color',
-              value: '#ff0000',
-            },
-          ],
-        },
-      ],
-    };
-    const md = renderMarkdown(doc);
-    expect(md).toContain('| /color/primary | #ff0000 | color |');
-    expect(md).toContain('| Token | Value | Type |');
-    expect(md).toContain('| --- | --- | --- |');
-  });
-
-  it('renders an empty string value for tokens without a value', () => {
-    const doc = {
-      version: 1 as const,
-      generatedAt: '2026-01-01T00:00:00.000Z',
-      sections: [
-        {
-          type: 'color',
-          tokens: [{ id: 'c1', pointer: '/color/pri', name: '/color/pri', type: 'color' }],
-        },
-      ],
-    };
-    const md = renderMarkdown(doc);
-    expect(md).toContain('| /color/pri |  | color |');
-  });
-
-  it('returns only headers for a document with no sections', () => {
-    const doc = {
-      version: 1 as const,
-      generatedAt: '2026-01-01T00:00:00.000Z',
-      sections: [],
-    };
-    const md = renderMarkdown(doc);
-    expect(md).toContain('<!-- dscp:version:1 -->');
-    expect(md).not.toContain('<!-- dscp:tokens:');
+  it('returns only the heading for a document with no tokens', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'dscp-md-'));
+    try {
+      await writeFile(path.join(dir, 'tokens.json'), makeTokenSnapshot([]));
+      const doc = await buildDocument(dir);
+      const md = renderMarkdown(doc);
+      expect(md).toContain('# DESIGN_SYSTEM.md');
+      expect(md).not.toContain('<!-- dscp:tokens:');
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
 });
 
@@ -245,7 +220,7 @@ describe('generate', () => {
     await generate({ from: dir, out });
 
     const content = await readFile(out, 'utf8');
-    expect(content).toContain('<!-- dscp:version:1 -->');
+    expect(content).toContain('# DESIGN_SYSTEM.md');
     expect(content).toContain('/color/primary');
   });
 
@@ -259,6 +234,6 @@ describe('generate', () => {
 
     const content = await readFile(out, 'utf8');
     expect(content).not.toBe('old content');
-    expect(content).toContain('<!-- dscp:version:1 -->');
+    expect(content).toContain('# DESIGN_SYSTEM.md');
   });
 });

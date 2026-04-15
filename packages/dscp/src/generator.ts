@@ -1,15 +1,53 @@
+/**
+ * Generates canonical DSCP documents from a completed dtifx build pipeline
+ * output directory.
+ *
+ * The dtifx authoring path produces a `DSCPDocument` that conforms to the
+ * canonical `@lapidist/dscp` v1 envelope. Sections that require runtime
+ * kernel state (componentRegistry, deprecationLedger, violations, rules) are
+ * populated with safe empty defaults — they can be enriched by a downstream
+ * DSR kernel if one is connected.
+ */
+import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { DSCPDocument, DSCPSection, DSCPToken, GenerateOptions } from './types.js';
+import {
+  generateDocument,
+  renderMarkdown,
+  type GeneratorInput,
+  type ViolationInput,
+} from '@lapidist/dscp';
+
+export type { DSCPDocument } from './types.js';
+export { renderMarkdown } from '@lapidist/dscp';
+export { DSCP_SCHEMA_URI, DSCP_SPEC_VERSION } from '@lapidist/dscp';
+
+import type { DSCPDocument, GenerateOptions } from './types.js';
 
 const DEFAULT_TOKENS_FILENAME = 'tokens.json';
+
+// ---------------------------------------------------------------------------
+// Intermediate representation — dtifx build tokens
+// ---------------------------------------------------------------------------
+
+interface FlatToken {
+  readonly id: string;
+  readonly pointer: string;
+  readonly name: string;
+  readonly type?: string;
+  readonly value?: unknown;
+}
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
 
 /**
  * Generates a DSCP document from a completed dtifx build output directory and
  * writes the resulting DESIGN_SYSTEM.md (or the path specified by `out`).
  *
- * @param {GenerateOptions} options - The source directory and output file path.
- * @returns {Promise<void>} Resolves when the file has been written.
+ * @param options - Source directory and output file path.
+ * @returns Promise that resolves when the file has been written.
  */
 export async function generate(options: GenerateOptions): Promise<void> {
   const document = await buildDocument(options.from);
@@ -18,60 +56,62 @@ export async function generate(options: GenerateOptions): Promise<void> {
 }
 
 /**
- * Builds the structured DSCPDocument from the token snapshot in `fromDir`.
+ * Builds a canonical DSCPDocument from the token snapshot in `fromDir`.
  *
- * @param {string} fromDir - Path to the dtifx build output directory.
- * @returns {Promise<DSCPDocument>} The structured DSCP document.
+ * Token-graph sections are derived from the dtifx build output.
+ * Component registry, deprecation ledger, violations, and rules are provided
+ * as empty defaults.
+ *
+ * @param fromDir - Path to the dtifx build output directory.
+ * @returns The generated DSCPDocument.
  */
 export async function buildDocument(fromDir: string): Promise<DSCPDocument> {
   const snapshotPath = path.join(fromDir, DEFAULT_TOKENS_FILENAME);
   const raw = await readFile(snapshotPath, 'utf8');
   const tree: unknown = JSON.parse(raw);
 
-  const flat = flattenTree(tree);
-  const sections = groupByType(flat);
+  const flatTokens = flattenTree(tree);
 
-  return {
-    version: 1,
-    generatedAt: new Date().toISOString(),
-    sections,
+  const allTokensMap = new Map<string, FlatToken>();
+  const byType = new Map<string, FlatToken[]>();
+
+  for (const token of flatTokens) {
+    allTokensMap.set(token.pointer, token);
+    if (token.type !== undefined) {
+      const bucket = byType.get(token.type);
+      if (bucket === undefined) {
+        byType.set(token.type, [token]);
+      } else {
+        bucket.push(token);
+      }
+    }
+  }
+
+  const snapshotHash = computeSnapshotHash(flatTokens);
+
+  const input: GeneratorInput = {
+    tokenGraph: { tokens: allTokensMap, byType },
+    componentRegistry: { components: new Map() },
+    deprecationLedger: { entries: new Map() },
+    ruleRegistry: { rules: new Map() },
+    violations: [] as ViolationInput[],
+    snapshotHash,
   };
-}
 
-/**
- * Renders a DSCPDocument to a Markdown string using the DSCP typed fenced block format.
- *
- * @param {DSCPDocument} document - The structured DSCP document to render.
- * @returns {string} The rendered Markdown content.
- */
-export function renderMarkdown(document: DSCPDocument): string {
-  const header = [
-    '<!-- dscp:version:1 -->',
-    `<!-- dscp:generatedAt:${document.generatedAt} -->`,
-    '',
-  ];
-
-  const body = document.sections.flatMap((section) => {
-    const { type } = section;
-    const rows = section.tokens.map((token) => {
-      const value = token.value === undefined ? '' : String(token.value);
-      return `| ${token.pointer} | ${value} | ${type} |`;
-    });
-    return [
-      `<!-- dscp:tokens:${type} -->`,
-      '| Token | Value | Type |',
-      '| --- | --- | --- |',
-      ...rows,
-      `<!-- /dscp:tokens:${type} -->`,
-      '',
-    ];
-  });
-
-  return [...header, ...body].join('\n');
+  return generateDocument(input);
 }
 
 // ---------------------------------------------------------------------------
-// Internal helpers
+// Snapshot hash — deterministic SHA-256 of the sorted token pointer list
+// ---------------------------------------------------------------------------
+
+function computeSnapshotHash(tokens: FlatToken[]): string {
+  const pointers = tokens.map((t) => t.pointer).toSorted();
+  return createHash('sha256').update(pointers.join('\n')).digest('hex');
+}
+
+// ---------------------------------------------------------------------------
+// Tree flattening — walks a nested dtifx build output and collects tokens
 // ---------------------------------------------------------------------------
 
 interface RawToken {
@@ -82,12 +122,6 @@ interface RawToken {
   readonly value?: unknown;
 }
 
-/**
- * Returns `true` when `value` has the minimal shape of a DtifFlattenedToken.
- *
- * @param {unknown} value - The value to inspect.
- * @returns {value is RawToken} Whether the value is a raw token object.
- */
 function isRawToken(value: unknown): value is RawToken {
   return (
     typeof value === 'object' &&
@@ -98,14 +132,7 @@ function isRawToken(value: unknown): value is RawToken {
   );
 }
 
-/**
- * Walks a nested pointer tree and collects every leaf that looks like a
- * DtifFlattenedToken (has `id`, `pointer`, and `name` fields).
- *
- * @param {unknown} node - A node in the pointer tree (or the root).
- * @returns {DSCPToken[]} Flat list of collected tokens.
- */
-function flattenTree(node: unknown): DSCPToken[] {
+function flattenTree(node: unknown): FlatToken[] {
   if (isRawToken(node)) {
     const base = {
       id: String(node.id ?? ''),
@@ -113,7 +140,7 @@ function flattenTree(node: unknown): DSCPToken[] {
       name: String(node.name ?? ''),
     };
     const withType = node.type === undefined ? base : { ...base, type: String(node.type) };
-    const token: DSCPToken =
+    const token: FlatToken =
       node.value === undefined ? withType : { ...withType, value: node.value };
     return [token];
   }
@@ -123,29 +150,4 @@ function flattenTree(node: unknown): DSCPToken[] {
   }
 
   return [];
-}
-
-/**
- * Groups a flat list of tokens into sections, one per `type`. Tokens without
- * a `type` are grouped under the section key `unknown`.
- *
- * @param {DSCPToken[]} tokens - Flat list of tokens to group.
- * @returns {DSCPSection[]} Sections sorted alphabetically by type.
- */
-function groupByType(tokens: DSCPToken[]): DSCPSection[] {
-  const map = new Map<string, DSCPToken[]>();
-
-  for (const token of tokens) {
-    const key = token.type ?? 'unknown';
-    const bucket = map.get(key);
-    if (bucket === undefined) {
-      map.set(key, [token]);
-    } else {
-      bucket.push(token);
-    }
-  }
-
-  return [...map.entries()]
-    .toSorted(([a], [b]) => a.localeCompare(b))
-    .map(([type, sectionTokens]) => ({ type, tokens: sectionTokens }));
 }

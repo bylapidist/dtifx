@@ -35,5 +35,9 @@
     "build": "nx build dscp",
     "test": "nx test dscp",
     "lint": "nx lint dscp"
+  },
+  "dependencies": {
+    "@dtifx/dscp": "link:",
+    "@lapidist/dscp": "^0.1.0"
   }
 }

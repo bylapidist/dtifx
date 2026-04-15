@@ -1,37 +1,30 @@
 /**
- * Input options for the DSCP document generator.
+ * Re-exports the canonical DSCP types from `@lapidist/dscp`.
+ *
+ * `@dtifx/dscp` is the dtifx authoring path for DSCP document generation.
+ * It uses the same envelope shape as the canonical spec so that DSCP
+ * documents produced from dtifx build outputs are interoperable with those
+ * produced by the design-lint kernel.
+ */
+export type {
+  DSCPDocument,
+  DSCPTokenEntry,
+  DSCPTokenGraph,
+  DSCPComponentEntry,
+  DSCPComponentSummary,
+  DSCPDeprecationEntry,
+  DSCPViolationPattern,
+  DSCPRuleSummary,
+  DSCPRuleSeverity,
+  DSCPSectionTag,
+} from '@lapidist/dscp';
+
+/**
+ * Input options for the dtifx DSCP document generator.
  */
 export interface GenerateOptions {
   /** Path to the dtifx build output directory containing resolved token files. */
   from: string;
   /** Path to write the generated DESIGN_SYSTEM.md document. */
   out: string;
-}
-
-/**
- * A single token entry included in the DSCP output.
- */
-export interface DSCPToken {
-  readonly id: string;
-  readonly pointer: string;
-  readonly name: string;
-  readonly type?: string;
-  readonly value?: unknown;
-}
-
-/**
- * A section of the DSCP document grouping tokens by type.
- */
-export interface DSCPSection {
-  readonly type: string;
-  readonly tokens: readonly DSCPToken[];
-}
-
-/**
- * The structured representation of a generated DSCP document.
- */
-export interface DSCPDocument {
-  readonly version: 1;
-  readonly generatedAt: string;
-  readonly sections: readonly DSCPSection[];
 }
