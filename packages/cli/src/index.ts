@@ -15,6 +15,7 @@ export { buildCommandModule } from './tools/build/build-command-module.js';
 export { auditCommandModule } from './tools/audit/audit-command-module.js';
 export { initCommandModule } from './tools/init/init-command-module.js';
 export { extractCommandModule } from './tools/extract/extract-command-module.js';
+export { dscpCommandModule } from './tools/dscp/dscp-command-module.js';
 export { createDiffCliKernel, runDiffCli } from './tools/diff/run-diff-cli.js';
 export type { CompareCommandOptions } from './tools/diff/compare-options.js';
 export { createBuildCliKernel, runBuildCli } from './tools/build/run-build-cli.js';

@@ -177,6 +177,9 @@ importers:
       '@dtifx/diff':
         specifier: workspace:^
         version: link:../diff
+      '@dtifx/dscp':
+        specifier: workspace:*
+        version: link:../dscp
       '@dtifx/extractors':
         specifier: workspace:*
         version: link:../extractors

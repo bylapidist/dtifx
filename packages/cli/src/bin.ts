@@ -10,6 +10,7 @@ import {
   createCliKernel,
   createProcessCliIo,
   diffCommandModule,
+  dscpCommandModule,
   extractCommandModule,
   initCommandModule,
 } from './index.js';
@@ -63,15 +64,16 @@ kernel.register(buildCommandModule);
 kernel.register(auditCommandModule);
 kernel.register(extractCommandModule);
 kernel.register(initCommandModule);
+kernel.register(dscpCommandModule);
 
 const exitCode = await kernel.run();
 
 if (process.argv.length <= 2) {
   const name = packageManifest.name ?? '@dtifx/cli';
   const message = [
-    `${name} supports init, diff, build, audit, and extract workflows.`,
+    `${name} supports init, diff, build, audit, extract, and dscp workflows.`,
     'Explore `dtifx init --help`, `dtifx diff --help`, `dtifx build --help`,',
-    '`dtifx audit --help`, or `dtifx extract --help` to get started.\n',
+    '`dtifx audit --help`, `dtifx extract --help`, or `dtifx dscp --help` to get started.\n',
   ].join(' ');
   io.writeOut(message);
 }
