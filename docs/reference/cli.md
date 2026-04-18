@@ -6,9 +6,9 @@ outline: deep
 
 # CLI reference
 
-The `@dtifx/cli` package publishes the `dtifx` binary. It registers the extract, diff, build, and
-audit command modules with a shared kernel, providing consistent IO, telemetry, and error handling.
-This reference lists every command and option.
+The `@dtifx/cli` package publishes the `dtifx` binary. It registers the extract, diff, build, audit,
+and dscp command modules with a shared kernel, providing consistent IO, telemetry, and error
+handling. This reference lists every command and option.
 
 ## Programmatic APIs
 
@@ -61,12 +61,14 @@ real process globals.
 
 ### Command modules
 
-The CLI ships reusable `CliCommandModule` instances for extract, diff, build, and audit workflows:
+The CLI ships reusable `CliCommandModule` instances for extract, diff, build, audit, and dscp
+workflows:
 
 - `extractCommandModule`
 - `diffCommandModule`
 - `buildCommandModule`
 - `auditCommandModule`
+- `dscpCommandModule`
 
 Each module registers its subcommands, flags, and help content when invoked with a Commander
 `Command` and the shared kernel context. Consumers can pair them with their own kernel or supplement
@@ -80,6 +82,7 @@ For common embed scenarios the package provides pre-wired kernel factories and r
 - `createDiffCliKernel(options)` and `runDiffCli(argv?)`
 - `createBuildCliKernel(options)` and `runBuildCli(argv?)`
 - `createAuditCliKernel(options)` and `runAuditCli(argv?)`
+- `createDscpCliKernel(options)` and `runDscpCli(argv?)`
 
 The `create*Kernel` helpers call `createCliKernel` with appropriate metadata, register the matching
 command module, and return the configured kernel. The `run*Cli` functions run the same kernel and

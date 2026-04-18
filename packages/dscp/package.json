@@ -37,7 +37,13 @@
     "lint": "nx lint dscp"
   },
   "dependencies": {
-    "@dtifx/dscp": "link:",
     "@lapidist/dscp": "^0.1.0"
+  },
+  "files": [
+    "dist/src",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }

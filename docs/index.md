@@ -65,6 +65,16 @@ features:
     link: /diff/
     linkText: Review diff strategies
   - icon:
+      src: /logos/dtifx-dscp.svg
+      alt: '@dtifx/dscp logo'
+    iconBackground: 'rgba(32, 41, 72, 0.06)'
+    title: '@dtifx/dscp'
+    details: |
+      Generate DSCP documents from a completed DTIFx build pipeline output for use with
+      AI tooling and design system context protocols.
+    link: /dscp/
+    linkText: Generate DSCP docs
+  - icon:
       src: /logos/dtifx-extractors.svg
       alt: '@dtifx/extractors logo'
     iconBackground: 'rgba(32, 41, 72, 0.06)'
