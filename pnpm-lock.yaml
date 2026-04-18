@@ -274,9 +274,6 @@ importers:
 
   packages/dscp:
     dependencies:
-      '@dtifx/dscp':
-        specifier: 'link:'
-        version: 'link:'
       '@lapidist/dscp':
         specifier: ^0.1.0
         version: 0.1.0
