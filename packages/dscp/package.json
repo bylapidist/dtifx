@@ -37,7 +37,7 @@
     "lint": "nx lint dscp"
   },
   "dependencies": {
-    "@lapidist/dscp": "^0.1.0"
+    "@lapidist/dscp": "^0.2.0"
   },
   "files": [
     "dist/src",
