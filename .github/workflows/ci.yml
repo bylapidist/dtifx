@@ -21,7 +21,7 @@ jobs:
           configFile: commitlint.config.mjs
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -50,7 +50,7 @@ jobs:
 
       - name: Post coverage comment
         if: github.event_name == 'pull_request' && steps.coverage_comment.outcome == 'success'
-        uses: marocchino/sticky-pull-request-comment@v3
+        uses: marocchino/sticky-pull-request-comment@v3.0.4
         with:
           path: coverage/coverage-comment.md
           header: coverage-report

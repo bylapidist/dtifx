@@ -102,14 +102,14 @@
     "@lapidist/dtif-parser": "2.0.0",
     "@lapidist/dtif-schema": "2.0.0",
     "@opentelemetry/api": "1.9.1",
-    "@opentelemetry/core": "2.7.0",
-    "@opentelemetry/sdk-trace-base": "2.7.0",
+    "@opentelemetry/core": "2.7.1",
+    "@opentelemetry/sdk-trace-base": "2.7.1",
     "color": "5.0.3",
     "cosmiconfig": "9.0.1",
     "fast-glob": "3.3.3",
     "json-rules-engine": "7.3.1",
     "p-map": "7.0.4",
-    "zod": "4.3.6"
+    "zod": "4.4.2"
   },
   "devDependencies": {
     "@types/color": "4.2.1"
