@@ -105,6 +105,27 @@ else
   fi
 fi
 
+DSCP_PKG_PATH=""
+DSCP_PKG_CLEANUP_PATH=""
+if [[ -z "${DSCP_PKG:-}" ]]; then
+  DSCP_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/dscp"
+  if [[ -d "${DSCP_PACKAGE_ROOT}" ]]; then
+    if ! declare -f pack_workspace_package >/dev/null 2>&1; then
+      # shellcheck source=../../../scripts/lib/package-utils.sh
+      source "${WORKSPACE_ROOT}/scripts/lib/package-utils.sh"
+    fi
+    DSCP_PKG_PATH="$(pack_workspace_package "${DSCP_PACKAGE_ROOT}")"
+    DSCP_PKG="${DSCP_PKG_PATH}"
+    DSCP_PKG_CLEANUP_PATH="${DSCP_PKG_PATH}"
+  fi
+else
+  if [[ "${DSCP_PKG}" = /* ]]; then
+    DSCP_PKG_PATH="${DSCP_PKG}"
+  else
+    DSCP_PKG_PATH="${WORKSPACE_ROOT}/${DSCP_PKG}"
+  fi
+fi
+
 if [[ "${PKG}" = /* ]]; then
   PKG_PATH="${PKG}"
 else
@@ -183,6 +204,9 @@ cleanup() {
   fi
   if [[ -n "${EXTRACTORS_PKG_CLEANUP_PATH}" ]]; then
     rm -f "${EXTRACTORS_PKG_CLEANUP_PATH}" 2>/dev/null || true
+  fi
+  if [[ -n "${DSCP_PKG_CLEANUP_PATH}" ]]; then
+    rm -f "${DSCP_PKG_CLEANUP_PATH}" 2>/dev/null || true
   fi
   exit "$status"
 }
@@ -333,11 +357,11 @@ NODE
 
 pushd "${WORK_DIR}" >/dev/null
 
-node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${CORE_PKG_PATH}" "${AUDIT_PKG_PATH}" "${DIFF_PKG_PATH}" "${EXTRACTORS_PKG_PATH}"
+node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${CORE_PKG_PATH}" "${AUDIT_PKG_PATH}" "${DIFF_PKG_PATH}" "${EXTRACTORS_PKG_PATH}" "${DSCP_PKG_PATH}"
 const fs = require('node:fs');
 const path = require('node:path');
 
-const [workspaceRoot, buildPath, cliPath, corePath, auditPath, diffPath, extractorsPath] = process.argv.slice(2);
+const [workspaceRoot, buildPath, cliPath, corePath, auditPath, diffPath, extractorsPath, dscpPath] = process.argv.slice(2);
 const pkg = {
   name: 'dtifx-build-cli-smoke',
   version: '0.0.0',
@@ -404,7 +428,11 @@ if (extractorsSpecifier) {
   overrides['@dtifx/extractors'] = extractorsSpecifier;
 }
 
-
+const dscpSpecifier = ensureFileSpecifier(dscpPath);
+if (dscpSpecifier) {
+  devDependencies['@dtifx/dscp'] = dscpSpecifier;
+  overrides['@dtifx/dscp'] = dscpSpecifier;
+}
 
 if (Object.keys(devDependencies).length > 0) {
   pkg.devDependencies = {
