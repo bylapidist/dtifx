@@ -52,9 +52,10 @@ telemetry.
 | ------------------------------------------ | ----------------------------------------------------------------------- |
 | [`@dtifx/audit`](packages/audit)           | Evaluates policy manifests and surfaces actionable guidance.            |
 | [`@dtifx/build`](packages/build)           | Plans token layers, runs transforms, and renders distributable outputs. |
-| [`@dtifx/cli`](packages/cli)               | Unified CLI for extract, diff, build, and audit workflows.              |
+| [`@dtifx/cli`](packages/cli)               | Unified CLI for extract, diff, build, audit, and dscp workflows.        |
 | [`@dtifx/core`](packages/core)             | Shared runtime primitives used by every package and custom hosts.       |
 | [`@dtifx/diff`](packages/diff)             | Calculates DTIF diffs and produces human and machine-friendly reports.  |
+| [`@dtifx/dscp`](packages/dscp)             | Generates DSCP documents from a completed DTIFx build pipeline output.  |
 | [`@dtifx/extractors`](packages/extractors) | Connects design providers (starting with Figma) to DTIF token exports.  |
 
 Review each package README for detailed usage examples and API references.

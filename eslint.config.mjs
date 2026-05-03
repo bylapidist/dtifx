@@ -34,6 +34,7 @@ const moduleBoundaryRule = [
           'scope:core',
           'scope:build',
           'scope:diff',
+          'scope:dscp',
           'scope:lint',
           'scope:audit',
           'scope:extractors',

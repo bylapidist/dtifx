@@ -19,7 +19,8 @@
     "smoke:diff": "./scripts/smoke-diff.sh",
     "smoke:audit": "./scripts/smoke-audit.sh",
     "smoke:extractors": "pnpm exec nx run extractors:cli-smoke",
-    "release": "pnpm run build && pnpm run smoke:diff && pnpm run smoke:build && pnpm run smoke:extractors && pnpm run smoke:audit && changeset publish",
+    "smoke:dscp": "./scripts/smoke-dscp.sh",
+    "release": "pnpm run build && pnpm run smoke:diff && pnpm run smoke:build && pnpm run smoke:extractors && pnpm run smoke:audit && pnpm run smoke:dscp && changeset publish",
     "docs:dev": "nx run docs-site:dev",
     "docs:build": "nx run docs-site:build",
     "docs:preview": "nx run docs-site:preview"

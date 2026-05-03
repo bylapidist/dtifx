@@ -11,7 +11,7 @@
 
 ## Overview
 
-`@dtifx/cli` publishes the `dtifx` executable. It unifies the extract, diff, build, and audit
+`@dtifx/cli` publishes the `dtifx` executable. It unifies the extract, diff, build, audit, and dscp
 runtimes so you can run every DTIFx workflow through one entry point with consistent logging,
 telemetry, and error handling.
 
@@ -46,6 +46,7 @@ pnpm exec dtifx extract sketch --file ./design-library.json \
 pnpm exec dtifx audit run --config ./dtifx.config.mjs
 pnpm exec dtifx diff compare tokens/base.json tokens/feature.json
 pnpm exec dtifx build generate --out-dir dist/tokens
+pnpm exec dtifx dscp generate --from tokens/build/ --out DESIGN_SYSTEM.md
 ```
 
 Kernel-wide flags shared across namespaces include:

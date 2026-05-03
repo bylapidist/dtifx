@@ -1,0 +1,49 @@
+{
+  "name": "@dtifx/dscp",
+  "version": "0.0.0",
+  "description": "Generate DSCP documents from a completed DTIFx build pipeline output.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bylapidist/dtifx.git",
+    "directory": "packages/dscp"
+  },
+  "homepage": "https://dtifx.lapidist.net/dscp",
+  "bugs": {
+    "url": "https://github.com/bylapidist/dtifx/issues"
+  },
+  "keywords": [
+    "dtif",
+    "dscp",
+    "design tokens",
+    "design system context protocol",
+    "ai"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "nx build dscp",
+    "test": "nx test dscp",
+    "lint": "nx lint dscp"
+  },
+  "dependencies": {
+    "@lapidist/dscp": "^0.2.0"
+  },
+  "files": [
+    "dist/src",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

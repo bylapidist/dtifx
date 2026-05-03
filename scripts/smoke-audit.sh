@@ -9,8 +9,8 @@ if [[ ! -d "${PACKAGE_ROOT}" ]]; then
   exit 1
 fi
 
-echo "Building @dtifx/core, @dtifx/cli, and @dtifx/audit packages for smoke test" >&2
-pnpm exec nx run-many -t build --projects core,cli,audit --output-style=static
+echo "Building @dtifx/core, @dtifx/cli, @dtifx/dscp, and @dtifx/audit packages for smoke test" >&2
+pnpm exec nx run-many -t build --projects core,cli,dscp,audit --output-style=static
 
 # shellcheck source=./lib/package-utils.sh
 source "${REPO_ROOT}/scripts/lib/package-utils.sh"
@@ -33,6 +33,12 @@ if [[ -d "${EXTRACTORS_PACKAGE_ROOT}" ]]; then
   EXTRACTORS_PKG_PATH="$(pack_workspace_package "${EXTRACTORS_PACKAGE_ROOT}")"
 fi
 
+DSCP_PACKAGE_ROOT="${REPO_ROOT}/packages/dscp"
+DSCP_PKG_PATH=""
+if [[ -d "${DSCP_PACKAGE_ROOT}" ]]; then
+  DSCP_PKG_PATH="$(pack_workspace_package "${DSCP_PACKAGE_ROOT}")"
+fi
+
 cleanup_artifacts() {
   rm -f "${PKG_PATH}" 2>/dev/null || true
   if [[ -n "${CORE_PKG_PATH:-}" ]]; then
@@ -40,6 +46,9 @@ cleanup_artifacts() {
   fi
   if [[ -n "${EXTRACTORS_PKG_PATH:-}" ]]; then
     rm -f "${EXTRACTORS_PKG_PATH}" 2>/dev/null || true
+  fi
+  if [[ -n "${DSCP_PKG_PATH:-}" ]]; then
+    rm -f "${DSCP_PKG_PATH}" 2>/dev/null || true
   fi
   rm -f "${CLI_PKG_PATH}" 2>/dev/null || true
 }
@@ -52,6 +61,9 @@ fi
 if [[ -n "${EXTRACTORS_PKG_PATH}" ]]; then
   echo "Using local @dtifx/extractors artifact $(basename "${EXTRACTORS_PKG_PATH}")" >&2
 fi
+if [[ -n "${DSCP_PKG_PATH}" ]]; then
+  echo "Using local @dtifx/dscp artifact $(basename "${DSCP_PKG_PATH}")" >&2
+fi
 echo "Using local @dtifx/cli artifact $(basename "${CLI_PKG_PATH}")" >&2
 
-PKG="${PKG_PATH}" CORE_PKG="${CORE_PKG_PATH}" CLI_PKG="${CLI_PKG_PATH}" EXTRACTORS_PKG="${EXTRACTORS_PKG_PATH}" bash "${PACKAGE_ROOT}/scripts/cli-smoke.sh"
+PKG="${PKG_PATH}" CORE_PKG="${CORE_PKG_PATH}" CLI_PKG="${CLI_PKG_PATH}" EXTRACTORS_PKG="${EXTRACTORS_PKG_PATH}" DSCP_PKG="${DSCP_PKG_PATH}" bash "${PACKAGE_ROOT}/scripts/cli-smoke.sh"
