@@ -1,6 +1,6 @@
 {
   "name": "@dtifx/diff",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "Production DTIF diff engine with reporters, formatters, and CI integrations.",
   "license": "MIT",
   "type": "module",
