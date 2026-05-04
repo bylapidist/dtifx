@@ -46,7 +46,9 @@ describe('buildDocument', () => {
 
     const doc = await buildDocument(dir);
 
-    expect(doc.$schema).toBe('https://dscp.lapidist.net/schema/v1.json');
+    expect(doc.$schema).toBe(
+      'https://raw.githubusercontent.com/bylapidist/dscp/main/schema/v1.json',
+    );
     expect(doc.specVersion).toBe('1.0.0');
     expect(typeof doc.generatedAt).toBe('string');
     expect(typeof doc.kernelSnapshotHash).toBe('string');
