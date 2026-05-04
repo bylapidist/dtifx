@@ -36,6 +36,8 @@ DIFF_PKG_PATH=""
 DIFF_PKG_CLEANUP_PATH=""
 AUDIT_PKG_PATH=""
 AUDIT_PKG_CLEANUP_PATH=""
+DSCP_PKG_PATH=""
+DSCP_PKG_CLEANUP_PATH=""
 
 CLI_DEPENDENCIES_BUILT=0
 
@@ -179,6 +181,23 @@ if [[ -z "${CORE_PKG:-}" && -z "${CORE_PKG_PATH}" ]]; then
   fi
 fi
 
+if [[ -z "${DSCP_PKG:-}" ]]; then
+  DSCP_PACKAGE_ROOT="${WORKSPACE_ROOT}/packages/dscp"
+  if [[ -d "${DSCP_PACKAGE_ROOT}" ]]; then
+    if ! command -v pack_workspace_package >/dev/null 2>&1; then
+      # shellcheck source=../../../scripts/lib/package-utils.sh
+      source "${WORKSPACE_ROOT}/scripts/lib/package-utils.sh"
+    fi
+    DSCP_PKG_PATH="$(pack_workspace_package "${DSCP_PACKAGE_ROOT}")"
+    DSCP_PKG="${DSCP_PKG_PATH}"
+    DSCP_PKG_CLEANUP_PATH="${DSCP_PKG_PATH}"
+  fi
+elif [[ "${DSCP_PKG}" = /* ]]; then
+  DSCP_PKG_PATH="${DSCP_PKG}"
+else
+  DSCP_PKG_PATH="${WORKSPACE_ROOT}/${DSCP_PKG}"
+fi
+
 if [[ ! -f "${PKG_PATH}" ]]; then
   echo "Resolved PKG path ${PKG_PATH} does not exist" >&2
   exit 1
@@ -248,17 +267,20 @@ cleanup() {
   if [[ -n "${CORE_PKG_CLEANUP_PATH}" ]]; then
     rm -f "${CORE_PKG_CLEANUP_PATH}" 2>/dev/null || true
   fi
+  if [[ -n "${DSCP_PKG_CLEANUP_PATH}" ]]; then
+    rm -f "${DSCP_PKG_CLEANUP_PATH}" 2>/dev/null || true
+  fi
   exit "$status"
 }
 trap 'cleanup $?' EXIT
 
 pushd "${WORK_DIR}" >/dev/null
 
-node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${CORE_PKG_PATH}" "${BUILD_PKG_PATH}" "${DIFF_PKG_PATH}" "${AUDIT_PKG_PATH}"
+node - <<'NODE' "${WORKSPACE_ROOT}" "${PKG_PATH}" "${CLI_PKG_PATH}" "${CORE_PKG_PATH}" "${BUILD_PKG_PATH}" "${DIFF_PKG_PATH}" "${AUDIT_PKG_PATH}" "${DSCP_PKG_PATH}"
 const fs = require('node:fs');
 const path = require('node:path');
 
-const [workspaceRoot, extractorsPath, cliPath, corePath, buildPath, diffPath, auditPath] = process.argv.slice(2);
+const [workspaceRoot, extractorsPath, cliPath, corePath, buildPath, diffPath, auditPath, dscpPath] = process.argv.slice(2);
 
 const pkg = {
   name: 'dtifx-extractors-cli-smoke',
@@ -306,6 +328,7 @@ registerPackage('@dtifx/core', ensureFileSpecifier(corePath));
 registerPackage('@dtifx/build', ensureFileSpecifier(buildPath));
 registerPackage('@dtifx/diff', ensureFileSpecifier(diffPath));
 registerPackage('@dtifx/audit', ensureFileSpecifier(auditPath));
+registerPackage('@dtifx/dscp', ensureFileSpecifier(dscpPath));
 
 if (Object.keys(dependencies).length > 0) {
   pkg.dependencies = {
