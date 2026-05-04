@@ -22,6 +22,8 @@ powers the workspace so builds, tests, and documentation run reproducibly.
   `runDiffSession`, filtering utilities, failure policies, and report renderers.
 - **`packages/audit`** loads policy manifests, resolves tokens through either the native or
   build-backed environments, and runs evaluations through `createAuditRuntime` with CLI reporters.
+- **`packages/dscp`** generates Design System Context Protocol (DSCP) documents from a completed
+  build pipeline output, producing a structured `DESIGN_SYSTEM.md` for AI agent consumption via MCP.
 - **`packages/cli`** stitches the runtimes together behind the `dtifx` binary. Command modules
   register with the shared kernel so each workflow receives a consistent IO contract.
 
@@ -39,7 +41,7 @@ enabled.
    - Policy configuration loads default governance factories (owner metadata, deprecation
      replacements, tag requirements, override approvals, WCAG contrast) and plugin modules.
 
-2. **Domain runtimes – build, diff, audit**
+2. **Domain runtimes – build, diff, audit, dscp**
    - Build runtime services (`SourcePlanner`, `TokenResolutionService`, `TransformationService`,
      `FormattingService`, `DependencyTrackingService`) coordinate planning, parsing, transformation,
      formatting, and dependency snapshots.
@@ -47,6 +49,8 @@ enabled.
      and failure policy evaluation before rendering reports.
    - Audit runtimes reuse the same resolution services and policy engine, optionally delegating to
      the build runtime when audits need build-aware context such as cached transforms.
+   - DSCP generation reads the build output (`tokens.json`) and delegates to `@lapidist/dscp` to
+     produce a typed Markdown document consumable by AI agents through the MCP protocol.
 
 3. **Hosts – CLI and integrations**
    - The CLI registers command modules that translate Commander arguments into runtime calls. Each

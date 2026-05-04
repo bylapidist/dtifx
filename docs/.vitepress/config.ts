@@ -36,6 +36,7 @@ export default defineConfig({
           { text: '@dtifx/cli', link: '/cli/' },
           { text: '@dtifx/core', link: '/core/' },
           { text: '@dtifx/diff', link: '/diff/' },
+          { text: '@dtifx/dscp', link: '/dscp/' },
           { text: '@dtifx/extractors', link: '/extractors/' },
         ],
       },
@@ -109,6 +110,15 @@ export default defineConfig({
             { text: 'Extractor setup guide', link: '/guides/extractor-setup' },
             { text: 'Quickstart guide', link: '/guides/getting-started' },
             { text: 'Troubleshooting', link: '/troubleshooting/' },
+          ],
+        },
+      ],
+      '/dscp/': [
+        {
+          text: '@dtifx/dscp',
+          items: [
+            { text: 'Overview', link: '/dscp/' },
+            { text: 'CLI reference', link: '/reference/cli' },
           ],
         },
       ],
