@@ -35,7 +35,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build CLI packages
-        run: pnpm exec nx run-many -t build --projects build,diff,audit --output-style=static
+        run:
+          pnpm exec nx run-many -t build --projects build,diff,audit,core,cli,dscp,extractors
+          --output-style=static
 
       - name: Smoke test CLI packages
         run: |
@@ -61,6 +63,9 @@ jobs:
           DIFF_PKG_TARBALL="$(capture_pack '@dtifx/diff')"
           AUDIT_PKG_TARBALL="$(capture_pack '@dtifx/audit')"
           CORE_PKG_TARBALL="$(capture_pack '@dtifx/core')"
+          CLI_PKG_TARBALL="$(capture_pack '@dtifx/cli')"
+          DSCP_PKG_TARBALL="$(capture_pack '@dtifx/dscp')"
+          EXTRACTORS_PKG_TARBALL="$(capture_pack '@dtifx/extractors')"
 
           run_smoke() {
             local name="$1"
@@ -75,8 +80,33 @@ jobs:
             echo "::endgroup::"
           }
 
-          run_smoke dtifx-build "${BUILD_PKG_TARBALL}" ./packages/build/scripts/cli-smoke.sh
-          run_smoke dtifx-diff "${DIFF_PKG_TARBALL}" ./packages/diff/scripts/cli-smoke.sh
-          run_smoke dtifx-audit "${AUDIT_PKG_TARBALL}" ./packages/audit/scripts/cli-smoke.sh
+          echo "::group::Smoke test dtifx-build"
+          PKG="${BUILD_PKG_TARBALL}" CORE_PKG="${CORE_PKG_TARBALL}" ./packages/build/scripts/cli-smoke.sh
+          echo "::endgroup::"
 
-          rm -f "${CORE_PKG_TARBALL}"
+          echo "::group::Smoke test dtifx-diff"
+          PKG="${DIFF_PKG_TARBALL}" CORE_PKG="${CORE_PKG_TARBALL}" ./packages/diff/scripts/cli-smoke.sh
+          echo "::endgroup::"
+
+          echo "::group::Smoke test dtifx-audit"
+          PKG="${AUDIT_PKG_TARBALL}" CORE_PKG="${CORE_PKG_TARBALL}" ./packages/audit/scripts/cli-smoke.sh
+          echo "::endgroup::"
+
+          echo "::group::Smoke test dtifx-extractors"
+          PKG="${EXTRACTORS_PKG_TARBALL}" \
+            CLI_PKG="${CLI_PKG_TARBALL}" \
+            CORE_PKG="${CORE_PKG_TARBALL}" \
+            BUILD_PKG="${BUILD_PKG_TARBALL}" \
+            DIFF_PKG="${DIFF_PKG_TARBALL}" \
+            AUDIT_PKG="${AUDIT_PKG_TARBALL}" \
+            DSCP_PKG="${DSCP_PKG_TARBALL}" \
+            ./packages/extractors/scripts/cli-smoke.sh
+          echo "::endgroup::"
+
+          echo "::group::Smoke test dtifx-dscp"
+          ./scripts/smoke-dscp.sh
+          echo "::endgroup::"
+
+          rm -f "${BUILD_PKG_TARBALL}" "${DIFF_PKG_TARBALL}" "${AUDIT_PKG_TARBALL}" \
+                "${CORE_PKG_TARBALL}" "${CLI_PKG_TARBALL}" "${DSCP_PKG_TARBALL}" \
+                "${EXTRACTORS_PKG_TARBALL}"
