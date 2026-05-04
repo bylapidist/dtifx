@@ -106,8 +106,8 @@ if [[ ! -f DESIGN_SYSTEM.md ]]; then
   exit 1
 fi
 
-if ! grep -q 'schema' DESIGN_SYSTEM.md; then
-  echo "ERROR: DESIGN_SYSTEM.md appears malformed (no schema reference)" >&2
+if ! grep -q '# DESIGN_SYSTEM.md' DESIGN_SYSTEM.md; then
+  echo "ERROR: DESIGN_SYSTEM.md appears malformed (missing heading)" >&2
   exit 1
 fi
 
