@@ -105,7 +105,7 @@
     "@opentelemetry/core": "2.7.1",
     "@opentelemetry/sdk-trace-base": "2.7.1",
     "color": "5.0.3",
-    "cosmiconfig": "9.0.1",
+    "cosmiconfig": "9.0.2",
     "fast-glob": "3.3.3",
     "json-rules-engine": "7.3.1",
     "p-map": "7.0.4",
