@@ -245,8 +245,8 @@ importers:
         specifier: 8.20.0
         version: 8.20.0
       cli-truncate:
-        specifier: 6.0.1
-        version: 6.0.1
+        specifier: 6.1.0
+        version: 6.1.0
       colord:
         specifier: 2.9.3
         version: 2.9.3
@@ -2532,8 +2532,8 @@ packages:
     resolution: {integrity: sha512-xRwvIOMGrfOAnM1JYtqQImuaNtDEv9v6oIYAs4LIHwTiKee8uwvIi363igssOC0O5U04i4AlENs79LQLu9tEMw==}
     engines: {node: '>=20'}
 
-  cli-truncate@6.0.1:
-    resolution: {integrity: sha512-2FPVnc3JxdRLONB/9edO1RwuUFFPJ3U2c6XvyccEhjqV5xw6mS22aH27OFdD1u4IYQOEUzXsT6ZU06d1VCSu+Q==}
+  cli-truncate@6.1.0:
+    resolution: {integrity: sha512-ofWtXdvPO1WepoE9Gn4dPdZw+ADud1Yz9K+xm9FjK5vvrs/D60vrlKIQeSw1wJX4cphW2bnWi8GZSKvf9T6shw==}
     engines: {node: '>=22'}
 
   cliui@8.0.1:
@@ -7443,7 +7443,7 @@ snapshots:
       slice-ansi: 8.0.0
       string-width: 8.2.1
 
-  cli-truncate@6.0.1:
+  cli-truncate@6.1.0:
     dependencies:
       slice-ansi: 9.0.0
       string-width: 8.2.1
