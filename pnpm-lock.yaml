@@ -138,8 +138,8 @@ importers:
         specifier: 4.7.9
         version: 4.7.9
       keyv:
-        specifier: 5.6.0
-        version: 5.6.0
+        specifier: 6.0.0
+        version: 6.0.0
       p-queue:
         specifier: 9.3.3
         version: 9.3.3
@@ -3276,6 +3276,10 @@ packages:
   hookable@5.5.3:
     resolution: {integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==}
 
+  hookified@3.0.2:
+    resolution: {integrity: sha512-FpIcRHpFlW7yh68lmL0h1/Vodv77TogpHlt4qqakE/0RyQMjgNxs53acH9NJPeyRZutP7GnlqiyqRNejV8/lHQ==}
+    engines: {node: '>=22.18.0'}
+
   html-entities@2.6.0:
     resolution: {integrity: sha512-kig+rMn/QOVRvr7c86gQ8lWXq+Hkv6CbAH1hLu+RG338StTpE8Z0b44SDVaqVu7HGKf27frdmUYEs9hTUX/cLQ==}
 
@@ -3621,8 +3625,9 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  keyv@5.6.0:
-    resolution: {integrity: sha512-CYDD3SOtsHtyXeEORYRx2qBtpDJFjRTGXUtmNEMGyzYOKj1TE3tycdlho7kA1Ufx9OYWZzg52QFBGALTirzDSw==}
+  keyv@6.0.0:
+    resolution: {integrity: sha512-N/n4R+nD5SC0fYOpAp4ZnbwwxqGVodgEZ9D7Gm/VBocorU0aQimVyleDWSY6/axdO0/temub760n3hnMppZpUg==}
+    engines: {node: '>= 22.19.0'}
 
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
@@ -8354,6 +8359,8 @@ snapshots:
 
   hookable@5.5.3: {}
 
+  hookified@3.0.2: {}
+
   html-entities@2.6.0: {}
 
   html-escaper@2.0.2: {}
@@ -8658,9 +8665,9 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  keyv@5.6.0:
+  keyv@6.0.0:
     dependencies:
-      '@keyv/serialize': 1.1.1
+      hookified: 3.0.2
 
   levn@0.4.1:
     dependencies:
