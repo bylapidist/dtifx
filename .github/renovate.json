@@ -6,7 +6,7 @@
   "platformAutomerge": true,
   "rangeStrategy": "pin",
   "constraints": {
-    "node": "26.8.1"
+    "node": "26.8.2"
   },
   "packageRules": [
     {
