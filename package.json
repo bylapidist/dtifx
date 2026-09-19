@@ -27,8 +27,8 @@
   },
   "devDependencies": {
     "@changesets/cli": "3.0.3",
-    "@commitlint/cli": "21.2.2",
-    "@commitlint/config-conventional": "21.2.2",
+    "@commitlint/cli": "21.2.3",
+    "@commitlint/config-conventional": "21.2.3",
     "@eslint/js": "9.39.5",
     "@nx/eslint": "22.7.12",
     "@nx/eslint-plugin": "22.7.12",
