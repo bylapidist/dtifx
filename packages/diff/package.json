@@ -51,7 +51,7 @@
     "handlebars": "4.7.9",
     "is-unicode-supported": "2.1.0",
     "strip-ansi": "7.2.0",
-    "supports-hyperlinks": "4.5.0",
+    "supports-hyperlinks": "4.6.0",
     "wrap-ansi": "10.0.2",
     "yaml": "2.9.1"
   },
