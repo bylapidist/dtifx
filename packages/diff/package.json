@@ -48,7 +48,7 @@
     "ajv": "8.20.0",
     "cli-truncate": "6.1.1",
     "colord": "2.10.0",
-    "handlebars": "4.7.9",
+    "handlebars": "4.7.10",
     "is-unicode-supported": "2.1.0",
     "strip-ansi": "7.2.0",
     "supports-hyperlinks": "4.6.0",
