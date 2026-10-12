@@ -217,8 +217,8 @@ importers:
         specifier: 7.3.1
         version: 7.3.1
       p-map:
-        specifier: 7.1.0
-        version: 7.1.0
+        specifier: 7.1.1
+        version: 7.1.1
       zod:
         specifier: 4.6.5
         version: 4.6.5
@@ -3964,8 +3964,8 @@ packages:
     resolution: {integrity: sha512-tkAQEw8ysMzmkhgw8k+1U/iPhWNhykKnSk4Rd5zLoPJCuJaGRPo6YposrZgaxHKzDHdDWWZvE/Sk7hsL2X/CpQ==}
     engines: {node: '>=18'}
 
-  p-map@7.1.0:
-    resolution: {integrity: sha512-HaSJ9hNZOxTUSATfB48Qi7U2+GF1eECjI39nkeLmCWQrSOYr1z4NepR0rpWiZO77pYwUWU2cJ5NIgsmoFCsYDQ==}
+  p-map@7.1.1:
+    resolution: {integrity: sha512-6Lh3jQPLthYujSrlw6ccWXBGZTkoTCz27Hd92g79LH/kjAbgoEu0t442cCCNbegPSJsA0lwDX8z0bcKtkpA32g==}
     engines: {node: '>=18'}
 
   p-queue@9.3.4:
@@ -9022,7 +9022,7 @@ snapshots:
 
   p-map@7.0.4: {}
 
-  p-map@7.1.0: {}
+  p-map@7.1.1: {}
 
   p-queue@9.3.4:
     dependencies:
