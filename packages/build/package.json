@@ -52,7 +52,7 @@
     "@lapidist/dtif-schema": "2.0.0",
     "@lapidist/dtif-validator": "2.0.0",
     "cacache": "21.0.1",
-    "chokidar": "5.0.0",
+    "chokidar": "6.0.0",
     "dependency-graph": "1.0.0",
     "fast-glob": "3.3.3",
     "handlebars": "4.7.10",
