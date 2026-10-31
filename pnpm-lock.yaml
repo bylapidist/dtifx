@@ -260,8 +260,8 @@ importers:
         specifier: 7.2.0
         version: 7.2.0
       supports-hyperlinks:
-        specifier: 4.6.0
-        version: 4.6.0
+        specifier: 5.0.0
+        version: 5.0.0
       wrap-ansi:
         specifier: 10.0.2
         version: 10.0.2
@@ -4457,17 +4457,17 @@ packages:
     resolution: {integrity: sha512-5JRxVqC8I8NuOUjzBbvVJAKNM8qoVuH0O77h4WInc/qC2q5IreqKxYwgkga3PfA22OayK2ikceb/B26dztPl+Q==}
     engines: {node: '>=16'}
 
-  supports-color@10.2.2:
-    resolution: {integrity: sha512-SS+jx45GF1QjgEXQx4NJZV9ImqmO2NPz5FNsIHrsDjh2YsHnawpan7SNQ1o8NuhrbHZy9AZhIoCUiCeaW/C80g==}
-    engines: {node: '>=18'}
+  supports-color@11.0.0:
+    resolution: {integrity: sha512-/zyImLdxhdygBIaVX0xTlQhKaCDLCrm665aqHk8xqK/Pa6k61fL6gwQGQq1k31yNyz6x55PppQgF2DMyPQa5xw==}
+    engines: {node: '>=22'}
 
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
-  supports-hyperlinks@4.6.0:
-    resolution: {integrity: sha512-FL/q/YePS4tFFTNiBOR+zPk2ZrKheqNtmTJ/9OUZ4e1wKHJofDbGQSmSsxS0XNnabSkqexryCaXGvEKz1vf9UQ==}
-    engines: {node: '>=20'}
+  supports-hyperlinks@5.0.0:
+    resolution: {integrity: sha512-+pKvWs0acYGnQAmn6UREXABwb/fsQfmGQgB/QnRP874122adqN0hvXZlOtT33czD77w3xNqmhSyY2jxoVgcTpg==}
+    engines: {node: '>=22'}
 
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
@@ -9642,16 +9642,16 @@ snapshots:
     dependencies:
       copy-anything: 3.0.5
 
-  supports-color@10.2.2: {}
+  supports-color@11.0.0: {}
 
   supports-color@7.2.0:
     dependencies:
       has-flag: 4.0.0
 
-  supports-hyperlinks@4.6.0:
+  supports-hyperlinks@5.0.0:
     dependencies:
       has-flag: 5.0.1
-      supports-color: 10.2.2
+      supports-color: 11.0.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
