@@ -26,7 +26,7 @@
     "docs:preview": "nx run docs-site:preview"
   },
   "devDependencies": {
-    "@changesets/cli": "3.0.3",
+    "@changesets/cli": "3.1.0",
     "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",
     "@eslint/js": "9.39.5",
