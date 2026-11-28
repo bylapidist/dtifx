@@ -57,8 +57,8 @@ importers:
         specifier: 2.32.0
         version: 2.32.0(@typescript-eslint/parser@8.74.0(eslint@9.39.5(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.5(jiti@2.6.1))
       eslint-plugin-jsdoc:
-        specifier: 65.5.7
-        version: 65.5.7(eslint@9.39.5(jiti@2.6.1))(typescript@5.9.3)
+        specifier: 65.6.0
+        version: 65.6.0(eslint@9.39.5(jiti@2.6.1))(typescript@5.9.3)
       eslint-plugin-prettier:
         specifier: 5.5.7
         version: 5.5.7(eslint-config-prettier@10.1.9(eslint@9.39.5(jiti@2.6.1)))(eslint@9.39.5(jiti@2.6.1))(prettier@3.8.5)
@@ -1115,8 +1115,8 @@ packages:
     resolution: {integrity: sha512-K8M2b2ixqOiF5B+qYJIWIznFtvbD8biX2mj31pXmXAaTRUUd2x6anAFZk4GVGXz7sX9tOkx+z6TaQc/paeVCeg==}
     engines: {node: ^22.16.0 || >=24.0.0}
 
-  '@es-joy/jsdoccomment@1.2.2':
-    resolution: {integrity: sha512-rx7i7QK9It5ekeASWa97aBTQUO/3DAnBD6wPwjCyfmagA3jyUxmRZ6hupz92iBZVyoi/Ns35/AjHP53COPVKGQ==}
+  '@es-joy/jsdoccomment@1.2.3':
+    resolution: {integrity: sha512-n9wKdGNyQlzDIzudVtVdz2cb4c/jJPSC9BsE/lq4HGSVLHUsQf+HuODhFFqF6oe1YLZpuvlQSHwgu6NKYCGw7A==}
     engines: {node: ^22.22.2 || >=24.15.0}
 
   '@es-joy/resolve.exports@1.2.0':
@@ -2962,8 +2962,8 @@ packages:
       '@typescript-eslint/parser':
         optional: true
 
-  eslint-plugin-jsdoc@65.5.7:
-    resolution: {integrity: sha512-mU8DSy+2nCiz2e2QvU4jVH32fEjguVJW4mcoNJZTCvzyt4X+2MTpulBn6N177o+EIs5/IjQ8WVG8fbwRlZ7ABQ==}
+  eslint-plugin-jsdoc@65.6.0:
+    resolution: {integrity: sha512-Y3wpaf3UwSg491STvWTUoPR1uKKsuif5K7m746wLG1rn7p20C8sEV97WOnzwFp7RAEiC+6Was0QZ8rijcG4Dvg==}
     engines: {node: ^22.22.2 || >=24.15.0}
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
@@ -5996,8 +5996,8 @@ snapshots:
     dependencies:
       '@es-joy/estraverse': 7.1.1
       '@es-joy/esutils': 3.0.0
-      '@es-joy/jsdoccomment': 1.2.2
-      '@types/estree': 1.0.10
+      '@es-joy/jsdoccomment': 1.2.3
+      '@types/estree': 1.0.11
       esprima: 4.0.1
       optionator: 0.9.4
     optionalDependencies:
@@ -6007,9 +6007,9 @@ snapshots:
 
   '@es-joy/esutils@3.0.0':
     dependencies:
-      '@types/estree': 1.0.10
+      '@types/estree': 1.0.11
 
-  '@es-joy/jsdoccomment@1.2.2':
+  '@es-joy/jsdoccomment@1.2.3':
     dependencies:
       '@types/estree': 1.0.11
       '@typescript-eslint/types': 8.74.0
@@ -7849,10 +7849,10 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-jsdoc@65.5.7(eslint@9.39.5(jiti@2.6.1))(typescript@5.9.3):
+  eslint-plugin-jsdoc@65.6.0(eslint@9.39.5(jiti@2.6.1))(typescript@5.9.3):
     dependencies:
       '@es-joy/escodegen': 5.0.1
-      '@es-joy/jsdoccomment': 1.2.2
+      '@es-joy/jsdoccomment': 1.2.3
       '@es-joy/resolve.exports': 1.2.0
       '@typescript-eslint/utils': 8.74.0(eslint@9.39.5(jiti@2.6.1))(typescript@5.9.3)
       are-docs-informative: 0.1.1
